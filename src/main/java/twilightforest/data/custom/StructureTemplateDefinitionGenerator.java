@@ -4,6 +4,7 @@ import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import twilightforest.TwilightForestMod;
+import twilightforest.world.components.structures.courtyard.CourtyardMain;
 import twilightforest.world.components.structures.finalcastle.FinalCastleBellTower21Component;
 import twilightforest.world.components.structures.finalcastle.FinalCastleBossGazeboComponent;
 import twilightforest.world.components.structures.finalcastle.FinalCastleLargeTowerComponent;
@@ -18,6 +19,8 @@ public class StructureTemplateDefinitionGenerator extends StructureTemplateDefin
 
 	@Override
 	protected void generatePools() {
+		this.add("courtyard/spawner", CourtyardMain.CENTER_POOL, 100);
+
 		this.addAllTemplatesToPool(LichTowerPieces.MOB_BRIDGE, 100,
 			"lich_tower/bridge_spawner",
 			"lich_tower/bridge_spawner_bend",
