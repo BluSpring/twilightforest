@@ -78,6 +78,10 @@ subprojects {
 	version = project(":").version
 }
 
+fabricApi {
+	configureDataGeneration()
+}
+
 loom {
 	accessWidenerPath.set(file("src/main/resources/twilightforest.accesswidener"))
 
@@ -102,7 +106,7 @@ jar {
 	exclude 'data/twilightforest/function/**'
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+//sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
 	mavenLocal()
