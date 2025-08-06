@@ -3,28 +3,12 @@ package twilightforest.data;
 import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.minecraft.DetectedVersion;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.metadata.PackMetadataGenerator;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
-import net.minecraft.util.InclusiveRange;
-import twilightforest.TFRegistries;
-import twilightforest.TwilightForestMod;
 import twilightforest.data.custom.QuestGenerator;
 import twilightforest.data.custom.StructureTemplateDefinitionGenerator;
 import twilightforest.data.custom.stalactites.StalactiteGenerator;
 import twilightforest.data.tags.*;
-import twilightforest.init.*;
-import twilightforest.init.custom.*;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DataGenerators implements DataGeneratorEntrypoint {
 	@Override
@@ -56,11 +40,14 @@ public class DataGenerators implements DataGeneratorEntrypoint {
 		pack.addProvider((output, lookupProvider) -> new TFStructureUpdater("structures", output, helper));
 
 		//normal tags
-		BlockTagGenerator tagGenerator;
-		pack.addProvider((output, lookupProvider) -> new BlockTagGenerator(output, lookupProvider, helper));
+		AtomicReference<BlockTagGenerator> tagGenerator = new AtomicReference<>();
+		pack.addProvider((output, lookupProvider) -> {
+			tagGenerator.set(new BlockTagGenerator(output, lookupProvider, helper));
+			return tagGenerator.get();
+		});
 		pack.addProvider((output, lookupProvider) -> new CustomTagGenerator.BlockEntityTagGenerator(output, lookupProvider, helper));
 		pack.addProvider((output, lookupProvider) -> new FluidTagGenerator(output, lookupProvider, helper));
-		//pack.addProvider((output, lookupProvider) -> new ItemTagGenerator(output, lookupProvider, blocktags.contentsGetter(), helper));
+		pack.addProvider((output, lookupProvider) -> new ItemTagGenerator(output, lookupProvider, tagGenerator.get().contentsGetter(), helper));
 		pack.addProvider((output, lookupProvider) -> new EntityTagGenerator(output, lookupProvider, helper));
 		pack.addProvider((output, lookupProvider) -> new CraftingGenerator(output, lookupProvider));
 		pack.addProvider((output, lookupProvider) -> new LootModifierGenerator(output, lookupProvider));

@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-07T04:59:17.5441088	The Twilight Forest/TwilightForest Item and BlockItem models
+// 1.21.1	2025-08-07T05:26:17.3319052	The Twilight Forest/TwilightForest Item and BlockItem models
 7753c0c0a54e0f4eb69cd733907db4f2acf2bc2b assets\twilightforest\models\item\ironwood_boots_netherite_trim.json
 2c7e66d55fbfb3c0c49c43795a50d2862acd6219 assets\twilightforest\models\item\stripped_canopy_log.json
 39ed9caada50dfbecbcb27d08887f6a03708c93b assets\twilightforest\models\item\music_disc_superstitious.json
@@ -574,8 +574,8 @@ da8ccbaaf7197d8de6f5a670061779d6c9bd69b8 assets\twilightforest\models\item\tripl
 0cf0aee8c9b2613e877ba99f6851ed39348aef3d assets\twilightforest\models\item\knightmetal_leggings_netherite_trim.json
 dce79ff2f9ddf262a1a2d36528aa6eaae37d9c36 assets\twilightforest\models\item\knightmetal_leggings_redstone_trim.json
 c1a459bcf79cfcd7d0bc5ad1cc47ec0c2f7cf2fa assets\twilightforest\models\item\aurora_slab.json
-88e790887e17454dcb6d12a9f71fdbb326723616 assets\twilightforest\models\item\fiery_ingot.json
 aab2deb218129c314139eb8f9446f9f19be2f404 assets\twilightforest\models\item\cracked_castle_brick_stairs.json
+88e790887e17454dcb6d12a9f71fdbb326723616 assets\twilightforest\models\item\fiery_ingot.json
 b03a59dab8b070aa8bb1b6bfd99a758ea8e5d9b2 assets\twilightforest\models\item\terrorcotta_lines.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\twilightforest\models\item\fire_beetle_spawn_egg.json
 13bf214f6c52bdda678b9265c8511987c113b2bd assets\twilightforest\models\item\giant_cobblestone_base.json

@@ -169,9 +169,9 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 
 		this.tag(RAW_MATERIALS_IRONWOOD).add(TFItems.RAW_IRONWOOD.get());
 		this.tag(RAW_MATERIALS_KNIGHTMETAL).add(TFItems.ARMOR_SHARD_CLUSTER.get());
-		this.tag(Tags.Items.RAW_MATERIALS).addTag(RAW_MATERIALS_IRONWOOD).addTag(RAW_MATERIALS_KNIGHTMETAL);
+		this.tag(Tags.Items.RAW_MATERIALS).addTag(RAW_MATERIALS_IRONWOOD).addTags(RAW_MATERIALS_KNIGHTMETAL);
 
-		this.tag(PORTAL_ACTIVATOR).addTag(Tags.Items.GEMS_DIAMOND);
+		this.tag(PORTAL_ACTIVATOR).addOptionalTag(Tags.Items.GEMS_DIAMOND.location());
 
 		this.tag(ItemTags.BOATS).add(
 			TFItems.TWILIGHT_OAK_BOAT.get(), TFItems.CANOPY_BOAT.get(),
@@ -217,13 +217,13 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 		);
 
 		this.tag(KOBOLD_PACIFICATION_BREADS).add(Items.BREAD);
-		this.tag(BOAR_TEMPT_ITEMS).addTag(Tags.Items.CROPS_CARROT).addTag(Tags.Items.CROPS_POTATO).addTag(Tags.Items.CROPS_BEETROOT);
-		this.tag(DEER_TEMPT_ITEMS).addTag(Tags.Items.CROPS_WHEAT).add(Items.APPLE);
-		this.tag(DWARF_RABBIT_TEMPT_ITEMS).addTag(Tags.Items.CROPS_CARROT).add(Items.GOLDEN_CARROT).add(Items.DANDELION);
-		this.tag(PENGUIN_TEMPT_ITEMS).addTag(ItemTags.FISHES);
-		this.tag(RAVEN_TEMPT_ITEMS).addTag(Tags.Items.SEEDS);
-		this.tag(SQUIRREL_TEMPT_ITEMS).addTag(Tags.Items.SEEDS);
-		this.tag(TINY_BIRD_TEMPT_ITEMS).addTag(Tags.Items.SEEDS);
+		this.tag(BOAR_TEMPT_ITEMS).addOptionalTag(Tags.Items.CROPS_CARROT.location()).addOptionalTag(Tags.Items.CROPS_POTATO.location()).addOptionalTag(Tags.Items.CROPS_BEETROOT.location());
+		this.tag(DEER_TEMPT_ITEMS).add(Items.APPLE).addOptionalTag(Tags.Items.CROPS_WHEAT.location());
+		this.tag(DWARF_RABBIT_TEMPT_ITEMS).add(Items.GOLDEN_CARROT).add(Items.DANDELION).addOptionalTag(Tags.Items.CROPS_CARROT.location());
+		this.tag(PENGUIN_TEMPT_ITEMS).addOptionalTag(ItemTags.FISHES.location());
+		this.tag(RAVEN_TEMPT_ITEMS).addOptionalTag(Tags.Items.SEEDS.location());
+		this.tag(SQUIRREL_TEMPT_ITEMS).addOptionalTag(Tags.Items.SEEDS.location());
+		this.tag(TINY_BIRD_TEMPT_ITEMS).addOptionalTag(Tags.Items.SEEDS.location());
 
 		this.tag(BANNED_UNCRAFTING_INGREDIENTS).add(
 			TFBlocks.INFESTED_TOWERWOOD.get().asItem(),
@@ -235,7 +235,7 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 			TFItems.TRANSFORMATION_POWDER.get());
 
 		this.tag(BANNED_UNCRAFTABLES).add(TFBlocks.GIANT_LOG.get().asItem());
-		this.tag(UNCRAFTING_IGNORES_COST).addTag(Tags.Items.RODS_WOODEN);
+		this.tag(UNCRAFTING_IGNORES_COST).addOptionalTag(Tags.Items.RODS_WOODEN.location());
 
 		this.tag(KEPT_ON_DEATH).add(TFItems.TOWER_KEY.get(), TFItems.PHANTOM_HELMET.get(), TFItems.PHANTOM_CHESTPLATE.get());
 
