@@ -1,6 +1,7 @@
 package twilightforest.data.tags;
 
 import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -109,7 +110,7 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 			.addTag(TWILIGHT_OAK_LOGS).addTag(CANOPY_LOGS).addTag(MANGROVE_LOGS)
 			.addTag(TIME_LOGS).addTag(TRANSFORMATION_LOGS).addTag(MINING_LOGS).addTag(SORTING_LOGS);
 
-		this.tag(Tags.Items.STRIPPED_LOGS).add(
+		this.tag(ConventionalItemTags.STRIPPED_LOGS).add(
 			TFBlocks.STRIPPED_TWILIGHT_OAK_LOG.value().asItem(),
 			TFBlocks.STRIPPED_CANOPY_LOG.value().asItem(),
 			TFBlocks.STRIPPED_MANGROVE_LOG.value().asItem(),
@@ -120,7 +121,7 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 			TFBlocks.STRIPPED_SORTING_LOG.value().asItem()
 		);
 
-		this.tag(Tags.Items.STRIPPED_WOODS).add(
+		this.tag(ConventionalItemTags.STRIPPED_WOODS).add(
 			TFBlocks.STRIPPED_TWILIGHT_OAK_WOOD.value().asItem(),
 			TFBlocks.STRIPPED_CANOPY_WOOD.value().asItem(),
 			TFBlocks.STRIPPED_MANGROVE_WOOD.value().asItem(),

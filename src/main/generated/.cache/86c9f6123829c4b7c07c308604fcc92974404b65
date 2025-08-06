@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-07T05:28:58.4105412	The Twilight Forest/Twilight Forest Entity Tags
+// 1.21.1	2025-08-07T05:55:02.2846098	The Twilight Forest/Twilight Forest Entity Tags
 4c421f0abf08155c163118250eff7f5a24617998 data\minecraft\tags\entity_type\zombies.json
 38bf80bb5d608168d87dbbc33e3314fd1d0135d9 data\twilightforest\tags\entity_type\bosses.json
 05818cb02398f00d3d7129f8fa26858a295e069f data\minecraft\tags\entity_type\skeletons.json
@@ -20,8 +20,8 @@ d0db54edeabbabca99c42c3c4953efe760b18c03 data\minecraft\tags\entity_type\undead.
 0865b5410d11831c91b4a4164d890df4852489ff data\c\tags\entity_type\bosses.json
 783d0f4b0afa2163ebc4d44da8d1d56939023582 data\twilightforest\tags\entity_type\lich_deflects_phase_2.json
 e5bff3b10b54d6af46050743b454bd8cce4993e0 data\minecraft\tags\entity_type\fall_damage_immune.json
-00b66b9a62a509d2c0bcfad259ff965c818a8f12 data\aether\tags\entity_type\deflectable_projectiles.json
 0865b5410d11831c91b4a4164d890df4852489ff data\ars_nouveau\tags\entity_type\jar_blacklist.json
+00b66b9a62a509d2c0bcfad259ff965c818a8f12 data\aether\tags\entity_type\deflectable_projectiles.json
 4cc81785a3c2c7f11c11bac6cf2ad3c0d89c9ad5 data\minecraft\tags\entity_type\frog_food.json
 c5eb251bcb3f4e958ddcb4f254b0d3563e7d28e7 data\twilightforest\tags\entity_type\multiplayer_inclusive_entities.json
 9e5f68b2faa6d767538d0f4264a7145d32a2bdda data\minecraft\tags\entity_type\freeze_hurts_extra_types.json

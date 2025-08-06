@@ -125,7 +125,7 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 		this.tag(BlockTags.LOGS).addTag(TF_LOGS);
 		this.tag(BlockTags.LOGS_THAT_BURN).addTag(TF_LOGS);
 
-		this.tag(Tags.Blocks.STRIPPED_LOGS).add(
+		this.tag(ConventionalBlockTags.STRIPPED_LOGS).add(
 			TFBlocks.STRIPPED_TWILIGHT_OAK_LOG.value(),
 			TFBlocks.STRIPPED_CANOPY_LOG.value(),
 			TFBlocks.STRIPPED_MANGROVE_LOG.value(),
@@ -136,7 +136,7 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 			TFBlocks.STRIPPED_SORTING_LOG.value()
 		);
 
-		this.tag(Tags.Blocks.STRIPPED_WOODS).add(
+		this.tag(ConventionalBlockTags.STRIPPED_WOODS).add(
 			TFBlocks.STRIPPED_TWILIGHT_OAK_WOOD.value(),
 			TFBlocks.STRIPPED_CANOPY_WOOD.value(),
 			TFBlocks.STRIPPED_MANGROVE_WOOD.value(),

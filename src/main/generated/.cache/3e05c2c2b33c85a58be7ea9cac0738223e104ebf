@@ -1,4 +1,4 @@
-// 1.21.1	2025-08-07T05:28:58.4286438	The Twilight Forest/Twilight Forest Block Tags
+// 1.21.1	2025-08-07T05:55:02.3037615	The Twilight Forest/Twilight Forest Block Tags
 843ba474e71a542ef634fe664ef97ce079a3186c data\twilightforest\tags\block\portal\generated_decoration.json
 7088eeadc01cb4ee514f7c4fd5c25d66a2ee1a00 data\c\tags\block\relocation_not_supported.json
 e1e1daa9f0fa727681cf4eb0a0a2cbde40e6708d data\c\tags\block\storage_blocks\knightmetal.json
@@ -45,6 +45,7 @@ c55a1566df31827f00cf563728704464bd98219c data\twilightforest\tags\block\carver_r
 e76ac35d93be5d3604434978c6f388542c03f06a data\twilightforest\tags\block\hollow_logs_climbable.json
 0c4ebe5892c15ecdc495af7c56d4ed1e0f61e511 data\twilightforest\tags\block\hollow_logs_vertical.json
 e33c5143db03e28da803a9f265902c39e93589e2 data\minecraft\tags\block\overworld_carver_replaceables.json
+96e133a68b59752179daf0ace7f09c7aa6f86a6d data\c\tags\block\stripped_logs.json
 0a52d65411c2027ae8e27da5af1fea4e9ef5f090 data\minecraft\tags\block\beacon_base_blocks.json
 8ed2ef0f9a24051c4d152d5d47721e79f790e2eb data\twilightforest\tags\block\deadrock.json
 6be3f00e1fa63bb65b978bb8e2c63bbf79b5775e data\minecraft\tags\block\small_dripleaf_placeable.json
@@ -104,6 +105,7 @@ e121d38615572a340044db73e20622af4e2a0a7c data\minecraft\tags\block\flower_pots.j
 34bb5d122fd15f6d868a5ff3cfe8ac8eafc6e892 data\c\tags\block\storage_blocks\steeleaf.json
 13ef2169fcd31b20ffd1e70c9f7b4855e786d936 data\c\tags\block\player_workstations\crafting_tables.json
 e3608a1e45288fc2d2c5f2258d8d69b2e3c61ca3 data\minecraft\tags\block\features_cannot_replace.json
+44805839a86579813bbaa5d7948e5adc4a4421a7 data\c\tags\block\stripped_woods.json
 3ff910b3376b5166da794689b1bf7569ad0b2e87 data\minecraft\tags\block\wooden_doors.json
 fb7a7436afb031785fd2fcab3f531096467171d2 data\minecraft\tags\block\dirt.json
 2585c456a9b7ce8d36c3a54a19bf73ef49cda315 data\twilightforest\tags\block\progression_allow_breaking.json
