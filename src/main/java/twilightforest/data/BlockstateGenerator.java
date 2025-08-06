@@ -3,6 +3,10 @@ package twilightforest.data;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.models.builders.CompositeModelBuilder;
+import io.github.fabricators_of_create.porting_lib.models.generators.*;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -12,16 +16,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.neoforged.neoforge.client.model.generators.*;
-import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 import twilightforest.TwilightForestMod;
 import twilightforest.block.*;
 import twilightforest.client.model.block.aurorablock.NoiseVaryingModelBuilder;
-import twilightforest.client.model.block.connected.ConnectedTextureBuilder;
 import twilightforest.client.model.block.carpet.RoyalRagsBuilder;
+import twilightforest.client.model.block.connected.ConnectedTextureBuilder;
 import twilightforest.client.model.block.forcefield.ForceFieldModel;
 import twilightforest.client.model.block.forcefield.ForceFieldModelBuilder;
 import twilightforest.client.model.block.giantblock.GiantBlockBuilder;
@@ -30,7 +30,6 @@ import twilightforest.data.helpers.BlockModelBuilders;
 import twilightforest.enums.*;
 import twilightforest.init.TFBlocks;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -1714,7 +1713,7 @@ public class BlockstateGenerator extends BlockModelBuilders {
 		}).renderType(CUTOUT).texture("top", top).texture("side", side).texture("inner", inner)).rotationY((int) state.getValue(ClimbableHollowLogBlock.FACING).toYRot()).uvLock(true).build());
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public String getName() {
 		return "TwilightForest blockstates and block models";

@@ -1,5 +1,7 @@
 package twilightforest.init;
 
+import io.github.fabricators_of_create.porting_lib.registry.DeferredItem;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -17,10 +19,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.components.item.PotionFlaskComponent;
 import twilightforest.data.tags.CustomTagGenerator;
 import twilightforest.enums.extensions.TFBoatTypeEnumExtension;
@@ -30,11 +29,9 @@ import twilightforest.util.TFToolMaterials;
 
 public class TFItems {
 
-	@Autowired
-	private static TFBoatTypeEnumExtension boatTypeEnumExtension;
+	private static TFBoatTypeEnumExtension boatTypeEnumExtension = new TFBoatTypeEnumExtension();
 
-	@Autowired
-	private static TFRarityEnumExtension tfRarityEnumExtension;
+	private static TFRarityEnumExtension tfRarityEnumExtension = new TFRarityEnumExtension();
 
 	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(TwilightForestMod.ID);
 
@@ -71,10 +68,10 @@ public class TFItems {
 	public static final DeferredItem<Item> IRONWOOD_PICKAXE = ITEMS.register("ironwood_pickaxe", () -> new PickaxeItem(TFToolMaterials.IRONWOOD, new Item.Properties().attributes(PickaxeItem.createAttributes(TFToolMaterials.IRONWOOD, 1.0F, -2.8F))));
 	public static final DeferredItem<Item> IRONWOOD_AXE = ITEMS.register("ironwood_axe", () -> new AxeItem(TFToolMaterials.IRONWOOD, new Item.Properties().attributes(AxeItem.createAttributes(TFToolMaterials.IRONWOOD, 6.0F, -3.1F))));
 	public static final DeferredItem<Item> IRONWOOD_HOE = ITEMS.register("ironwood_hoe", () -> new HoeItem(TFToolMaterials.IRONWOOD, new Item.Properties().attributes(HoeItem.createAttributes(TFToolMaterials.IRONWOOD, -2, -1.0F))));
-	public static final DeferredItem<Item> TORCHBERRIES = ITEMS.register("torchberries", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().alwaysEdible().effect(() -> new MobEffectInstance(MobEffects.GLOWING, 100, 0), 0.75F).build())));
+	public static final DeferredItem<Item> TORCHBERRIES = ITEMS.register("torchberries", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().alwaysEdible().effect(new MobEffectInstance(MobEffects.GLOWING, 100, 0), 0.75F).build())));
 	public static final DeferredItem<Item> RAW_VENISON = ITEMS.register("raw_venison", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).build())));
 	public static final DeferredItem<Item> COOKED_VENISON = ITEMS.register("cooked_venison", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build())));
-	public static final DeferredItem<Item> HYDRA_CHOP = ITEMS.register("hydra_chop", () -> new HydraChopItem(new Item.Properties().fireResistant().food(new FoodProperties.Builder().nutrition(18).saturationModifier(2.0F).effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 100, 0), 1.0F).build()).rarity(Rarity.UNCOMMON)));
+	public static final DeferredItem<Item> HYDRA_CHOP = ITEMS.register("hydra_chop", () -> new HydraChopItem(new Item.Properties().fireResistant().food(new FoodProperties.Builder().nutrition(18).saturationModifier(2.0F).effect(new MobEffectInstance(MobEffects.REGENERATION, 100, 0), 1.0F).build()).rarity(Rarity.UNCOMMON)));
 	public static final DeferredItem<Item> FIERY_BLOOD = ITEMS.register("fiery_blood", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 	public static final DeferredItem<Item> FIERY_TEARS = ITEMS.register("fiery_tears", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 	public static final DeferredItem<Item> FIERY_INGOT = ITEMS.register("fiery_ingot", () -> new Item(new Item.Properties().fireResistant().rarity(Rarity.UNCOMMON)));
@@ -96,7 +93,7 @@ public class TFItems {
 	public static final DeferredItem<Item> STEELEAF_HOE = ITEMS.register("steeleaf_hoe", () -> new HoeItem(TFToolMaterials.STEELEAF, new Item.Properties().attributes(HoeItem.createAttributes(TFToolMaterials.STEELEAF, -3.0F, -0.5F))));
 	public static final DeferredItem<Item> GOLDEN_MINOTAUR_AXE = ITEMS.register("gold_minotaur_axe", () -> new MinotaurAxeItem(Tiers.GOLD, new Item.Properties().rarity(Rarity.COMMON).attributes(AxeItem.createAttributes(Tiers.GOLD, 6.0F, -3.2F))));
 	public static final DeferredItem<Item> DIAMOND_MINOTAUR_AXE = ITEMS.register("diamond_minotaur_axe", () -> new MinotaurAxeItem(Tiers.DIAMOND, new Item.Properties().rarity(Rarity.UNCOMMON).attributes(AxeItem.createAttributes(Tiers.DIAMOND, 6.0F, -3.2F))));
-	public static final DeferredItem<Item> MAZEBREAKER_PICKAXE = ITEMS.register("mazebreaker_pickaxe", () -> new MazebreakerPickItem(Tiers.DIAMOND, new Item.Properties().setNoRepair().rarity(Rarity.RARE).attributes(PickaxeItem.createAttributes(Tiers.DIAMOND, 1.0F, -2.8F))));
+	public static final DeferredItem<Item> MAZEBREAKER_PICKAXE = ITEMS.register("mazebreaker_pickaxe", () -> new MazebreakerPickItem(Tiers.DIAMOND, new Item.Properties().rarity(Rarity.RARE).attributes(PickaxeItem.createAttributes(Tiers.DIAMOND, 1.0F, -2.8F))));
 	public static final DeferredItem<Item> TRANSFORMATION_POWDER = ITEMS.register("transformation_powder", () -> new TransformPowderItem(new Item.Properties()));
 	public static final DeferredItem<Item> RAW_MEEF = ITEMS.register("raw_meef", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationModifier(0.3F).build())));
 	public static final DeferredItem<Item> COOKED_MEEF = ITEMS.register("cooked_meef", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(6).saturationModifier(0.6F).build())));
@@ -105,9 +102,9 @@ public class TFItems {
 	public static final DeferredItem<Item> ORE_MAGNET = ITEMS.register("ore_magnet", () -> new OreMagnetItem(new Item.Properties().durability(64)));
 	public static final DeferredItem<Item> CRUMBLE_HORN = ITEMS.register("crumble_horn", () -> new CrumbleHornItem(new Item.Properties().durability(1024).rarity(Rarity.RARE)));
 	public static final DeferredItem<Item> PEACOCK_FEATHER_FAN = ITEMS.register("peacock_feather_fan", () -> new PeacockFanItem(new Item.Properties().durability(1024).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> MOONWORM_QUEEN = ITEMS.register("moonworm_queen", () -> new MoonwormQueenItem(new Item.Properties().setNoRepair().durability(256).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> BRITTLE_FLASK = ITEMS.register("brittle_potion_flask", () -> new BrittleFlaskItem(new Item.Properties().component(TFDataComponents.POTION_FLASK_CONTENTS, PotionFlaskComponent.EMPTY)));
-	public static final DeferredItem<Item> GREATER_FLASK = ITEMS.register("greater_potion_flask", () -> new GreaterFlaskItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant().component(TFDataComponents.POTION_FLASK_CONTENTS, PotionFlaskComponent.EMPTY_UNBREAKABLE)));
+	public static final DeferredItem<Item> MOONWORM_QUEEN = ITEMS.register("moonworm_queen", () -> new MoonwormQueenItem(new Item.Properties().durability(256).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> BRITTLE_FLASK = ITEMS.register("brittle_potion_flask", () -> new BrittleFlaskItem(new Item.Properties().component(TFDataComponents.POTION_FLASK_CONTENTS.value(), PotionFlaskComponent.EMPTY)));
+	public static final DeferredItem<Item> GREATER_FLASK = ITEMS.register("greater_potion_flask", () -> new GreaterFlaskItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant().component(TFDataComponents.POTION_FLASK_CONTENTS.value(), PotionFlaskComponent.EMPTY_UNBREAKABLE)));
 	public static final DeferredItem<Item> CHARM_OF_LIFE_1 = ITEMS.register("charm_of_life_1", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 	public static final DeferredItem<Item> CHARM_OF_LIFE_2 = ITEMS.register("charm_of_life_2", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 	public static final DeferredItem<Item> CHARM_OF_KEEPING_1 = ITEMS.register("charm_of_keeping_1", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
@@ -152,7 +149,7 @@ public class TFItems {
 	public static final DeferredItem<Item> ICE_BOW = ITEMS.register("ice_bow", () -> new IceBowItem(new Item.Properties().rarity(Rarity.UNCOMMON).durability(384)));
 	public static final DeferredItem<Item> ENDER_BOW = ITEMS.register("ender_bow", () -> new EnderBowItem(new Item.Properties().rarity(Rarity.UNCOMMON).durability(384)));
 	public static final DeferredItem<Item> ICE_SWORD = ITEMS.register("ice_sword", () -> new IceSwordItem(TFToolMaterials.ICE, new Item.Properties().attributes(SwordItem.createAttributes(TFToolMaterials.ICE, 3, -2.4F))));
-	public static final DeferredItem<Item> GLASS_SWORD = ITEMS.register("glass_sword", () -> new GlassSwordItem(TFToolMaterials.GLASS, new Item.Properties().setNoRepair().rarity(Rarity.UNCOMMON).attributes(SwordItem.createAttributes(TFToolMaterials.GLASS, 3, -2.4F))));
+	public static final DeferredItem<Item> GLASS_SWORD = ITEMS.register("glass_sword", () -> new GlassSwordItem(TFToolMaterials.GLASS, new Item.Properties().rarity(Rarity.UNCOMMON).attributes(SwordItem.createAttributes(TFToolMaterials.GLASS, 3, -2.4F))));
 	public static final DeferredItem<Item> MAGIC_BEANS = ITEMS.register("magic_beans", () -> new MagicBeansItem(new Item.Properties()));
 	public static final DeferredItem<Item> GIANT_PICKAXE = ITEMS.register("giant_pickaxe", () -> new GiantPickItem(TFToolMaterials.GIANT, new Item.Properties().attributes(GiantPickItem.createGiantAttributes(TFToolMaterials.GIANT, 8, -3.5F))));
 	public static final DeferredItem<Item> GIANT_SWORD = ITEMS.register("giant_sword", () -> new GiantSwordItem(TFToolMaterials.GIANT, new Item.Properties().attributes(GiantSwordItem.createGiantAttributes(TFToolMaterials.GIANT, 10, -3.5F))));
@@ -166,7 +163,7 @@ public class TFItems {
 	public static final DeferredItem<Item> CROWN_SPLINTER = ITEMS.register("crown_splinter", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 	public static final DeferredItem<Item> MYSTIC_CROWN = ITEMS.register("mystic_crown", () -> new MysticCrownItem(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1).attributes(ItemAttributeModifiers.builder().add(Attributes.ARMOR, new AttributeModifier(ResourceLocation.withDefaultNamespace("armor.head"), 2.0F, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HEAD).build())));
 
-	public static final DeferredItem<Item> KEEPSAKE_CASKET = ITEMS.register("keepsake_casket", () -> new KeepsakeCasketItem(TFBlocks.KEEPSAKE_CASKET.get(), new Item.Properties().rarity(Rarity.UNCOMMON).component(TFDataComponents.CASKET_DAMAGE, 0)));
+	public static final DeferredItem<Item> KEEPSAKE_CASKET = ITEMS.register("keepsake_casket", () -> new KeepsakeCasketItem(TFBlocks.KEEPSAKE_CASKET.get(), new Item.Properties().rarity(Rarity.UNCOMMON).component(TFDataComponents.CASKET_DAMAGE.value(), 0)));
 	public static final DeferredItem<Item> HUGE_LILY_PAD = ITEMS.register("huge_lily_pad", () -> new HugeLilyPadItem(TFBlocks.HUGE_LILY_PAD.get(), new Item.Properties()));
 	public static final DeferredItem<Item> HUGE_WATER_LILY = ITEMS.register("huge_water_lily", () -> new PlaceOnWaterBlockItem(TFBlocks.HUGE_WATER_LILY.get(), new Item.Properties()));
 	public static final DeferredItem<Item> FALLEN_LEAVES = ITEMS.register("fallen_leaves", () -> new BlockItem(TFBlocks.FALLEN_LEAVES.get(), new Item.Properties()) {

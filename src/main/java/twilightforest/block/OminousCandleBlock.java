@@ -3,6 +3,8 @@ package twilightforest.block;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomSoundTypeBlock;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredBlock;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -37,7 +39,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import twilightforest.block.entity.OminousCandleBlockEntity;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFParticleType;
@@ -169,7 +170,7 @@ public class OminousCandleBlock extends BaseEntityBlock {
 
 				BlockState newState = level.getBlockState(pos);
 
-				SoundType soundtype = newState.getSoundType(level, pos, player);
+				SoundType soundtype = newState.getBlock() instanceof CustomSoundTypeBlock soundTypeBlock ? soundTypeBlock.getSoundType(newState, level, pos, player) : newState.getSoundType();
 				level.playSound(
 					player,
 					pos,
@@ -202,7 +203,7 @@ public class OminousCandleBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
 		return new ItemStack(this.candle);
 	}
 

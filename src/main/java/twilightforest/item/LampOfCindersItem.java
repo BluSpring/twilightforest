@@ -20,7 +20,7 @@ import net.minecraft.world.phys.AABB;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFSounds;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class LampOfCindersItem extends Item {
 
@@ -35,19 +35,19 @@ public class LampOfCindersItem extends Item {
 		return false;
 	}
 
-	@Override
+	/*@Override
 	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
 		return false;
-	}
+	}*/
 
-	@Nonnull
+	@NotNull
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, @Nonnull InteractionHand hand) {
+	public InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
 		player.startUsingItem(hand);
 		return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		Level world = context.getLevel();
@@ -84,7 +84,7 @@ public class LampOfCindersItem extends Item {
 	public void releaseUsing(ItemStack stack, Level level, LivingEntity living, int useRemaining) {
 		int useTime = this.getUseDuration(stack, living) - useRemaining;
 
-		if (useTime > FIRING_TIME && (stack.getDamageValue() + 1) < this.getMaxDamage(stack)) {
+		if (useTime > FIRING_TIME && (stack.getDamageValue() + 1) < stack.getMaxDamage()) {
 			this.doBurnEffect(level, living);
 		}
 	}

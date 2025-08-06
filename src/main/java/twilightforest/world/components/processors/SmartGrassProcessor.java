@@ -23,27 +23,26 @@ public class SmartGrassProcessor extends StructureProcessor {
 	private SmartGrassProcessor() {
 	}
 
-	@Nullable
 	@Override
-	public StructureTemplate.StructureBlockInfo process(LevelReader level, BlockPos origin, BlockPos centerBottom, StructureTemplate.StructureBlockInfo originalBlockInfo, StructureTemplate.StructureBlockInfo modifiedBlockInfo, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
-		if (originalBlockInfo.state().getBlock() != Blocks.GRASS_BLOCK)
-			return modifiedBlockInfo;
+	public @Nullable StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
+		if (blockInfo.state().getBlock() != Blocks.GRASS_BLOCK)
+			return blockInfo;
 
-		if (level.getBlockState(modifiedBlockInfo.pos()).is(BlockTags.DIRT) || !level.isEmptyBlock(modifiedBlockInfo.pos().above()))
+		if (level.getBlockState(pos).is(BlockTags.DIRT) || !level.isEmptyBlock(pos.above()))
 			return null;
 
 		for (Direction direction : RotationUtil.CARDINALS) {
-			BlockState stateAt = level.getBlockState(modifiedBlockInfo.pos().relative(direction));
+			BlockState stateAt = level.getBlockState(pos.relative(direction));
 
-			if (stateAt.getBlock() == Blocks.PODZOL) return new StructureTemplate.StructureBlockInfo(modifiedBlockInfo.pos(), Blocks.PODZOL.defaultBlockState(), null);
-			if (stateAt.getBlock() == Blocks.GRASS_BLOCK) return modifiedBlockInfo;
-			if (stateAt.getBlock() == Blocks.MYCELIUM) return new StructureTemplate.StructureBlockInfo(modifiedBlockInfo.pos(), Blocks.MYCELIUM.defaultBlockState(), null);
-			if (stateAt.getBlock() == Blocks.DIRT_PATH) return new StructureTemplate.StructureBlockInfo(modifiedBlockInfo.pos(), Blocks.DIRT_PATH.defaultBlockState(), null);
-			if (stateAt.getBlock() == Blocks.COARSE_DIRT) return new StructureTemplate.StructureBlockInfo(modifiedBlockInfo.pos(), Blocks.COARSE_DIRT.defaultBlockState(), null);
-			if (stateAt.getBlock() == TFBlocks.UBEROUS_SOIL.get()) return new StructureTemplate.StructureBlockInfo(modifiedBlockInfo.pos(), TFBlocks.UBEROUS_SOIL.get().defaultBlockState(), null);
+			if (stateAt.getBlock() == Blocks.PODZOL) return new StructureTemplate.StructureBlockInfo(blockInfo.pos(), Blocks.PODZOL.defaultBlockState(), null);
+			if (stateAt.getBlock() == Blocks.GRASS_BLOCK) return blockInfo;
+			if (stateAt.getBlock() == Blocks.MYCELIUM) return new StructureTemplate.StructureBlockInfo(blockInfo.pos(), Blocks.MYCELIUM.defaultBlockState(), null);
+			if (stateAt.getBlock() == Blocks.DIRT_PATH) return new StructureTemplate.StructureBlockInfo(blockInfo.pos(), Blocks.DIRT_PATH.defaultBlockState(), null);
+			if (stateAt.getBlock() == Blocks.COARSE_DIRT) return new StructureTemplate.StructureBlockInfo(blockInfo.pos(), Blocks.COARSE_DIRT.defaultBlockState(), null);
+			if (stateAt.getBlock() == TFBlocks.UBEROUS_SOIL.get()) return new StructureTemplate.StructureBlockInfo(blockInfo.pos(), TFBlocks.UBEROUS_SOIL.get().defaultBlockState(), null);
 		}
 
-		return modifiedBlockInfo;
+		return blockInfo;
 	}
 
 	@Override

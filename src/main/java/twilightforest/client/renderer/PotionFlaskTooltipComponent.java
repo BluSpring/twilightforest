@@ -2,6 +2,7 @@ package twilightforest.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import org.joml.Matrix4f;
 import twilightforest.TwilightForestMod;
 import twilightforest.components.item.PotionFlaskComponent;
@@ -123,7 +123,7 @@ public class PotionFlaskTooltipComponent implements ClientTooltipComponent {
 		int red = (color >> 16) & 255;
 		int green = (color >> 8) & 255;
 		int blue = color & 255;
-		TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(IClientFluidTypeExtensions.of(Fluids.WATER).getStillTexture());
+		TextureAtlasSprite sprite = FluidRenderHandlerRegistry.INSTANCE.get(Fluids.WATER).getFluidSprites(null, null, Fluids.WATER.defaultFluidState())[0];
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		int xTileCount = desiredWidth / 16;

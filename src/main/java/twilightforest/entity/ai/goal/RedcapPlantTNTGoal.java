@@ -3,9 +3,9 @@ package twilightforest.entity.ai.goal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.event.EventHooks;
 import twilightforest.entity.monster.Redcap;
 
 public class RedcapPlantTNTGoal extends RedcapBaseGoal {
@@ -21,7 +21,7 @@ public class RedcapPlantTNTGoal extends RedcapBaseGoal {
 			&& !this.redcap.heldTNT.isEmpty()
 			&& this.redcap.distanceToSqr(attackTarget) < 25
 			&& !this.isTargetLookingAtMe(attackTarget)
-			&& EventHooks.canEntityGrief(this.redcap.level(), this.redcap)
+			&& this.redcap.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
 			&& !this.isLitTNTNearby(8)
 			&& this.findBlockTNTNearby(5) == null;
 	}

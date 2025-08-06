@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "twilightforest",
+  "version": "${version}",
+  "name": "The Twilight Forest",
+  "description": "An enchanted forest dimension.",
+  "authors": [
+    "Benimatic, AtomicBlom, Drullkus, Killer_Demon, quadraxis, Tamaized, williewillus, Andromander, GizmoTheMoonPig, jodlodi"
+  ],
+  "contact": {
+  },
+  "license": "LGPL-2.1",
+  "icon": "twilightforest_logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "twilightforest.client.TwilightForestClient"
+    ],
+    "main": [
+      "twilightforest.TwilightForestMod"
+    ],
+    "fabric-datagen": [
+      "twilightforest.data.DataGenerators"
+    ],
+    "mm:early_risers": [
+      "twilightforest.fabric.TFEarlyRiser"
+    ],
+    "modmenu": [
+      "twilightforest.compat.ModMenuCompat"
+    ],
+    "rei_client": [
+      "twilightforest.compat.rei.TFREIClientPlugin"
+    ],
+    "rei_server": [
+      "twilightforest.compat.rei.TFREIServerPlugin"
+    ]
+  },
+  "mixins": [
+    "twilightforest.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "1.21.1",
+    "fabric-api": "*",
+    "architectury": "*",
+    "trinkets": "*"
+  },
+  "accessWidener": "twilightforest.accesswidener"
+}

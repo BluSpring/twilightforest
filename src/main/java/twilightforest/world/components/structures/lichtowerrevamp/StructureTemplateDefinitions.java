@@ -8,6 +8,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.util.random.WeightedEntry;
 import org.jetbrains.annotations.Nullable;
+import twilightforest.TwilightForestMod;
 import twilightforest.world.components.structures.util.CodecResourceReloadListener;
 
 import java.util.*;
@@ -90,5 +91,10 @@ public class StructureTemplateDefinitions extends CodecResourceReloadListener<St
 	// TODO Autowired
 	public static Iterable<ResourceLocation> getShuffledSequence(RandomSource random, ResourceLocation poolId) {
 		return INSTANCE.shuffledTemplatePool(random, poolId);
+	}
+
+	@Override
+	public ResourceLocation getFabricId() {
+		return TwilightForestMod.prefix("structure_template");
 	}
 }

@@ -1,5 +1,10 @@
 package twilightforest.events;
 
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.player.PlayerEvents;
+import io.github.fabricators_of_create.porting_lib.entity.events.tick.EntityTickEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.tick.PlayerTickEvent;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -8,16 +13,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import twilightforest.TwilightForestMod;
 import twilightforest.components.entity.FortificationShieldAttachment;
 import twilightforest.config.TFConfig;
 import twilightforest.init.TFDataAttachments;
@@ -26,36 +22,51 @@ import twilightforest.network.UpdateShieldPacket;
 import twilightforest.world.NoReturnTeleporter;
 import twilightforest.world.TFTeleporter;
 
-@EventBusSubscriber(modid = TwilightForestMod.ID)
 public class CapabilityEvents {
+	public static void init() {
+		EntityTickEvent.Post.EVENT.register(event -> {
+			updateShields(event);
+		});
 
-	@SubscribeEvent
+		PlayerTickEvent.Post.EVENT.register(event -> updatePlayerCaps(event));
+
+		LivingHurtEvent.EVENT.register(event -> livingAttack(event));
+
+		dev.architectury.event.events.common.PlayerEvent.PLAYER_RESPAWN.register((newPlayer, conqueredEnd, removalReason) -> {
+			onPlayerRespawn(newPlayer);
+		});
+
+		PlayerEvents.PlayerLoggedInEvent.EVENT.register(event -> playerLogsIn(event));
+
+		dev.architectury.event.events.common.PlayerEvent.CHANGE_DIMENSION.register((player, oldLevel, newLevel) -> playerPortals(player));
+
+		PlayerEvents.StartTracking.EVENT.register(event -> onStartTracking(event));
+	}
+
 	public static void updateShields(EntityTickEvent.Post event) {
-		if (event.getEntity() instanceof LivingEntity living && !living.level().isClientSide() && living.hasData(TFDataAttachments.FORTIFICATION_SHIELDS)) {
-			event.getEntity().getData(TFDataAttachments.FORTIFICATION_SHIELDS).tick(living);
+		if (event.getEntity() instanceof LivingEntity living && !living.level().isClientSide() && living.hasAttached(TFDataAttachments.FORTIFICATION_SHIELDS.get())) {
+			event.getEntity().getAttachedOrCreate(TFDataAttachments.FORTIFICATION_SHIELDS.get()).tick(living);
 		}
 	}
 
-	@SubscribeEvent
 	public static void updatePlayerCaps(PlayerTickEvent.Post event) {
-		if (event.getEntity().getData(TFDataAttachments.FEATHER_FAN)) {
+		if (event.getEntity().getAttachedOrCreate(TFDataAttachments.FEATHER_FAN.get())) {
 			event.getEntity().setIgnoreFallDamageFromCurrentImpulse(true);
 			event.getEntity().currentImpulseImpactPos = event.getEntity().position();
 
 			if (event.getEntity().onGround() || event.getEntity().isSwimming() || event.getEntity().isInWater()) {
-				event.getEntity().setData(TFDataAttachments.FEATHER_FAN, false);
+				event.getEntity().setAttached(TFDataAttachments.FEATHER_FAN.get(), false);
 			}
 		}
-		event.getEntity().getData(TFDataAttachments.YETI_THROWING).tick(event.getEntity());
-		event.getEntity().getData(TFDataAttachments.TF_PORTAL_COOLDOWN).tick(event.getEntity());
+		event.getEntity().getAttachedOrCreate(TFDataAttachments.YETI_THROWING.get()).tick(event.getEntity());
+		event.getEntity().getAttachedOrCreate(TFDataAttachments.TF_PORTAL_COOLDOWN.get()).tick(event.getEntity());
 	}
 
-	@SubscribeEvent
-	public static void livingAttack(LivingIncomingDamageEvent event) {
+	public static void livingAttack(LivingHurtEvent event) {
 		LivingEntity living = event.getEntity();
 		// shields
 		if (!living.level().isClientSide() && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) {
-            FortificationShieldAttachment attachment = living.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
+            FortificationShieldAttachment attachment = living.getAttachedOrCreate(TFDataAttachments.FORTIFICATION_SHIELDS.get());
 			if (attachment.shieldsLeft() > 0) {
 				if (living.invulnerableTime <= 0) {
 					attachment.breakShield(living, false);
@@ -67,10 +78,7 @@ public class CapabilityEvents {
 		}
 	}
 
-	@SubscribeEvent
-	public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-		if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
-
+	public static void onPlayerRespawn(ServerPlayer serverPlayer) {
 		if (serverPlayer.getRespawnPosition() == null) {
 			newSpawnInTwilightForest(serverPlayer);
 		}
@@ -79,33 +87,28 @@ public class CapabilityEvents {
 	/**
 	 * When player logs in, report conflict status, set progression status
 	 */
-	@SubscribeEvent
-	public static void playerLogsIn(PlayerEvent.PlayerLoggedInEvent event) {
+	public static void playerLogsIn(PlayerEvents.PlayerLoggedInEvent event) {
 		if (event.getEntity().level().isClientSide() || !(event.getEntity() instanceof ServerPlayer player))
 			return;
 		updateCapabilities(player, event.getEntity());
 		dataFixLegacyBanish(player);
-		if (!player.hasData(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST))
+		if (!player.hasAttached(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST.get()))
 			newSpawnInTwilightForest(player);
 	}
 
-	@SubscribeEvent
-	public static void playerPortals(PlayerEvent.PlayerChangedDimensionEvent event) {
-		if (!event.getEntity().level().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
-			updateCapabilities(player, event.getEntity());
-		}
+	public static void playerPortals(ServerPlayer player) {
+		updateCapabilities(player, player);
 	}
 
-	@SubscribeEvent
-	public static void onStartTracking(PlayerEvent.StartTracking event) {
+	public static void onStartTracking(PlayerEvents.StartTracking event) {
 		updateCapabilities((ServerPlayer) event.getEntity(), event.getTarget());
 	}
 
 	// send any capabilities that are needed client-side
 	private static void updateCapabilities(ServerPlayer clientTarget, Entity shielded) {
-		var attachment = shielded.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
+		var attachment = shielded.getAttachedOrCreate(TFDataAttachments.FORTIFICATION_SHIELDS.get());
 		if (attachment.shieldsLeft() > 0) {
-			PacketDistributor.sendToPlayer(clientTarget, new UpdateShieldPacket(shielded.getId(), attachment.temporaryShieldsLeft(), attachment.permanentShieldsLeft()));
+			ServerPlayNetworking.send(clientTarget, new UpdateShieldPacket(shielded.getId(), attachment.temporaryShieldsLeft(), attachment.permanentShieldsLeft()));
 		}
 	}
 
@@ -123,23 +126,23 @@ public class CapabilityEvents {
 			NoReturnTeleporter.createNoPortalTransition(level, player, newDefaultSpawn));
 		player.setRespawnPosition(TFDimension.DIMENSION_KEY, newDefaultSpawn, player.getYRot(), true, false);
 
-		player.setData(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST, Unit.INSTANCE);
+		player.setAttached(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST.get(), Unit.INSTANCE);
 	}
 
 	private static void dataFixLegacyBanish(ServerPlayer player) {
-		CompoundTag tagCompound = player.getPersistentData();
-		if (!tagCompound.contains(Player.PERSISTED_NBT_TAG))
+		CompoundTag tagCompound = player.getCustomData();
+		if (!tagCompound.contains("PlayerPersisted"))
 			return;
-		CompoundTag playerData = tagCompound.getCompound(Player.PERSISTED_NBT_TAG);
+		CompoundTag playerData = tagCompound.getCompound("PlayerPersisted");
 		if (!playerData.contains("twilightforest_banished"))
 			return;
 
 		playerData.remove("twilightforest_banished");
-		tagCompound.put(Player.PERSISTED_NBT_TAG, playerData);
+		tagCompound.put("PlayerPersisted", playerData);
 
-		if (player.hasData(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST))
+		if (player.hasAttached(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST.get()))
 			return;
 
-		player.setData(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST, Unit.INSTANCE);
+		player.setAttached(TFDataAttachments.BANISHED_TO_TWILIGHT_FOREST.get(), Unit.INSTANCE);
 	}
 }

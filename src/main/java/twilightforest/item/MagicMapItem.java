@@ -24,6 +24,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.saveddata.maps.*;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.data.tags.StructureTagGenerator;
+import twilightforest.fabric.CustomMapItem;
 import twilightforest.init.TFBiomes;
 import twilightforest.init.TFDataMaps;
 import twilightforest.init.TFItems;
@@ -38,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 // [VanillaCopy] super everything, but with appropriate redirections to our own datastructures. finer details noted
-public class MagicMapItem extends MapItem {
+public class MagicMapItem extends MapItem implements CustomMapItem {
 
 	public static final String STR_ID = "magicmap";
 
@@ -66,7 +67,7 @@ public class MagicMapItem extends MapItem {
 
 	@Nullable
 	@Override
-	protected TFMagicMapData getCustomMapData(ItemStack stack, Level level) {
+	public TFMagicMapData getCustomMapData(ItemStack stack, Level level) {
 		TFMagicMapData mapdata = getData(stack, level);
 		if (mapdata == null && !level.isClientSide()) {
 			BlockPos sharedSpawnPos = level.getSharedSpawnPos();
@@ -182,7 +183,7 @@ public class MagicMapItem extends MapItem {
 	}
 
 	private MagicMapBiomeColor getMapColorPerBiome(Holder<Biome> biome) {
-		MagicMapBiomeColor color = biome.getData(TFDataMaps.MAGIC_MAP_BIOME_COLOR);
+		MagicMapBiomeColor color = MagicMapBiomeColor.BIOME_COLOR_MAP.get(biome.unwrapKey().orElseThrow());
 		return color != null ? color : new MagicMapBiomeColor(MapColor.COLOR_MAGENTA);
 	}
 

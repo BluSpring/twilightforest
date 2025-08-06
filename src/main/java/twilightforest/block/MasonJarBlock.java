@@ -1,6 +1,8 @@
 package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.LightEmissiveBlock;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -25,13 +27,12 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import twilightforest.block.entity.MasonJarBlockEntity;
 import twilightforest.init.TFSounds;
 
 import java.util.List;
 
-public class MasonJarBlock extends JarBlock implements SimpleWaterloggedBlock {
+public class MasonJarBlock extends JarBlock implements SimpleWaterloggedBlock, LightEmissiveBlock {
 	public static final MapCodec<MasonJarBlock> CODEC = simpleCodec(MasonJarBlock::new);
 
 	public MasonJarBlock(BlockBehaviour.Properties properties) {
@@ -54,37 +55,48 @@ public class MasonJarBlock extends JarBlock implements SimpleWaterloggedBlock {
 			if (level.getBlockEntity(pos) instanceof MasonJarBlockEntity blockEntity) {
 				if (level instanceof ServerLevel serverLevel) {
 					MasonJarBlockEntity.MasonJarItemStackHandler handler = blockEntity.getItemHandler();
-					if (stack.isEmpty()) {
-						ItemStack test = handler.extractItem(0, Integer.MAX_VALUE, true);
-						if (!test.isEmpty()) {
-							if (player.isSecondaryUseActive()) {
-								player.displayClientMessage(Component.literal(test.getItem().getName(test).getString() + " x" + test.getCount()), true);
-								serverLevel.playSound(null, pos, TFSounds.JAR_WIGGLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-								blockEntity.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
-							} else {
-								ItemStack attainedStack = handler.extractItem(0, Integer.MAX_VALUE, false);
-								player.setItemInHand(hand, attainedStack);
-								serverLevel.playSound(null, pos, TFSounds.JAR_REMOVE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-								serverLevel.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+					try (Transaction transaction = Transaction.openOuter()) {
+						if (stack.isEmpty()) {
+							var attainedStack = handler.getStackInSlot(0);
+							try (Transaction transaction1 = Transaction.openNested(transaction)) {
+								var extracted = handler.extractSlot(0, handler.getVariantInSlot(0), Integer.MAX_VALUE, transaction1);
+								if (extracted > 0) {
+									if (player.isSecondaryUseActive()) {
+										player.displayClientMessage(Component.literal(attainedStack.getItem().getName(attainedStack).getString() + " x" + attainedStack.getCount()), true);
+										serverLevel.playSound(null, pos, TFSounds.JAR_WIGGLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+										blockEntity.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
+									} else {
+										transaction1.commit();
+										player.setItemInHand(hand, attainedStack);
+										serverLevel.playSound(null, pos, TFSounds.JAR_REMOVE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+										serverLevel.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+									}
+								} else {
+									serverLevel.playSound(null, pos, TFSounds.JAR_WIGGLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+									blockEntity.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
+								}
 							}
 						} else {
-							serverLevel.playSound(null, pos, TFSounds.JAR_WIGGLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-							blockEntity.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
+							try (Transaction transaction1 = Transaction.openNested(transaction)) {
+								blockEntity.setItemRotation(RotationSegment.convertToSegment(player.getYRot() + 180.0F));
+								player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+								ItemStack inserted = stack.copy();
+								var returned = stack.getCount() - handler.insertSlot(0, handler.getVariantInSlot(0), stack.getCount(), transaction1);
+
+								if (returned < stack.getCount()) {
+									player.setItemInHand(hand, stack.copyWithCount((int) returned));
+									float pitch = (float) (inserted.getCount() - returned) / (float) inserted.getMaxStackSize();
+									serverLevel.playSound(null, pos, TFSounds.JAR_INSERT.get(), SoundSource.BLOCKS, 1.0F, 0.7F + 0.5F * pitch);
+
+									serverLevel.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+								} else {
+									serverLevel.playSound(null, pos, TFSounds.JAR_WIGGLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+									blockEntity.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
+								}
+
+								transaction1.commit();
+							}
 						}
-					} else if (handler.insertItem(0, stack, true).getCount() < stack.getCount()) {
-						blockEntity.setItemRotation(RotationSegment.convertToSegment(player.getYRot() + 180.0F));
-						player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-						ItemStack inserted = stack.copy();
-						ItemStack returned = handler.insertItem(0, stack, false);
-
-						player.setItemInHand(hand, returned);
-						float pitch = (float) (inserted.getCount() - returned.getCount()) / (float) inserted.getMaxStackSize();
-						serverLevel.playSound(null, pos, TFSounds.JAR_INSERT.get(), SoundSource.BLOCKS, 1.0F, 0.7F + 0.5F * pitch);
-
-						serverLevel.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-					} else {
-						serverLevel.playSound(null, pos, TFSounds.JAR_WIGGLE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-						blockEntity.wobble(DecoratedPotBlockEntity.WobbleStyle.NEGATIVE);
 					}
 				}
 				return ItemInteractionResult.SUCCESS;
@@ -111,16 +123,16 @@ public class MasonJarBlock extends JarBlock implements SimpleWaterloggedBlock {
 		return true;
 	}
 
-	@Override
+	/*@Override
 	public boolean hasDynamicLightEmission(BlockState state) {
 		return true;
-	}
+	}*/
 
 	@Override
 	public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-		AuxiliaryLightManager lightManager = level.getAuxLightManager(pos);
-		if (lightManager != null) return lightManager.getLightAt(pos);
-		return super.getLightEmission(state, level, pos);
+		/*AuxiliaryLightManager lightManager = level.getAuxLightManager(pos);
+		if (lightManager != null) return lightManager.getLightAt(pos);*/
+		return LightEmissiveBlock.super.getLightEmission(state, level, pos);
 	}
 
 	@Override

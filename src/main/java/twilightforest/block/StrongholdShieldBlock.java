@@ -1,6 +1,7 @@
 package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.EntityDestroyBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +17,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import twilightforest.util.entities.EntityUtil;
 
-public class StrongholdShieldBlock extends DirectionalBlock {
+public class StrongholdShieldBlock extends DirectionalBlock implements EntityDestroyBlock {
 
 	public static final MapCodec<StrongholdShieldBlock> CODEC = simpleCodec(StrongholdShieldBlock::new);
 

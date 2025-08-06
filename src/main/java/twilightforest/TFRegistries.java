@@ -1,9 +1,9 @@
 package twilightforest;
 
+import io.github.fabricators_of_create.porting_lib.registry.RegistryBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.registries.RegistryBuilder;
 import twilightforest.entity.MagicPaintingVariant;
 import twilightforest.entity.passive.DwarfRabbitVariant;
 import twilightforest.entity.passive.TinyBirdVariant;
@@ -20,6 +20,7 @@ import twilightforest.world.components.structures.StructureSpeleothemConfig;
 import java.util.Locale;
 
 public class TFRegistries {
+	public static void init() {}
 
 	public static final Registry<BiomeLayerType> BIOME_LAYER_TYPE = new RegistryBuilder<>(Keys.BIOME_LAYER_TYPE).create();
 	public static final Registry<Enforcement> ENFORCEMENT = new RegistryBuilder<>(Keys.ENFORCEMENT).sync(true).create();

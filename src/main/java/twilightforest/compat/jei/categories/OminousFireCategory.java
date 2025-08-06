@@ -1,5 +1,6 @@
 package twilightforest.compat.jei.categories;
 
+import io.github.fabricators_of_create.porting_lib.util.DeferredSpawnEggItem;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -14,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import twilightforest.TwilightForestMod;
 import twilightforest.compat.RecipeViewerConstants;
 import twilightforest.compat.jei.JEICompat;

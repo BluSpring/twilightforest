@@ -2,13 +2,13 @@ package twilightforest.client.model.block.connected;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.models.generators.CustomLoaderBuilder;
+import io.github.fabricators_of_create.porting_lib.models.generators.ModelBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import twilightforest.TwilightForestMod;
 
 import java.util.ArrayList;

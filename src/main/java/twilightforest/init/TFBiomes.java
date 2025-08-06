@@ -10,15 +10,13 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.enums.extensions.TFGrassColorModifierEnumExtension;
 
 import static twilightforest.world.registration.biomes.BiomeHelper.*;
 
 public class TFBiomes {
 
-	@Autowired
-	private static TFGrassColorModifierEnumExtension grassColorModifierEnumExtension;
+	private static TFGrassColorModifierEnumExtension grassColorModifierEnumExtension = new TFGrassColorModifierEnumExtension();
 
 	public static final ResourceKey<Biome> FOREST = makeKey("forest");
 	public static final ResourceKey<Biome> DENSE_FOREST = makeKey("dense_forest");

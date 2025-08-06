@@ -1,5 +1,6 @@
 package twilightforest.world.components.structures.lichtowerrevamp;
 
+import io.github.fabricators_of_create.porting_lib.world.PieceBeardifierModifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.FrontAndTop;
@@ -20,10 +21,8 @@ import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.neoforged.neoforge.common.world.PieceBeardifierModifier;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TFRegistries;
-import tamaized.beanification.Autowired;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.data.tags.CustomTagGenerator;
 import twilightforest.entity.MagicPainting;
@@ -40,8 +39,7 @@ import twilightforest.world.components.structures.TwilightJigsawPiece;
 import java.util.Optional;
 
 public class LichTowerMagicGallery extends TwilightJigsawPiece implements PieceBeardifierModifier, SpawnIndexProvider {
-	@Autowired
-	private static LichTowerUtil lichTowerUtil;
+	private static LichTowerUtil lichTowerUtil = new LichTowerUtil();
 
 	public LichTowerMagicGallery(StructurePieceSerializationContext ctx, CompoundTag compoundTag) {
 		super(TFStructurePieceTypes.LICH_MAGIC_GALLERY.value(), compoundTag, ctx, readSettings(compoundTag));

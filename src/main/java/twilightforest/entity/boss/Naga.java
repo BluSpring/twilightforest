@@ -1,5 +1,8 @@
 package twilightforest.entity.boss;
 
+import io.github.fabricators_of_create.porting_lib.entity.MultiPartEntity;
+import io.github.fabricators_of_create.porting_lib.entity.PartEntity;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -32,6 +35,7 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -41,9 +45,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
 import twilightforest.entity.TFPart;
@@ -61,7 +62,7 @@ import twilightforest.util.entities.EntityUtil;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Naga extends BaseTFBoss {
+public class Naga extends BaseTFBoss implements MultiPartEntity {
 	private static final int DEATH_ANIMATION_DURATION = 24;
 	private static final int DEATH_PARTICLES_DURATION = 100;
 
@@ -263,7 +264,7 @@ public class Naga extends BaseTFBoss {
 			this.setTarget(null);
 		}
 
-		if (EventHooks.canEntityGrief(this.level(), this)) {
+		if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 			AABB bb = this.getBoundingBox();
 
 			int minx = Mth.floor(bb.minX - 0.75D);
@@ -372,7 +373,7 @@ public class Naga extends BaseTFBoss {
 				this.push(motion.x() * -1.25D, 0.5D, motion.z() * -1.25D);
 				if (toAttack instanceof ServerPlayer player) {
 					player.getUseItem().hurtAndBreak(5, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
-					PacketDistributor.sendToPlayer(player, new MovePlayerPacket(motion.x() * 3.0D, motion.y() + 0.75D, motion.z() * 3.0D));
+					ServerPlayNetworking.send(player, new MovePlayerPacket(motion.x() * 3.0D, motion.y() + 0.75D, motion.z() * 3.0D));
 				}
 				this.hurt(this.damageSources().generic(), 2.0F);
 				this.level().playSound(null, toAttack.blockPosition(), SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 0.8F + this.level().getRandom().nextFloat() * 0.4F);

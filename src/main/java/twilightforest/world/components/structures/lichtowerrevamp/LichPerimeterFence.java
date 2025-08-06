@@ -1,6 +1,7 @@
 package twilightforest.world.components.structures.lichtowerrevamp;
 
 import com.google.common.collect.Streams;
+import io.github.fabricators_of_create.porting_lib.world.PieceBeardifierModifier;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,7 +30,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnorePr
 import net.minecraft.world.level.levelgen.structure.templatesystem.JigsawReplacementProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.neoforged.neoforge.common.world.PieceBeardifierModifier;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
 import twilightforest.block.WroughtIronFenceBlock;
@@ -356,7 +356,7 @@ public class LichPerimeterFence extends TwilightJigsawPiece implements PieceBear
 		boundedEntity.setPersistenceRequired();
 		boundedEntity.setLeashedTo(knot, false);
 		boundedEntity.moveTo(zombiePos.getX() + 0.5, zombiePos.getY() - 1, zombiePos.getZ() + 0.5);
-		boundedEntity.setData(TFDataAttachments.LEASH_PATHFINDER_OVERRIDE, Unit.INSTANCE);
+		boundedEntity.setAttached(TFDataAttachments.LEASH_PATHFINDER_OVERRIDE.get(), Unit.INSTANCE);
 		level.addFreshEntity(boundedEntity);
 	}
 

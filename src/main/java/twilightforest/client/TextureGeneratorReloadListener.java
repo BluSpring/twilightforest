@@ -2,6 +2,7 @@ package twilightforest.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +16,7 @@ import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TextureGeneratorReloadListener implements ResourceManagerReloadListener {
+public class TextureGeneratorReloadListener implements ResourceManagerReloadListener, IdentifiableResourceReloadListener {
 	public static final TextureGeneratorReloadListener INSTANCE = new TextureGeneratorReloadListener();
 	private static final EnumMap<Boat.Type, AbstractTexture> BOAT_CACHE = new EnumMap<>(Boat.Type.class);
 	private static final AtomicReference<NativeImage> ref = new AtomicReference<>();
@@ -114,5 +115,10 @@ public class TextureGeneratorReloadListener implements ResourceManagerReloadList
 
 	private static ResourceLocation getTextureLocation(Boat.Type type) {
 		return ResourceLocation.parse(type.getName()).withPrefix("textures/entity/chest_boat/").withSuffix(".png");
+	}
+
+	@Override
+	public ResourceLocation getFabricId() {
+		return TwilightForestMod.prefix("texture_generator");
 	}
 }

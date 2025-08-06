@@ -20,12 +20,12 @@ import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.block.ChiseledCanopyShelfBlock;
+import twilightforest.fabric.IOwnableSpawner;
 import twilightforest.init.TFBlockEntities;
 import twilightforest.init.TFBlocks;
 
 public class ChiseledCanopyShelfBlockEntity extends ChiseledBookShelfBlockEntity implements Spawner {
-
-	private final BookshelfSpawner spawner = new BookshelfSpawner() {
+	private class CanopyBookshelfSpawner extends BookshelfSpawner implements IOwnableSpawner {
 		@Override
 		public void broadcastEvent(Level level, BlockPos pos, int id) {
 			level.blockEvent(pos, TFBlocks.CHISELED_CANOPY_BOOKSHELF.get(), id, 0);
@@ -44,7 +44,9 @@ public class ChiseledCanopyShelfBlockEntity extends ChiseledBookShelfBlockEntity
 		public Either<BlockEntity, Entity> getOwner() {
 			return Either.left(ChiseledCanopyShelfBlockEntity.this);
 		}
-	};
+	}
+
+	private final BookshelfSpawner spawner = new CanopyBookshelfSpawner();
 
 	public ChiseledCanopyShelfBlockEntity(BlockPos pos, BlockState state) {
 		super(pos, state);

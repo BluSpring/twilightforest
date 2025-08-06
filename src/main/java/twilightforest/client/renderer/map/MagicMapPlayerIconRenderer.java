@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.MapDecorationTextureManager;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.neoforged.neoforge.client.gui.map.IMapDecorationRenderer;
 import org.joml.Matrix4f;
+import twilightforest.fabric.IMapDecorationRenderer;
 import twilightforest.item.mapdata.TFMagicMapData;
 
 public class MagicMapPlayerIconRenderer implements IMapDecorationRenderer {

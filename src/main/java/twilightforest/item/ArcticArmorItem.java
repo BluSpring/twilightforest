@@ -1,5 +1,6 @@
 package twilightforest.item;
 
+import io.github.fabricators_of_create.porting_lib.item.extensions.WalkOnSnowItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -16,7 +17,7 @@ import twilightforest.init.TFItems;
 
 import java.util.List;
 
-public class ArcticArmorItem extends ArmorItem {
+public class ArcticArmorItem extends ArmorItem implements WalkOnSnowItem {
 	private static final MutableComponent TOOLTIP = Component.translatable("item.twilightforest.arctic_armor.desc").withStyle(ChatFormatting.GRAY);
 	public static final int DEFAULT_COLOR = 0xFFBDCFD9;
 
@@ -40,9 +41,9 @@ public class ArcticArmorItem extends ArmorItem {
 			super(TFArmorModel::new, TFModelLayers.ARCTIC_ARMOR_INNER, TFModelLayers.ARCTIC_ARMOR_OUTER);
 		}
 
-		@Override
+		/*@Override
 		public int getDefaultDyeColor(ItemStack stack) {
 			return DEFAULT_COLOR;
-		}
+		}*/
 	}
 }

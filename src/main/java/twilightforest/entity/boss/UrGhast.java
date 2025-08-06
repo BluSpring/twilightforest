@@ -1,5 +1,6 @@
 package twilightforest.entity.boss;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomFrictionBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,7 +32,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import twilightforest.client.renderer.TFWeatherRenderer;
 import twilightforest.entity.ai.control.NoClipMoveControl;
 import twilightforest.entity.ai.goal.UrGhastAttackGoal;
@@ -257,7 +257,7 @@ public class UrGhast extends BaseTFBoss {
 
 			minion.moveTo(sx, sy, sz, level.getRandom().nextFloat() * 360.0F, 0.0F);
 			minion.makeBossMinion();
-			EventHooks.finalizeMobSpawn(minion, level, level.getCurrentDifficultyAt(minion.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+			minion.finalizeSpawn(level, level.getCurrentDifficultyAt(minion.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
 			if (minion.checkSpawnRules(level, MobSpawnType.MOB_SUMMONED)) {
 				level.addFreshEntity(minion);
 				minion.spawnAnim();
@@ -479,15 +479,20 @@ public class UrGhast extends BaseTFBoss {
 				this.setDeltaMovement(this.getDeltaMovement().scale(0.5));
 			} else {
 				BlockPos ground = getBlockPosBelowThatAffectsMyMovement();
+				var state = this.level().getBlockState(ground);
 				float f = 0.91F;
 				if (this.onGround()) {
-					f = this.level().getBlockState(ground).getFriction(this.level(), ground, this) * 0.91F;
+					f = (state.getBlock() instanceof CustomFrictionBlock frictionBlock ?
+						frictionBlock.getFriction(state, this.level(), ground, this) :
+						state.getBlock().getFriction()) * 0.91f;
 				}
 
 				float f1 = 0.16277137F / (f * f * f);
 				f = 0.91F;
 				if (this.onGround()) {
-					f = this.level().getBlockState(ground).getFriction(this.level(), ground, this) * 0.91F;
+					f = (state.getBlock() instanceof CustomFrictionBlock frictionBlock ?
+						frictionBlock.getFriction(state, this.level(), ground, this) :
+						state.getBlock().getFriction()) * 0.91f;
 				}
 
 				this.moveRelative(this.onGround() ? 0.1F * f1 : 0.02F, vec3);

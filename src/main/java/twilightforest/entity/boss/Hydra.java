@@ -1,5 +1,7 @@
 package twilightforest.entity.boss;
 
+import io.github.fabricators_of_create.porting_lib.entity.MultiPartEntity;
+import io.github.fabricators_of_create.porting_lib.entity.PartEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -24,13 +26,12 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.entity.TFPart;
 import twilightforest.init.*;
@@ -43,7 +44,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @SuppressWarnings("this-escape")
-public class Hydra extends BaseTFBoss {
+public class Hydra extends BaseTFBoss implements MultiPartEntity {
 
 	private static final int TICKS_BEFORE_HEALING = 1000;
 	private static final int HEAD_RESPAWN_TICKS = 140;
@@ -556,7 +557,7 @@ public class Hydra extends BaseTFBoss {
 	}
 
 	private void destroyBlocksInAABB(AABB box) {
-		if (this.deathTime <= 0 && EventHooks.canEntityGrief(this.level(), this)) {
+		if (this.deathTime <= 0 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 			for (BlockPos pos : WorldUtil.getAllInBB(box)) {
 				if (EntityUtil.canDestroyBlock(this.level(), pos, this)) {
 					this.level().destroyBlock(pos, false);

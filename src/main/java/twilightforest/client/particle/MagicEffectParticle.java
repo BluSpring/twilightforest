@@ -1,12 +1,13 @@
 package twilightforest.client.particle;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.ColorParticleOption;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+
+@Environment(EnvType.CLIENT)
 public class MagicEffectParticle extends SpellParticle {
 	protected MagicEffectParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet sprites) {
 		super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprites);
@@ -17,7 +18,7 @@ public class MagicEffectParticle extends SpellParticle {
 		return 0xF000F0;
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleProvider<ColorParticleOption> {
 		private final SpriteSet sprite;
 

@@ -31,7 +31,7 @@ public class EmperorsClothRecipe extends CustomRecipe {
 				if (stack.is(TFItems.EMPERORS_CLOTH.get()) && !foundInk) {
 					foundInk = true;
 				} else if (!foundItem) {
-					if (stack.getItem() instanceof ArmorItem && !stack.hasCraftingRemainingItem() && stack.get(TFDataComponents.EMPERORS_CLOTH) == null) {
+					if (stack.getItem() instanceof ArmorItem && !stack.getItem().hasCraftingRemainingItem() && stack.get(TFDataComponents.EMPERORS_CLOTH.get()) == null) {
 						foundItem = true;
 					} else {
 						return false;
@@ -57,7 +57,7 @@ public class EmperorsClothRecipe extends CustomRecipe {
 		}
 
 		ItemStack copy = item.copy();
-		copy.set(TFDataComponents.EMPERORS_CLOTH, Unit.INSTANCE);
+		copy.set(TFDataComponents.EMPERORS_CLOTH.get(), Unit.INSTANCE);
 		return copy;
 	}
 

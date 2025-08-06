@@ -2,6 +2,8 @@ package twilightforest.enchantment;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.EntityDestroyBlock;
+import io.github.fabricators_of_create.porting_lib.level.events.BlockEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -11,15 +13,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.item.enchantment.EnchantedItemInUse;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.item.enchantment.effects.EnchantmentEntityEffect;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import twilightforest.entity.projectile.ChainBlock;
 import twilightforest.init.TFDataAttachments;
 
@@ -38,7 +43,7 @@ public record SmashBlocksEffect(LevelBasedValue maxSmash, LevelBasedValue radius
 	@Override
 	public void apply(ServerLevel level, int enchantmentLevel, EnchantedItemInUse item, Entity entity, Vec3 position) {
 		if (item.owner() instanceof ServerPlayer player) {
-			int blocksSmashed = entity.getData(TFDataAttachments.SMASH_BLOCKS).getBlocksSmashed();
+			int blocksSmashed = entity.getAttachedOrCreate(TFDataAttachments.SMASH_BLOCKS.get()).getBlocksSmashed();
 			int maxSmash = Math.round(this.maxSmash.calculate(enchantmentLevel));
 			if (blocksSmashed >= maxSmash) return;
 			BlockPos start = BlockPos.containing(position);
@@ -49,8 +54,8 @@ public record SmashBlocksEffect(LevelBasedValue maxSmash, LevelBasedValue radius
 				BlockState state = level.getBlockState(pos);
 				if (!state.isAir()) {
 					if (this.immuneBlocks().isPresent() && this.immuneBlocks().get().contains(state.getBlockHolder())) continue;
-					if (ChainBlock.canBreakBlockAt(level, pos, state, item.itemStack(), player.gameMode.getGameModeForPlayer().isBlockPlacingRestricted()) && state.canEntityDestroy(level, pos, player)) {
-						if (!NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, player)).isCanceled()) {
+					if (ChainBlock.canBreakBlockAt(level, pos, state, item.itemStack(), player.gameMode.getGameModeForPlayer().isBlockPlacingRestricted()) && canEntityDestroy(state, level, pos, player)) {
+						if (!(new BlockEvent.BreakEvent(level, pos, state, player)).post()) {
 							level.destroyBlock(pos, false);
 							if (!player.isCreative()) state.getBlock().playerDestroy(level, player, pos, state, level.getBlockEntity(pos), item.itemStack());
 							if (this.smashSound().isPresent()) {
@@ -62,8 +67,22 @@ public record SmashBlocksEffect(LevelBasedValue maxSmash, LevelBasedValue radius
 				}
 			}
 
-			entity.getData(TFDataAttachments.SMASH_BLOCKS).setBlocksSmashed(blocksSmashed);
+			entity.getAttachedOrCreate(TFDataAttachments.SMASH_BLOCKS.get()).setBlocksSmashed(blocksSmashed);
 		}
+	}
+
+	private boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
+		if (state.getBlock() instanceof EntityDestroyBlock entityDestroyBlock)
+			return entityDestroyBlock.canEntityDestroy(state, level, pos, entity);
+
+		if (entity instanceof EnderDragon) {
+			return !state.is(BlockTags.DRAGON_IMMUNE);
+		} else if ((entity instanceof WitherBoss) ||
+			(entity instanceof WitherSkull)) {
+			return state.isAir() || WitherBoss.canDestroy(state);
+		}
+
+		return true;
 	}
 
 	@Override

@@ -4,8 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.realmsclient.util.JsonUtils;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 
 public final class PatchModelLoader implements IGeometryLoader<UnbakedPatchModel> {
 	public static final PatchModelLoader INSTANCE = new PatchModelLoader();

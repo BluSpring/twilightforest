@@ -2,6 +2,10 @@ package twilightforest.loot.modifiers;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.HarvestableBlock;
+import io.github.fabricators_of_create.porting_lib.level.events.BlockEvent;
+import io.github.fabricators_of_create.porting_lib.loot.IGlobalLootModifier;
+import io.github.fabricators_of_create.porting_lib.loot.LootModifier;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,12 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import net.neoforged.neoforge.common.loot.LootModifier;
-import net.neoforged.neoforge.event.EventHooks;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.NotNull;
 import twilightforest.TwilightForestMod;
 import twilightforest.block.GiantBlock;
@@ -30,7 +28,6 @@ import twilightforest.item.GiantPickItem;
 import java.util.HashMap;
 import java.util.Map;
 
-@EventBusSubscriber(modid = TwilightForestMod.ID)
 public class GiantToolGroupingModifier extends LootModifier {
 	public static Map<Block, Item> CONVERSIONS = new HashMap<>(); // Map of block-to-giant block conversions. Supposed to be similar to vanilla's AxeItem.STRIPPABLES Map
 
@@ -45,7 +42,7 @@ public class GiantToolGroupingModifier extends LootModifier {
 		if (context.getParam(LootContextParams.THIS_ENTITY) instanceof Player player) {
 			BlockState state = context.getParam(LootContextParams.BLOCK_STATE);
 			if (CONVERSIONS.containsKey(state.getBlock())) { // Should be true but let's double-check
-				var attachment = player.getData(TFDataAttachments.GIANT_PICKAXE_MINING);
+				var attachment = player.getAttachedOrCreate(TFDataAttachments.GIANT_PICKAXE_MINING.get());
 				int blockConversion = attachment.getGiantBlockConversion(); // Get how many conversions are left
 				attachment.setGiantBlockConversion(blockConversion - 1);
 				if (blockConversion == 64)
@@ -61,13 +58,16 @@ public class GiantToolGroupingModifier extends LootModifier {
 		return GiantToolGroupingModifier.CODEC;
 	}
 
-	@SubscribeEvent
+	static {
+		BlockEvent.BreakEvent.EVENT.register(event -> breakBlock((BlockEvent.BreakEvent) event));
+	}
+
 	public static void breakBlock(BlockEvent.BreakEvent event) {
 		BlockPos pos = event.getPos();
 		BlockState state = event.getState();
 
 		if (event.getPlayer() instanceof ServerPlayer player && canHarvestWithGiantPick(player, state, pos)) {
-			var attachment = player.getData(TFDataAttachments.GIANT_PICKAXE_MINING);
+			var attachment = player.getAttachedOrCreate(TFDataAttachments.GIANT_PICKAXE_MINING.get());
 
 			if (shouldBreakGiantBlock(player, attachment)) {
 				attachment.setBreaking(true); // Tell the capability that a block breaking loop is happening, so it knows to fail the if check above. Otherwise, this would go on forever
@@ -97,7 +97,7 @@ public class GiantToolGroupingModifier extends LootModifier {
 	}
 
 	private static boolean canHarvestWithGiantPick(Player player, BlockState state, BlockPos pos) {
-		return player.getMainHandItem().getItem() instanceof GiantPickItem && EventHooks.doPlayerHarvestCheck(player, state, player.level(), pos);
+		return player.getMainHandItem().getItem() instanceof GiantPickItem && player.hasCorrectToolForDrops(state);
 	}
 
 	private static boolean shouldBreakGiantBlock(Player player, GiantPickaxeMiningAttachment attachment) {

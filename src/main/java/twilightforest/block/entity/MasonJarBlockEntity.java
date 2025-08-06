@@ -1,5 +1,11 @@
 package twilightforest.block.entity;
 
+import io.github.fabricators_of_create.porting_lib.core.util.ServerLifecycleHooks;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemStackHandler;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
@@ -9,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -21,10 +28,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import twilightforest.init.TFBlockEntities;
 import twilightforest.network.SetMasonJarItemPacket;
 
@@ -82,7 +85,7 @@ public class MasonJarBlockEntity extends JarBlockEntity {
 
 	private void acceptLootTable(ItemStack stack) {
 		MasonJarItemStackHandler jarInv = this.getItemHandler();
-		if (jarInv.isEmpty()) {
+		if (jarInv.empty()) {
 			jarInv.setItem(stack);
 		} else {
 			ItemStack contained = jarInv.peekItem();
@@ -121,14 +124,16 @@ public class MasonJarBlockEntity extends JarBlockEntity {
 		super.setChanged();
 		if (this.level != null) {
 			BlockPos pos = this.getBlockPos();
-			AuxiliaryLightManager lightManager = this.level.getAuxLightManager(pos);
+			/*AuxiliaryLightManager lightManager = this.level.getAuxLightManager(pos);
 			if (lightManager != null) {
 				lightManager.setLightAt(pos, this.item.getItem().getItem() instanceof BlockItem blockItem ? blockItem.getBlock().defaultBlockState().getLightEmission() : 0);
 			}
-			this.level.getLightEngine().checkBlock(pos);
+			this.level.getLightEngine().checkBlock(pos);*/
 		}
 		if (this.level instanceof ServerLevel serverLevel) {
-			PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(this.getBlockPos()), new SetMasonJarItemPacket(this.getBlockPos(), this.item.getItem(), this.itemRotation));
+			for (ServerPlayer player : PlayerLookup.tracking(serverLevel, this.getBlockPos())) {
+				ServerPlayNetworking.send(player, new SetMasonJarItemPacket(this.getBlockPos(), this.item.getItem(), this.itemRotation));
+			}
 		}
 	}
 
@@ -150,49 +155,49 @@ public class MasonJarBlockEntity extends JarBlockEntity {
 
 		// Used for simple checks of what the one item is, without going through all the hoops. Used by the renderer and when saving contents to item
 		public ItemStack getItem() {
-			return this.stacks.getFirst().copy();
+			return this.peekItem().copy();
 		}
 
 		// Peeks at the stored item, without cloning it
 		private ItemStack peekItem() {
-			return this.stacks.getFirst();
+			return this.getStackInSlot(0);
 		}
 
 		// Used when syncing to client and when placing a jar that already has stored items
 		public void setItem(ItemStack itemStack) {
-			this.stacks.set(0, itemStack);
+			this.setStackInSlot(0, itemStack);
 		}
 
 		@Override
-		public boolean isItemValid(int slot, ItemStack stack) {
-			return stack.getItem().canFitInsideContainerItems();
+		public boolean isItemValid(int slot, ItemVariant resource, int count) {
+			return resource.getItem().canFitInsideContainerItems();
 		}
 
 		@Override
-		public ItemStack extractItem(int slot, int amount, boolean simulate) {
-			if (simulate) return super.extractItem(slot, amount, true);
-			ItemStack extractedStack = super.extractItem(slot, amount, false);
-			if (!extractedStack.isEmpty()) {
+		public long extractSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
+			var extractedStack = super.extractSlot(slot, resource, maxAmount, transaction);
+			if (extractedStack > 0) {
 				this.jarEntity.wobble(WobbleStyle.NEGATIVE);
 				this.jarEntity.setChanged();
 			}
+
 			return extractedStack;
 		}
 
 		@Override
-		public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-			if (simulate) return super.insertItem(slot, stack, true);
-			ItemStack inserted = stack.copy();
-			ItemStack returned = super.insertItem(slot, stack, false);
-			if (!ItemStack.isSameItemSameComponents(inserted, returned) || inserted.getCount() != returned.getCount()) {
+		public long insertSlot(int slot, ItemVariant resource, long maxAmount, TransactionContext transaction) {
+			var inserted = this.getItem();
+			var returned = super.insertSlot(slot, resource, maxAmount, transaction);
+			if (returned != inserted.getCount() || (returned > 0 && !resource.getItem().equals(inserted.getItem()))) {
 				this.jarEntity.wobble(WobbleStyle.POSITIVE);
 				this.jarEntity.setChanged();
 			}
 			return returned;
 		}
 
-		public boolean isEmpty() {
-			return this.stacks.getFirst().isEmpty();
+		@Override
+		public boolean empty() {
+			return this.peekItem().isEmpty();
 		}
 	}
 }

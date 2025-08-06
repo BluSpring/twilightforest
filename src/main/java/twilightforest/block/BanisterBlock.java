@@ -1,6 +1,7 @@
 package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,7 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -28,13 +28,10 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ItemAbilities;
-import org.jetbrains.annotations.Nullable;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.enums.BanisterShape;
 
@@ -198,10 +195,10 @@ public class BanisterBlock extends HorizontalDirectionalBlock implements SimpleW
 		tooltip.add(Component.translatable("block.twilightforest.banister.cycle").withStyle(ChatFormatting.GRAY));
 	}
 
-	@Override
+	/*@Override
 	public PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
 		return PathType.FENCE;
-	}
+	}*/
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> blockStateBuilder) {

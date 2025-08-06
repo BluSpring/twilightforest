@@ -1,5 +1,8 @@
 package twilightforest.item;
 
+import io.github.fabricators_of_create.porting_lib.enchant.CustomEnchantingBehaviorItem;
+import io.github.fabricators_of_create.porting_lib.resources.events.TagsUpdatedEvent;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,10 +26,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.TwilightForestMod;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFParticleType;
@@ -34,15 +33,14 @@ import twilightforest.init.TFSounds;
 import twilightforest.network.ParticlePacket;
 import twilightforest.util.iterators.VoxelBresenhamIterator;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@EventBusSubscriber(modid = TwilightForestMod.ID)
-public class OreMagnetItem extends Item {
+public class OreMagnetItem extends Item implements CustomEnchantingBehaviorItem {
 
 	private static final float WIGGLE = 10F;
 
@@ -64,12 +62,12 @@ public class OreMagnetItem extends Item {
 			}
 		});
 
-		return !badEnchant.get() && super.isBookEnchantable(stack, book);
+		return !badEnchant.get() && CustomEnchantingBehaviorItem.super.isBookEnchantable(stack, book);
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, @Nonnull InteractionHand hand) {
+	public InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
 		player.startUsingItem(hand);
 		return new InteractionResultHolder<>(InteractionResult.SUCCESS, player.getItemInHand(hand));
 	}
@@ -113,7 +111,7 @@ public class OreMagnetItem extends Item {
 		}
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public UseAnim getUseAnimation(ItemStack stack) {
 		return UseAnim.BOW;
@@ -188,7 +186,7 @@ public class OreMagnetItem extends Item {
 									Vec3 offset = new Vec3((level.random.nextDouble() - 0.5D) * 1.25D, (level.random.nextDouble() - 0.5D) * 1.25D, (level.random.nextDouble() - 0.5D) * 1.25D);
 									particlePacket.queueParticle(TFParticleType.LOG_CORE_PARTICLE.get(), false, xyz.add(offset), new Vec3(0.8, 0.9, 0.2));
 								}
-								PacketDistributor.sendToPlayer(serverplayer, particlePacket);
+								ServerPlayNetworking.send(serverplayer, particlePacket);
 							}
 						}
 					}
@@ -254,7 +252,10 @@ public class OreMagnetItem extends Item {
 	public static final HashMap<Block, Block> MAGNET_ORE_TO_BLOCK_REPLACEMENTS = new HashMap<>();
 	public static final HashMap<Block, Block> TREE_ORE_TO_BLOCK_REPLACEMENTS = new HashMap<>();
 
-	@SubscribeEvent
+	static {
+		TagsUpdatedEvent.EVENT.register(event -> onTagsUpdatedEvent(event));
+	}
+
 	public static void onTagsUpdatedEvent(TagsUpdatedEvent event) {
 		MAGNET_ORE_TO_BLOCK_REPLACEMENTS.clear();
 		TREE_ORE_TO_BLOCK_REPLACEMENTS.clear();

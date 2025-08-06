@@ -11,7 +11,7 @@ public class CasketSubtypeInterpreter implements IIngredientSubtypeInterpreter<I
 
 	@Override
 	public String apply(ItemStack stack, UidContext context) {
-		Integer damage = stack.get(TFDataComponents.CASKET_DAMAGE);
+		Integer damage = stack.get(TFDataComponents.CASKET_DAMAGE.get());
 		if (damage == null) {
 			return IIngredientSubtypeInterpreter.NONE;
 		}

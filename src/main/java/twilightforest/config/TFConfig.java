@@ -4,18 +4,20 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import io.github.fabricators_of_create.porting_lib.core.util.ServerLifecycleHooks;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.common.TranslatableEnum;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
 import twilightforest.network.SyncUncraftingTableConfigPacket;
@@ -183,12 +185,14 @@ public class TFConfig {
 		//resends uncrafting settings to all players when the config is reloaded. This ensures all players have matching configs so things don't desync.
 		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 		if (server != null && server.isDedicatedServer()) {
-			PacketDistributor.sendToAllPlayers(new SyncUncraftingTableConfigPacket(
-				uncraftingXpCostMultiplier, repairingXpCostMultiplier,
-				allowShapelessUncrafting, disableIngredientSwitching,
-				disableUncraftingOnly, disableEntireTable,
-				disableUncraftingRecipes, reverseRecipeBlacklist,
-				blacklistedUncraftingModIds, flipUncraftingModIdList));
+			for (ServerPlayer pl : PlayerLookup.all(server)) {
+				ServerPlayNetworking.send(pl, (new SyncUncraftingTableConfigPacket(
+					uncraftingXpCostMultiplier, repairingXpCostMultiplier,
+					allowShapelessUncrafting, disableIngredientSwitching,
+					disableUncraftingOnly, disableEntireTable,
+					disableUncraftingRecipes, reverseRecipeBlacklist,
+					blacklistedUncraftingModIds, flipUncraftingModIdList)));
+			}
 		}
 		//sets cached portal locking advancement to null just in case it changed
 		portalLockingAdvancement = null;

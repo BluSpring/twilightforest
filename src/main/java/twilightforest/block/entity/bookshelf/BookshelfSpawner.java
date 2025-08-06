@@ -24,8 +24,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
 import twilightforest.block.ChiseledCanopyShelfBlock;
@@ -35,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class BookshelfSpawner implements IOwnedSpawner {
+public abstract class BookshelfSpawner /*implements IOwnedSpawner*/ {
 	public static final List<Pair<Integer, BooleanProperty>> SLOT_PROPERTIES_AND_INDEXES = List.of(
 		Pair.of(0, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_0_OCCUPIED),
 		Pair.of(1, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_1_OCCUPIED),
@@ -271,7 +269,7 @@ public abstract class BookshelfSpawner implements IOwnedSpawner {
 			entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), random.nextFloat() * 360.0F, 0.0F);
 			if (entity instanceof Mob mob) {
 				boolean flag1 = data.getEntityToSpawn().size() == 1 && data.getEntityToSpawn().contains("id", 8);
-				EventHooks.finalizeMobSpawnSpawner(mob, level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, this, flag1);
+				mob.finalizeSpawn(level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null);
 
 				data.getEquipment().ifPresent(mob::equip);
 			}

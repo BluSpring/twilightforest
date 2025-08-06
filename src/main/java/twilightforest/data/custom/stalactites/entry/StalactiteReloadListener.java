@@ -76,4 +76,9 @@ public class StalactiteReloadListener extends CodecResourceReloadListener<Speleo
 			}
 		}
 	}
+
+	@Override
+	public ResourceLocation getFabricId() {
+		return TwilightForestMod.prefix("stalactite");
+	}
 }

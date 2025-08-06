@@ -1,5 +1,8 @@
 package twilightforest.item;
 
+import io.github.fabricators_of_create.porting_lib.level.events.BlockEvent;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -22,9 +25,6 @@ import net.minecraft.world.level.block.FlowerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.block.LightableBlock;
 import twilightforest.init.TFDataAttachments;
 import twilightforest.init.TFSounds;
@@ -33,7 +33,7 @@ import twilightforest.network.ParticlePacket;
 import twilightforest.network.UpdateFeatherFanFallPacket;
 import twilightforest.util.WorldUtil;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class PeacockFanItem extends Item {
 
@@ -41,19 +41,20 @@ public class PeacockFanItem extends Item {
 		super(properties);
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, @Nonnull InteractionHand hand) {
+	public InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 
-		boolean flag = !player.onGround() && !player.isSwimming() && !player.getData(TFDataAttachments.FEATHER_FAN);
+		boolean flag = !player.onGround() && !player.isSwimming() && !player.getAttachedOrCreate(TFDataAttachments.FEATHER_FAN.get());
 
 		if (!level.isClientSide()) {
 			int fanned = this.doFan(level, player);
 			stack.hurtAndBreak(fanned + 1, player, LivingEntity.getSlotForHand(hand));
 			if (flag) {
-				player.setData(TFDataAttachments.FEATHER_FAN, true);
-				PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new UpdateFeatherFanFallPacket(player.getId(), true));
+				player.setAttached(TFDataAttachments.FEATHER_FAN.get(), true);
+				PlayerLookup.tracking(player).forEach(p -> ServerPlayNetworking.send(p, new UpdateFeatherFanFallPacket(player.getId(), true)));
+				ServerPlayNetworking.send((ServerPlayer) player, new UpdateFeatherFanFallPacket(player.getId(), true));
 			} else {
 				AABB fanBox = this.getEffectAABB(player);
 				Vec3 lookVec = player.getLookAngle();
@@ -68,7 +69,7 @@ public class PeacockFanItem extends Item {
 								fanBox.minZ + level.getRandom().nextFloat() * (fanBox.maxZ - fanBox.minZ),
 								lookVec.x(), lookVec.y(), lookVec.z());
 						}
-						PacketDistributor.sendToPlayer(serverplayer, packet);
+						ServerPlayNetworking.send(serverplayer, packet);
 					}
 				}
 			}
@@ -99,7 +100,7 @@ public class PeacockFanItem extends Item {
 		return new InteractionResultHolder<>(InteractionResult.PASS, stack);
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public UseAnim getUseAnimation(ItemStack stack) {
 		return UseAnim.BLOCK;
@@ -127,7 +128,7 @@ public class PeacockFanItem extends Item {
 			}
 
 			if (entity instanceof ServerPlayer pushedPlayer && pushedPlayer != player && !pushedPlayer.isShiftKeyDown()) {
-				PacketDistributor.sendToPlayer(pushedPlayer, new MovePlayerPacket(moveVec.x(), moveVec.y(), moveVec.z()));
+				ServerPlayNetworking.send(pushedPlayer, new MovePlayerPacket(moveVec.x(), moveVec.y(), moveVec.z()));
 				player.getCooldowns().addCooldown(fan, 40);
 				fannedEntities += 2;
 			}
@@ -159,7 +160,7 @@ public class PeacockFanItem extends Item {
 		BlockState state = level.getBlockState(pos);
 		if (state.getBlock() instanceof FlowerBlock) {
 			if (level.getRandom().nextInt(3) == 0) {
-				if (!NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(level, pos, state, player)).isCanceled()) {
+				if (!(new BlockEvent.BreakEvent(level, pos, state, player)).post()) {
 					level.destroyBlock(pos, true);
 					cost++;
 				}

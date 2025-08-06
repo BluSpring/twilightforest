@@ -1,5 +1,6 @@
 package twilightforest.client;
 
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
@@ -7,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import twilightforest.TwilightForestMod;
 import twilightforest.entity.MagicPaintingVariant;
 
-public class MagicPaintingTextureManager extends TextureAtlasHolder {
+public class MagicPaintingTextureManager extends TextureAtlasHolder implements IdentifiableResourceReloadListener {
 	public final static String MAGIC_PAINTING_PATH = "magic_paintings";
 	public static final ResourceLocation ATLAS_LOCATION = TwilightForestMod.prefix("textures/atlas/magic_paintings.png");
 	public static final ResourceLocation ATLAS_INFO_LOCATION = ResourceLocation.withDefaultNamespace(MAGIC_PAINTING_PATH);
@@ -25,5 +26,10 @@ public class MagicPaintingTextureManager extends TextureAtlasHolder {
 
 	public TextureAtlasSprite getBackSprite(MagicPaintingVariant variant) {
 		return this.getSprite(variant.backTexture());
+	}
+
+	@Override
+	public ResourceLocation getFabricId() {
+		return TwilightForestMod.prefix("magic_painting");
 	}
 }

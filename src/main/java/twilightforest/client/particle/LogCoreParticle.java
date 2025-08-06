@@ -1,12 +1,13 @@
 package twilightforest.client.particle;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomRenderBoundingBoxBlockEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 
-public class LogCoreParticle extends RisingParticle {
+public class LogCoreParticle extends RisingParticle implements CustomRenderBoundingBoxBlockEntity {
 	LogCoreParticle(ClientLevel pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
 		super(pLevel, pX, pY, pZ, 0.0, 0.02, 0.0);
 		this.rCol = (float) pXSpeed;
@@ -61,10 +62,5 @@ public class LogCoreParticle extends RisingParticle {
 			logCoreParticle.pickSprite(this.sprite);
 			return logCoreParticle;
 		}
-	}
-
-	@Override
-	public AABB getRenderBoundingBox(float partialTicks) {
-		return AABB.INFINITE;
 	}
 }

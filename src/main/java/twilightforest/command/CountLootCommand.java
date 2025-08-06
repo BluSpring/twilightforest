@@ -33,7 +33,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-@tamaized.beanification.Component
 public class CountLootCommand {
 	public LiteralArgumentBuilder<CommandSourceStack> register() {
 		return Commands.literal("count_loot").requires(cs -> cs.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -89,7 +88,7 @@ public class CountLootCommand {
 
 			Item lootItem = countedItem.getKey();
 
-			var rarityColor = new ItemStack(lootItem).getRarity().getStyleModifier();
+			var rarityColor = new ItemStack(lootItem).getRarity().color();
 
 			context.getSource().sendSystemMessage(lootItem.getDescription().copy().withStyle(rarityColor).append(suffixCount));
 		}

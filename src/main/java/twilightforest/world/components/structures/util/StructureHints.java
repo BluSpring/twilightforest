@@ -67,7 +67,7 @@ public interface StructureHints {
 			true
 		));
 
-		book.set(TFDataComponents.TRANSLATABLE_BOOK, Unit.INSTANCE);
+		book.set(TFDataComponents.TRANSLATABLE_BOOK.get(), Unit.INSTANCE);
 	}
 
 	/**

@@ -2,36 +2,47 @@ package twilightforest.init;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import twilightforest.TwilightForestMod;
 import twilightforest.components.entity.*;
 import twilightforest.components.item.OreScannerComponent;
 import twilightforest.util.Codecs;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public class TFDataAttachments {
-	public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, TwilightForestMod.ID);
+	//public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, TwilightForestMod.ID);
 
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<Boolean>> FEATHER_FAN = ATTACHMENT_TYPES.register("feather_fan_falling", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<PotionFlaskTrackingAttachment>> FLASK_DOSES = ATTACHMENT_TYPES.register("flask_doses", () -> AttachmentType.builder(PotionFlaskTrackingAttachment::new).serialize(PotionFlaskTrackingAttachment.CODEC).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<FortificationShieldAttachment>> FORTIFICATION_SHIELDS = ATTACHMENT_TYPES.register("fortification_shields", () -> AttachmentType.builder(FortificationShieldAttachment::new).serialize(FortificationShieldAttachment.CODEC).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<GiantPickaxeMiningAttachment>> GIANT_PICKAXE_MINING = ATTACHMENT_TYPES.register("giant_pickaxe_mining", () -> AttachmentType.builder(GiantPickaxeMiningAttachment::new).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<OreScannerComponent>> ORE_SCANNER = ATTACHMENT_TYPES.register("ore_scanner", () -> AttachmentType.builder(OreScannerComponent::getEmpty).serialize(OreScannerComponent.CODEC).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<YetiThrowAttachment>> YETI_THROWING = ATTACHMENT_TYPES.register("yeti_throwing", () -> AttachmentType.builder(YetiThrowAttachment::new).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<MultiplayerInclusivityAttachment>> MULTIPLAYER_FIGHT = ATTACHMENT_TYPES.register("multiplayer_fight", () -> AttachmentType.builder(MultiplayerInclusivityAttachment::new).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<TFPortalAttachment>> TF_PORTAL_COOLDOWN = ATTACHMENT_TYPES.register("tf_portal_cooldown", () -> AttachmentType.builder(TFPortalAttachment::new).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<SmashBlocksEnchantmentAttachment>> SMASH_BLOCKS = ATTACHMENT_TYPES.register("smash_blocks", () -> AttachmentType.builder(() -> new SmashBlocksEnchantmentAttachment()).serialize(SmashBlocksEnchantmentAttachment.CODEC).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<GameProfile>> ZOMBIFIED_PLAYER = ATTACHMENT_TYPES.register("zombified_player", () -> AttachmentType.builder(() -> UUIDUtil.createOfflineProfile("GizmoTheMoonPig")).serialize(Codecs.SIMPLE_GAME_PROFILE).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<Unit>> LEASH_PATHFINDER_OVERRIDE = ATTACHMENT_TYPES.register("leashed_pathfinder_override", () -> AttachmentType.builder(() -> Unit.INSTANCE).serialize(Codec.unit(Unit.INSTANCE)).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<Unit>> BANISHED_TO_TWILIGHT_FOREST = ATTACHMENT_TYPES.register("twilightforest_banished", () -> AttachmentType.builder(() -> Unit.INSTANCE).serialize(Codec.unit(Unit.INSTANCE)).copyOnDeath().build());
+	public static final Supplier<AttachmentType<Boolean>> FEATHER_FAN = register("feather_fan_falling", builder -> builder.initializer(() -> false).persistent(Codec.BOOL));
+	public static final Supplier<AttachmentType<PotionFlaskTrackingAttachment>> FLASK_DOSES = register("flask_doses", builder -> builder.initializer(PotionFlaskTrackingAttachment::new).persistent(PotionFlaskTrackingAttachment.CODEC));
+	public static final Supplier<AttachmentType<FortificationShieldAttachment>> FORTIFICATION_SHIELDS = register("fortification_shields", builder -> builder.initializer(FortificationShieldAttachment::new).persistent(FortificationShieldAttachment.CODEC));
+	public static final Supplier<AttachmentType<GiantPickaxeMiningAttachment>> GIANT_PICKAXE_MINING = register("giant_pickaxe_mining", builder -> builder.initializer(GiantPickaxeMiningAttachment::new));
+	public static final Supplier<AttachmentType<OreScannerComponent>> ORE_SCANNER = register("ore_scanner", builder -> builder.initializer(OreScannerComponent::getEmpty).persistent(OreScannerComponent.CODEC));
+	public static final Supplier<AttachmentType<YetiThrowAttachment>> YETI_THROWING = register("yeti_throwing", builder -> builder.initializer(YetiThrowAttachment::new));
+	public static final Supplier<AttachmentType<MultiplayerInclusivityAttachment>> MULTIPLAYER_FIGHT = register("multiplayer_fight", builder -> builder.initializer(MultiplayerInclusivityAttachment::new));
+	public static final Supplier<AttachmentType<TFPortalAttachment>> TF_PORTAL_COOLDOWN = register("tf_portal_cooldown", builder -> builder.initializer(TFPortalAttachment::new));
+	public static final Supplier<AttachmentType<SmashBlocksEnchantmentAttachment>> SMASH_BLOCKS = register("smash_blocks", builder -> builder.initializer(() -> new SmashBlocksEnchantmentAttachment()).persistent(SmashBlocksEnchantmentAttachment.CODEC));
+	public static final Supplier<AttachmentType<GameProfile>> ZOMBIFIED_PLAYER = register("zombified_player", builder -> builder.initializer(() -> UUIDUtil.createOfflineProfile("GizmoTheMoonPig")).persistent(Codecs.SIMPLE_GAME_PROFILE));
+	public static final Supplier<AttachmentType<Unit>> LEASH_PATHFINDER_OVERRIDE = register("leashed_pathfinder_override", builder -> builder.initializer(() -> Unit.INSTANCE).persistent(Codec.unit(Unit.INSTANCE)));
+	public static final Supplier<AttachmentType<Unit>> BANISHED_TO_TWILIGHT_FOREST = register("twilightforest_banished", builder -> builder.initializer(() -> Unit.INSTANCE).persistent(Codec.unit(Unit.INSTANCE)).copyOnDeath());
 
-	private static <T> T directCopy(T attachment, IAttachmentHolder holder, HolderLookup.Provider provider) {
+	/*private static <T> T directCopy(T attachment, IAttachmentHolder holder, HolderLookup.Provider provider) {
 		return attachment;
+	}*/
+
+	private static <T> Supplier<AttachmentType<T>> register(String name, Consumer<AttachmentRegistry.Builder<T>> consumer) {
+		var builder = AttachmentRegistry.<T>builder();
+		consumer.accept(builder);
+		var registered = builder.buildAndRegister(ResourceLocation.fromNamespaceAndPath(TwilightForestMod.ID, name));
+
+		return () -> registered;
 	}
 }

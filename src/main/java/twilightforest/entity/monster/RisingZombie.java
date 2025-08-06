@@ -1,5 +1,6 @@
 package twilightforest.entity.monster;
 
+import io.github.fabricators_of_create.porting_lib.fluids.FluidType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidType;
 
 public class RisingZombie extends Monster {
 
@@ -63,7 +63,7 @@ public class RisingZombie extends Monster {
 			if (!this.level().isClientSide()) {
 				this.getEntityData().set(RISING_TICKS, this.getRisingTicks() + 1);
 				if (this.getRisingTicks() % 10 == 0 && this.getRisingTicks() < 130) {
-					this.level().playSound(null, this.blockPosition(), state.getSoundType(this.level(), pos, null).getBreakSound(), SoundSource.BLOCKS, 1.0F, this.getRandom().nextFloat() * 0.15F + 0.7F);
+					this.level().playSound(null, this.blockPosition(), state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 1.0F, this.getRandom().nextFloat() * 0.15F + 0.7F);
 				}
 			} else {
 				if (!this.level().isEmptyBlock(this.blockPosition().below())) {
@@ -176,7 +176,7 @@ public class RisingZombie extends Monster {
 	}
 
 	@Override
-	public boolean isPushedByFluid(FluidType type) {
+	public boolean isPushedByFluid() {
 		return false;
 	}
 

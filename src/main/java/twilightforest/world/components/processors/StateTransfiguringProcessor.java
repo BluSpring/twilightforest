@@ -7,10 +7,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.*;
+import org.jetbrains.annotations.Nullable;
 import twilightforest.init.TFStructureProcessors;
 import twilightforest.util.features.FeaturePlacers;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,12 +24,11 @@ public class StateTransfiguringProcessor extends StructureProcessor {
 		this.rules = Collections.unmodifiableList(rules);
 	}
 
-	@Nullable
 	@Override
-	public StructureTemplate.StructureBlockInfo process(LevelReader level, BlockPos origin, BlockPos centerBottom, StructureTemplate.StructureBlockInfo originalBlockInfo, StructureTemplate.StructureBlockInfo modifiedBlockInfo, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
-		BlockState state = level.getBlockState(modifiedBlockInfo.pos());
+	public @Nullable StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
+		BlockState state = level.getBlockState(pos);
 
-		RandomSource random = RandomSource.create(Mth.getSeed(modifiedBlockInfo.pos()));
+		RandomSource random = RandomSource.create(Mth.getSeed(blockInfo.pos()));
 		long i = random.nextLong();
 		// Re-seed the random source for each loop iteration, the positional seed defines the initial random value
 		for (ProcessorRule processorRule : this.rules) {
@@ -37,11 +36,11 @@ public class StateTransfiguringProcessor extends StructureProcessor {
 			random.setSeed(i * 3);
 			i += 115;
 
-			if (processorRule.test(modifiedBlockInfo.state(), state, originalBlockInfo.pos(), modifiedBlockInfo.pos(), centerBottom, random))
-				return new StructureTemplate.StructureBlockInfo(modifiedBlockInfo.pos(), FeaturePlacers.transferAllStateKeys(modifiedBlockInfo.state(), processorRule.getOutputState()), processorRule.getOutputTag(random, modifiedBlockInfo.nbt()));
+			if (processorRule.test(blockInfo.state(), state, blockInfo.pos(), blockInfo.pos(), offset, random))
+				return new StructureTemplate.StructureBlockInfo(blockInfo.pos(), FeaturePlacers.transferAllStateKeys(blockInfo.state(), processorRule.getOutputState()), processorRule.getOutputTag(random, blockInfo.nbt()));
 		}
 
-		return modifiedBlockInfo;
+		return blockInfo;
 	}
 
 	@Override

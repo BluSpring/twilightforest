@@ -2,6 +2,7 @@ package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.EntityDestroyBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
@@ -16,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import twilightforest.block.entity.spawner.BossSpawnerBlockEntity;
 import twilightforest.enums.BossVariant;
 
-public class BossSpawnerBlock extends BaseEntityBlock {
+public class BossSpawnerBlock extends BaseEntityBlock implements EntityDestroyBlock {
 
 	public static final MapCodec<BossSpawnerBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			BossVariant.CODEC.fieldOf("variant").forGetter(o -> o.boss),

@@ -2,6 +2,8 @@ package twilightforest.client.renderer.block;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import io.github.fabricators_of_create.porting_lib.core.util.Lazy;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredBlock;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -21,19 +23,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity.WobbleStyle;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RotationSegment;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.RenderTypeHelper;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import tamaized.beanification.Autowired;
-import tamaized.beanification.Configurable;
+import org.jetbrains.annotations.Nullable;
 import twilightforest.block.entity.JarBlockEntity;
 import twilightforest.block.entity.MasonJarBlockEntity;
 import twilightforest.enums.extensions.TFItemDisplayContextEnumExtension;
 import twilightforest.init.TFBlocks;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,32 +149,17 @@ public class JarRenderer<T extends JarBlockEntity> implements BlockEntityRendere
 		float r = (float) (color >> 16 & 0xFF) / 255.0F;
 		float g = (float) (color >> 8 & 0xFF) / 255.0F;
 		float b = (float) (color & 0xFF) / 255.0F;
-		for (RenderType rt : bakedModel.getRenderTypes(blockState, RandomSource.create(42), ModelData.EMPTY))
-			blockRenderer.getModelRenderer()
-				.renderModel(
-					stack.last(),
-					buffer.getBuffer(RenderTypeHelper.getEntityRenderType(rt, false)),
-					blockState,
-					bakedModel,
-					r,
-					g,
-					b,
-					packedLight,
-					packedOverlay,
-					ModelData.EMPTY,
-					rt
-				);
+
+		blockRenderer.getModelRenderer().renderModel(stack.last(), buffer.getBuffer(RenderType.translucent()), blockState, bakedModel, r, g, b, packedLight, packedOverlay);
 	}
 
 	public void renderContents(T blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
 
 	}
 
-	@Configurable
 	public static class MasonJarRenderer extends JarRenderer<MasonJarBlockEntity> {
 
-		@Autowired(dist = Dist.CLIENT)
-		private TFItemDisplayContextEnumExtension itemDisplayContextEnumExtension;
+		private TFItemDisplayContextEnumExtension itemDisplayContextEnumExtension = TFItemDisplayContextEnumExtension.INSTANCE;
 
 		protected final ItemRenderer itemRenderer;
 		protected final EntityRenderDispatcher entityRender;

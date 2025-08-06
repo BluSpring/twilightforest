@@ -1,5 +1,6 @@
 package twilightforest.block;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.EntityDestroyBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -21,7 +22,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class ForceFieldBlock extends Block implements SimpleWaterloggedBlock {
+public class ForceFieldBlock extends Block implements SimpleWaterloggedBlock, EntityDestroyBlock {
 	public static final BooleanProperty DOWN = PipeBlock.DOWN;
 	public static final BooleanProperty UP = PipeBlock.UP;
 	public static final BooleanProperty NORTH = PipeBlock.NORTH;

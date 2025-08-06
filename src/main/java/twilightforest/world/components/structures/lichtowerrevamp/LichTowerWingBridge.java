@@ -17,9 +17,8 @@ import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.neoforged.neoforge.common.world.PieceBeardifierModifier;
+import io.github.fabricators_of_create.porting_lib.world.PieceBeardifierModifier;
 import org.jetbrains.annotations.Nullable;
-import tamaized.beanification.Autowired;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFStructurePieceTypes;
 import twilightforest.util.BoundingBoxUtils;
@@ -31,8 +30,7 @@ import twilightforest.world.components.structures.util.SortablePiece;
 import java.util.List;
 
 public final class LichTowerWingBridge extends TwilightJigsawPiece implements PieceBeardifierModifier, SortablePiece {
-	@Autowired
-	private static LichTowerUtil lichTowerUtil;
+	private static LichTowerUtil lichTowerUtil = new LichTowerUtil();
 
 	private final boolean fromCentral;
 

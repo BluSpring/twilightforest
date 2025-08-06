@@ -65,7 +65,7 @@ public class JEIUncraftingCategory implements IRecipeCategory<CraftingRecipe> {
 		List<Ingredient> outputs = new ArrayList<>(recipe.getIngredients()); //Collect each ingredient
 		outputs.replaceAll(ingredient -> Ingredient.of(Arrays.stream(ingredient.getItems())
 			.filter(o -> !(o.is(ItemTagGenerator.BANNED_UNCRAFTING_INGREDIENTS)))
-			.filter(o -> !(o.getItem().hasCraftingRemainingItem(o))))//Remove any banned items
+			.filter(o -> !(o.getItem().hasCraftingRemainingItem())))//Remove any banned items
 		);
 
 		for (int j = 0, k = 0; j - k < outputs.size() && j < 9; j++) {

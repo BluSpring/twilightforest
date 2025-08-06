@@ -1,6 +1,7 @@
 package twilightforest.data;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,9 +15,6 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.crafting.CompoundIngredient;
-import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import twilightforest.TwilightForestMod;
 import twilightforest.data.custom.NoSmithingTemplateRecipeBuilder;
 import twilightforest.data.custom.ScepterRecipeBuilder;
@@ -40,7 +38,7 @@ public class CraftingGenerator extends CraftingDataHelper {
 	}
 
 	@Override
-	protected void buildRecipes(RecipeOutput output) {
+	public void buildRecipes(RecipeOutput output) {
 		StonecuttingGenerator.buildRecipes(output);
 		UncraftingGenerator.buildRecipes(output);
 
@@ -172,14 +170,14 @@ public class CraftingGenerator extends CraftingDataHelper {
 			.unlockedBy("has_item", has(TFItems.TORCHBERRIES.get()))
 			.save(output, TwilightForestMod.prefix("berry_torch"));
 
-		ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, TFBlocks.UNCRAFTING_TABLE.get())
+		/*ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, TFBlocks.UNCRAFTING_TABLE.get())
 			.pattern("###")
 			.pattern("#X#")
 			.pattern("###")
 			.define('#', Blocks.CRAFTING_TABLE)
 			.define('X', TFItems.MAZE_MAP_FOCUS.get())
 			.unlockedBy("has_uncrafting_table", has(TFBlocks.UNCRAFTING_TABLE.get()))
-			.save(output.withConditions(UncraftingTableCondition.INSTANCE), TwilightForestMod.prefix("uncrafting_table"));
+			.save(output.withConditions(UncraftingTableCondition.INSTANCE), TwilightForestMod.prefix("uncrafting_table"));*/
 
 		cookingRecipes(output, "smelted", RecipeSerializer.SMELTING_RECIPE, SmeltingRecipe::new, 200);
 		cookingRecipes(output, "smoked", RecipeSerializer.SMOKING_RECIPE, SmokingRecipe::new, 100);
@@ -431,7 +429,7 @@ public class CraftingGenerator extends CraftingDataHelper {
 			.group("fiery_sword")
 			.save(output, locEquip(TFItems.FIERY_SWORD.getKey().location().getPath()));
 
-		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, new ItemStack(TFItems.NAGA_CHESTPLATE, 1, this.buildEnchants(provider, Pair.of(Enchantments.FIRE_PROTECTION, 3)).build()))
+		/*ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, new ItemStack(TFItems.NAGA_CHESTPLATE, 1, this.buildEnchants(provider, Pair.of(Enchantments.FIRE_PROTECTION, 3)).build()))
 			.pattern("# #")
 			.pattern("###")
 			.pattern("###")
@@ -475,7 +473,7 @@ public class CraftingGenerator extends CraftingDataHelper {
 			.pattern("# #")
 			.define('#', TFItems.ALPHA_YETI_FUR)
 			.unlockedBy("has_item", has(TFItems.ALPHA_YETI_FUR))
-			.save(output, locEquip(TFItems.YETI_BOOTS.getKey().location().getPath()));
+			.save(output, locEquip(TFItems.YETI_BOOTS.getKey().location().getPath()));*/
 
 		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, TFItems.GIANT_PICKAXE.get())
 			.pattern("###")
@@ -572,14 +570,14 @@ public class CraftingGenerator extends CraftingDataHelper {
 			.addRepairIngredient(Tags.Items.ENDER_PEARLS)
 			.save(output, locEquip(TFItems.TWILIGHT_SCEPTER.getId().getPath()));
 
-		ScepterRecipeBuilder.repairFor(TFItems.ZOMBIE_SCEPTER.get(), 9)
+		/*ScepterRecipeBuilder.repairFor(TFItems.ZOMBIE_SCEPTER.get(), 9)
 			.addRepairIngredient(CompoundIngredient.of(
 				DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.STRENGTH), Items.POTION),
 				DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.LONG_STRENGTH), Items.POTION),
 				DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.STRONG_STRENGTH), Items.POTION)
 			))
 			.addRepairIngredient(Items.ROTTEN_FLESH)
-			.save(output, locEquip(TFItems.ZOMBIE_SCEPTER.getId().getPath()));
+			.save(output, locEquip(TFItems.ZOMBIE_SCEPTER.getId().getPath()));*/
 	}
 
 	private void blockCompressionRecipes(RecipeOutput output) {

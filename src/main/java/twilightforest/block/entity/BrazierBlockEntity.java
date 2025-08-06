@@ -1,14 +1,16 @@
 package twilightforest.block.entity;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomRenderBoundingBoxBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import twilightforest.block.BrazierBlock;
 import twilightforest.init.TFBlockEntities;
 
-public class BrazierBlockEntity extends BlockEntity {
+public class BrazierBlockEntity extends BlockEntity implements CustomRenderBoundingBoxBlockEntity {
 
 	private static int tick = 0;
 
@@ -27,5 +29,11 @@ public class BrazierBlockEntity extends BlockEntity {
 			}
 			BrazierBlockEntity.tick++;
 		}
+	}
+
+	@Override
+	public AABB getRenderBoundingBox() {
+		BlockPos pos = this.getBlockPos();
+		return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 2.0, pos.getZ() + 1.0);
 	}
 }

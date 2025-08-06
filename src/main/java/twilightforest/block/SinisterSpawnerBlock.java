@@ -1,6 +1,8 @@
 package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomExpBlock;
+import io.github.fabricators_of_create.porting_lib.models.ConcatenatedListView;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
@@ -31,7 +33,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.util.ConcatenatedListView;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.block.entity.spawner.SinisterSpawnerBlockEntity;
 import twilightforest.block.entity.spawner.SinisterSpawnerLogic;
@@ -44,7 +45,7 @@ import java.util.List;
 
 import static twilightforest.init.TFBlocks.KNIGHT_PHANTOM_BOSS_SPAWNER;
 
-public class SinisterSpawnerBlock extends BaseEntityBlock {
+public class SinisterSpawnerBlock extends BaseEntityBlock implements CustomExpBlock {
 	public static final MapCodec<SinisterSpawnerBlock> CODEC = simpleCodec(SinisterSpawnerBlock::new);
 
 	public SinisterSpawnerBlock(Properties properties) {

@@ -1,0 +1,51 @@
+{
+  "required": true,
+  "package": "twilightforest.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CropBlockMixin",
+    "ExistingFileHelperMixin",
+    "FlowerPotBlockMixin",
+    "HangingEntityAccessor",
+    "LivingEntityAccessor",
+    "MapItemMixin",
+    "ParrotAccessor",
+    "asm.armor.ArmorVisibilityRenderingMixin",
+    "asm.beardifier.BeardifierMixin",
+    "asm.beardifier.NoiseBasedChunkGeneratorMixin",
+    "asm.book.ModifyWrittenBookNameMixin",
+    "asm.chunk.ChunkStatusTaskMixin",
+    "asm.cloud.IsRainingAtMixin",
+    "asm.conquered.StructureStartLoadMixin",
+    "asm.lead.LeashFenceKnotSurvivesMixin",
+    "asm.map.ResolveNearestNonRandomSpreadMapStructureMixin",
+    "asm.mob.PathFinderUnrestrainedByLeashMixin",
+    "asm.multipart.SendDirtyEntityDataMixin",
+    "asm.shroom.MushroomBlockMixin",
+    "ee.BoatTypeAccessor",
+    "ee.DamageEffectsAccessor",
+    "ee.DamageEffectsMixin",
+    "ee.GrassColorModifierAccessor",
+    "ee.GrassColorModifierMixin",
+    "ee.ItemDisplayContextAccessor",
+    "ee.RarityAccessor",
+    "trinkets.TrinketMixin"
+  ],
+  "client": [
+    "BoatRendererMixin",
+    "DimensionSpecialEffectsAccessor",
+    "EntityRenderDispatcherAccessor",
+    "ItemFrameRendererMixin",
+    "ItemInHandRendererMixin",
+    "MapRendererMixin",
+    "MinecraftMixin",
+    "ModelLayersMixin",
+    "asm.armor.CancelArmorRenderingMixin",
+    "asm.foliage.FoliageColorResolverMixin",
+    "asm.multipart.ResolveEntitiesForRenderingMixin",
+    "asm.multipart.ResolveEntityRendererMixin"
+  ],
+  "mixinextras": {
+    "minVersion": "0.5.0-rc.2"
+  }
+}

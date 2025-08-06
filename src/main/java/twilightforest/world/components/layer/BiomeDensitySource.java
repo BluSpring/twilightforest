@@ -12,6 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import org.jetbrains.annotations.NotNull;
+import twilightforest.fabric.ComparableResourceKey;
 import twilightforest.init.custom.BiomeLayerStack;
 import twilightforest.world.components.chunkgenerators.TerrainColumn;
 import twilightforest.world.components.layer.vanillalegacy.BiomeLayerFactory;
@@ -29,7 +30,7 @@ import java.util.stream.Stream;
 
 public class BiomeDensitySource {
 	public static final Codec<BiomeDensitySource> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-		TerrainColumn.CODEC.listOf().fieldOf("biome_landscape").xmap(l -> l.stream().collect(Collectors.toMap(TerrainColumn::getResourceKey, Function.identity())), m -> m.values().stream().sorted(Comparator.comparing(TerrainColumn::getResourceKey)).toList()).forGetter(o -> o.biomeList),
+		TerrainColumn.CODEC.listOf().fieldOf("biome_landscape").xmap(l -> l.stream().collect(Collectors.toMap(TerrainColumn::getResourceKey, Function.identity())), m -> m.values().stream().sorted(Comparator.comparing(e -> new ComparableResourceKey<>(e.getResourceKey()))).toList()).forGetter(o -> o.biomeList),
 		BiomeLayerStack.HOLDER_CODEC.fieldOf("biome_layer_config").forGetter(BiomeDensitySource::getBiomeConfig)
 	).apply(instance, instance.stable(BiomeDensitySource::new)));
 

@@ -7,12 +7,11 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.neoforged.neoforge.client.DimensionSpecialEffectsManager;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import twilightforest.TwilightForestMod;
 import twilightforest.client.TwilightForestRenderInfo;
 import twilightforest.client.renderer.TFWeatherRenderer;
 import twilightforest.init.TFDimension;
+import twilightforest.mixin.DimensionSpecialEffectsAccessor;
 import twilightforest.util.Codecs;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public record StructureProtectionPacket(Optional<List<Pair<BoundingBox, Boolean>
 
 	public static void handle(StructureProtectionPacket message, IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
-			DimensionSpecialEffects info = DimensionSpecialEffectsManager.getForType(TFDimension.DIMENSION_RENDERER);
+			DimensionSpecialEffects info = DimensionSpecialEffectsAccessor.getEffects().get(TFDimension.DIMENSION_RENDERER);
 
 			// Now you have a List<Pair<BoundingBox, Boolean>>
 			if (info instanceof TwilightForestRenderInfo) {

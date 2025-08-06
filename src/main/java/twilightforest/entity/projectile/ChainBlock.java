@@ -1,5 +1,8 @@
 package twilightforest.entity.projectile;
 
+import io.github.fabricators_of_create.porting_lib.entity.IEntityWithComplexSpawn;
+import io.github.fabricators_of_create.porting_lib.entity.PartEntity;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -27,9 +30,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFDamageTypes;
@@ -173,7 +173,7 @@ public class ChainBlock extends ThrowableProjectile implements IEntityWithComple
 			BlockState state = level.getBlockState(pos);
 			if (!state.isAir()) {
 				boolean restrictedPlaceMode = this.getOwner() instanceof ServerPlayer player && player.gameMode.getGameModeForPlayer().isBlockPlacingRestricted();
-				if (!canBreakBlockAt(level, pos, state, this.stack, restrictedPlaceMode) || this.getData(TFDataAttachments.SMASH_BLOCKS).getBlocksSmashed() >= 12) {
+				if (!canBreakBlockAt(level, pos, state, this.stack, restrictedPlaceMode) || this.getAttachedOrCreate(TFDataAttachments.SMASH_BLOCKS.get()).getBlocksSmashed() >= 12) {
 					this.bounce(result.getDirection());
 				}
 
@@ -277,8 +277,8 @@ public class ChainBlock extends ThrowableProjectile implements IEntityWithComple
 				if (this.isReturning()) {
 					// despawn if close enough
 					if (distToPlayer < 2F) {
-						if (this.stack != null && this.getOwner() instanceof LivingEntity living && living.getData(TFDataAttachments.SMASH_BLOCKS).getBlocksSmashed() > 0) {
-							this.stack.hurtAndBreak(Math.min(living.getData(TFDataAttachments.SMASH_BLOCKS).getBlocksSmashed(), 3), living, LivingEntity.getSlotForHand(this.getHand()));
+						if (this.stack != null && this.getOwner() instanceof LivingEntity living && living.getAttachedOrCreate(TFDataAttachments.SMASH_BLOCKS.get()).getBlocksSmashed() > 0) {
+							this.stack.hurtAndBreak(Math.min(living.getAttachedOrCreate(TFDataAttachments.SMASH_BLOCKS.get()).getBlocksSmashed(), 3), living, LivingEntity.getSlotForHand(this.getHand()));
 						}
 						this.discard();
 					}

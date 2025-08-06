@@ -1,7 +1,21 @@
 package twilightforest.block;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomDestroyEffectsBlock;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomHitEffectsBlock;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomLandingEffectsBlock;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomRunningEffectsBlock;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -14,16 +28,17 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SnowLayerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import twilightforest.config.TFConfig;
 import twilightforest.init.TFParticleType;
 import twilightforest.network.ParticlePacket;
 
-import javax.annotation.Nullable;
-
-public class CloudBlock extends Block {
+public class CloudBlock extends Block implements CustomHitEffectsBlock, CustomDestroyEffectsBlock, CustomLandingEffectsBlock, CustomRunningEffectsBlock {
 	@Nullable
 	protected final Biome.Precipitation precipitation;
 
@@ -154,7 +169,9 @@ public class CloudBlock extends Block {
 			particlePacket.queueParticle(TFParticleType.CLOUD_PUFF.get(), false, x, y, z, xSpeed, ySpeed, zSpeed);
 		}
 
-		PacketDistributor.sendToPlayersTrackingChunk(level, new ChunkPos(pos), particlePacket);
+		for (ServerPlayer player : PlayerLookup.tracking(level, pos)) {
+			ServerPlayNetworking.send(player, particlePacket);
+		}
 
 		return true;
 	}
@@ -177,6 +194,82 @@ public class CloudBlock extends Block {
 		if (level.isClientSide() && state.getRenderShape() != RenderShape.INVISIBLE) {
 			addEntityMovementParticles(level, pos, entity, false);
 		}
+		return true;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean addHitEffects(BlockState state, Level level, HitResult target, ParticleEngine manager) {
+		if (level.random.nextBoolean() && target instanceof BlockHitResult hitResult) { // No clue why the parameter isn't blockHitResult, this should be always true, but we check just in case
+			BlockPos pos = hitResult.getBlockPos();
+			BlockState blockstate = level.getBlockState(pos);
+			if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
+				Direction side = hitResult.getDirection();
+
+				int posX = pos.getX();
+				int posY = pos.getY();
+				int posZ = pos.getZ();
+
+				AABB aabb = blockstate.getShape(level, pos).bounds();
+				double x = (double) posX + level.random.nextDouble() * (aabb.maxX - aabb.minX - (double) 0.2F) + (double) 0.1F + aabb.minX;
+				double y = (double) posY + level.random.nextDouble() * (aabb.maxY - aabb.minY - (double) 0.2F) + (double) 0.1F + aabb.minY;
+				double z = (double) posZ + level.random.nextDouble() * (aabb.maxZ - aabb.minZ - (double) 0.2F) + (double) 0.1F + aabb.minZ;
+
+				if (side == Direction.DOWN) y = (double) posY + aabb.minY - (double) 0.1F;
+				if (side == Direction.UP) y = (double) posY + aabb.maxY + (double) 0.1F;
+
+				if (side == Direction.NORTH) z = (double) posZ + aabb.minZ - (double) 0.1F;
+				if (side == Direction.SOUTH) z = (double) posZ + aabb.maxZ + (double) 0.1F;
+
+				if (side == Direction.WEST) x = (double) posX + aabb.minX - (double) 0.1F;
+				if (side == Direction.EAST) x = (double) posX + aabb.maxX + (double) 0.1F;
+
+				Particle particle = Minecraft.getInstance().particleEngine.createParticle(TFParticleType.CLOUD_PUFF.get(), x, y, z, (double) side.getStepX() * 0.01D, (double) side.getStepY() * 0.01D, (double) side.getStepZ() * 0.01D);
+				if (particle == null) return true;
+				manager.add(particle);
+			}
+		}
+		return true;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean addDestroyEffects(BlockState state, ClientLevel level, BlockPos pos, ParticleEngine manager) {
+		state.getShape(level, pos).forAllBoxes((boxX, boxY, boxZ, boxX1, boxY1, boxZ1) -> {
+			double xSize = Math.min(1.0D, boxX1 - boxX);
+			double ySize = Math.min(1.0D, boxY1 - boxY);
+			double zSize = Math.min(1.0D, boxZ1 - boxZ);
+
+			int xMax = Math.max(2, Mth.ceil(xSize / 0.25D));
+			int yMax = Math.max(2, Mth.ceil(ySize / 0.25D));
+			int zMax = Math.max(2, Mth.ceil(zSize / 0.25D));
+
+			for (int xSlice = 0; xSlice < xMax; ++xSlice) {
+				if (level.random.nextInt(3) == 1) continue;
+				for (int ySlice = 0; ySlice < yMax; ++ySlice) {
+					if (level.random.nextInt(3) == 1) continue;
+					for (int zSlice = 0; zSlice < zMax; ++zSlice) {
+						if (level.random.nextInt(3) == 1) continue;
+
+						double speedX = ((double) xSlice + 0.5D) / (double) xMax;
+						double speedY = ((double) ySlice + 0.5D) / (double) yMax;
+						double speedZ = ((double) zSlice + 0.5D) / (double) zMax;
+
+						double x = speedX * xSize + boxX;
+						double y = speedY * ySize + boxY;
+						double z = speedZ * zSize + boxZ;
+
+						speedX = (speedX - 0.5D) * 0.05D;
+						speedY = (speedY - 0.5D) * 0.05D;
+						speedZ = (speedZ - 0.5D) * 0.05D;
+
+						Particle particle = Minecraft.getInstance().particleEngine.createParticle(TFParticleType.CLOUD_PUFF.get(), (double) pos.getX() + x, (double) pos.getY() + y, (double) pos.getZ() + z, speedX, speedY, speedZ);
+						if (particle == null) return;
+						manager.add(particle);
+					}
+				}
+			}
+		});
 		return true;
 	}
 }

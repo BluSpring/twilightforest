@@ -4,9 +4,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.client.model.block.forcefield.ForceFieldModel.ExtraDirection;
 

@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import twilightforest.TwilightForestMod;
 import twilightforest.init.TFDataAttachments;
 
@@ -40,7 +40,7 @@ public record UpdateShieldPacket(int entityID, int temporaryShields, int permane
 				public void run() {
 					Entity entity = ctx.player().level().getEntity(message.entityID);
 					if (entity instanceof LivingEntity living) {
-						var attachment = living.getData(TFDataAttachments.FORTIFICATION_SHIELDS);
+						var attachment = living.getAttachedOrCreate(TFDataAttachments.FORTIFICATION_SHIELDS.get());
 						attachment.setShields(living, message.temporaryShields, true);
 						attachment.setShields(living, message.permanentShields, false);
 					}

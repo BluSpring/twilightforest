@@ -16,8 +16,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.JigsawReplace
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import org.jetbrains.annotations.Nullable;
-import tamaized.beanification.Autowired;
-import tamaized.beanification.Component;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFEntities;
 import twilightforest.world.components.processors.*;
@@ -27,10 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-@Component
 public class LichTowerUtil {
-	@Autowired
-	private LichTowerPieces lichRoomPieces;
+	private LichTowerPieces lichRoomPieces = new LichTowerPieces();
 
 	private final Supplier<StructureProcessor> roomSpawners = Suppliers.memoize(() -> SpawnerProcessor.compile(2, 0.8f, Object2IntMaps.unmodifiable(Util.make(new Object2IntArrayMap<>(), map -> {
 		// 1/3 chance for any spider variant, 1/3 chance for skeleton, 1/3 chance for zombie

@@ -1,6 +1,12 @@
 package twilightforest.client.model.block.connected;
 
 import com.mojang.math.Transformation;
+import io.github.fabricators_of_create.porting_lib.models.ExtraFaceData;
+import io.github.fabricators_of_create.porting_lib.models.UnbakedGeometryHelper;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryBakingContext;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IUnbakedGeometry;
+import io.github.fabricators_of_create.porting_lib.models.geometry.SimpleModelState;
+import io.github.fabricators_of_create.porting_lib.render_types.RenderTypeGroup;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -11,12 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.RenderTypeGroup;
-import net.neoforged.neoforge.client.model.ExtraFaceData;
-import net.neoforged.neoforge.client.model.SimpleModelState;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-import net.neoforged.neoforge.client.model.geometry.UnbakedGeometryHelper;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.joml.Vector3f;
 
@@ -59,10 +59,10 @@ public class UnbakedConnectedTextureModel implements IUnbakedGeometry<UnbakedCon
 			for(int i = 0; i < 4; ++i) {
 				Vec3i corner = face.getNormal().offset(planeDirections[i].getNormal()).offset(planeDirections[(i + 1) % 4].getNormal()).offset(1, 1, 1).multiply(8);
 				BlockElement element = new BlockElement(new Vector3f((float)Math.min(center.getX(), corner.getX()), (float)Math.min(center.getY(), corner.getY()), (float)Math.min(center.getZ(), corner.getZ())), new Vector3f((float)Math.max(center.getX(), corner.getX()), (float)Math.max(center.getY(), corner.getY()), (float)Math.max(center.getZ(), corner.getZ())), Map.of(), null, true);
-				this.baseElements[face.get3DDataValue()][i] = new BlockElement(element.from, element.to, Map.of(face, new BlockElementFace(face, baseTintIndex, "", new BlockFaceUV(ConnectionLogic.NONE.remapUVs(element.uvsByFace(face)), 0), baseFace, new MutableObject<>())), null, true);
+				this.baseElements[face.get3DDataValue()][i] = new BlockElement(element.from, element.to, Map.of(face, new BlockElementFace(face, baseTintIndex, "", new BlockFaceUV(ConnectionLogic.NONE.remapUVs(element.uvsByFace(face)), 0))), null, true);
 
 				for (ConnectionLogic logic : ConnectionLogic.values()) {
-					this.faceElements[face.get3DDataValue()][i][logic.ordinal()] = new BlockElement(element.from, element.to, Map.of(face, new BlockElementFace(face, tintIndex, "", new BlockFaceUV(logic.remapUVs(element.uvsByFace(face)), 0), overlayFace, new MutableObject<>())), null, true);
+					this.faceElements[face.get3DDataValue()][i][logic.ordinal()] = new BlockElement(element.from, element.to, Map.of(face, new BlockElementFace(face, tintIndex, "", new BlockFaceUV(logic.remapUVs(element.uvsByFace(face)), 0))), null, true);
 				}
 			}
 		}

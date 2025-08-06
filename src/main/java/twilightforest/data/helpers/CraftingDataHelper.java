@@ -1,6 +1,8 @@
 package twilightforest.data.helpers;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
@@ -26,8 +28,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import twilightforest.TwilightForestMod;
 import twilightforest.block.TFChestBlock;
 import twilightforest.block.TFTrappedChestBlock;
@@ -110,7 +110,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void helmetItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, result.get())
 			.pattern("###")
 			.pattern("# #")
 			.define('#', material)
@@ -123,7 +123,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void chestplateItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, result.get())
 			.pattern("# #")
 			.pattern("###")
 			.pattern("###")
@@ -137,7 +137,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void leggingsItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, result.get())
 			.pattern("###")
 			.pattern("# #")
 			.pattern("# #")
@@ -151,7 +151,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void bootsItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, result.get())
 			.pattern("# #")
 			.pattern("# #")
 			.define('#', material)
@@ -164,7 +164,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void pickaxeItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, TagKey<Item> handle, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, result.get())
 			.pattern("###")
 			.pattern(" X ")
 			.pattern(" X ")
@@ -179,7 +179,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void swordItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, TagKey<Item> handle, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, result.get())
 			.pattern("#")
 			.pattern("#")
 			.pattern("X")
@@ -194,7 +194,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void axeItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, TagKey<Item> handle, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, result.get())
 			.pattern("##")
 			.pattern("#X")
 			.pattern(" X")
@@ -205,7 +205,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void shovelItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, TagKey<Item> handle, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, result.get())
 			.pattern("#")
 			.pattern("X")
 			.pattern("X")
@@ -216,7 +216,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 	}
 
 	protected final void hoeItem(RecipeOutput output, DeferredHolder<Item, ? extends Item> result, TagKey<Item> material, TagKey<Item> handle, DataComponentPatch.Builder component) {
-		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, new ItemStack(result, 1, component.build()))
+		ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, result.get())
 			.pattern("##")
 			.pattern(" X")
 			.pattern(" X")
@@ -451,7 +451,7 @@ public abstract class CraftingDataHelper extends RecipeProvider {
 		return TwilightForestMod.prefix("wood/" + name);
 	}
 
-	protected static Criterion<InventoryChangeTrigger.TriggerInstance> has(TagKey<Item> tag) {
+	public static Criterion<InventoryChangeTrigger.TriggerInstance> has(TagKey<Item> tag) {
 		return inventoryTrigger(ItemPredicate.Builder.item().of(tag).build());
 	}
 }

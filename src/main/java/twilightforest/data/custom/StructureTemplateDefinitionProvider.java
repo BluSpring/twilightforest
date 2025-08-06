@@ -1,11 +1,11 @@
 package twilightforest.data.custom;
 
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.data.JsonCodecProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.common.data.JsonCodecProvider;
 import twilightforest.TwilightForestMod;
 import twilightforest.world.components.structures.lichtowerrevamp.StructureTemplateDefinition;
 import twilightforest.world.components.structures.lichtowerrevamp.StructureTemplateDefinitions;

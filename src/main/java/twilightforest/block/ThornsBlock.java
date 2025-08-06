@@ -1,5 +1,6 @@
 package twilightforest.block;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.PlayerDestroyBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +30,7 @@ import twilightforest.data.tags.ItemTagGenerator;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFDamageTypes;
 
-public class ThornsBlock extends ConnectableRotatedPillarBlock implements SimpleWaterloggedBlock {
+public class ThornsBlock extends ConnectableRotatedPillarBlock implements SimpleWaterloggedBlock, PlayerDestroyBlock {
 
 	protected static final VoxelShape BASE_SHAPE = Block.box(3.0D, 3.0D, 3.0D, 13.0D, 13.0D, 13.0D);
 
@@ -74,10 +75,10 @@ public class ThornsBlock extends ConnectableRotatedPillarBlock implements Simple
 		return shape;
 	}
 
-	@Override
+	/*@Override
 	public PathType getBlockPathType(BlockState state, BlockGetter getter, BlockPos pos, @Nullable Mob entity) {
 		return PathType.DAMAGE_OTHER;
-	}
+	}*/
 
 	@Override
 	public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
@@ -105,7 +106,7 @@ public class ThornsBlock extends ConnectableRotatedPillarBlock implements Simple
 			}
 			return false;
 		} else {
-			return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+			return PlayerDestroyBlock.super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
 		}
 	}
 

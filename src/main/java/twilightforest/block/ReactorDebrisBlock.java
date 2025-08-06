@@ -1,6 +1,7 @@
 package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomLandingEffectsBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import twilightforest.block.entity.ReactorDebrisBlockEntity;
 import twilightforest.init.TFBlockEntities;
 
-public class ReactorDebrisBlock extends BaseEntityBlock {
+public class ReactorDebrisBlock extends BaseEntityBlock implements CustomLandingEffectsBlock {
 
 	public VoxelShape SHAPE;
 	public static final MapCodec<ReactorDebrisBlock> CODEC = simpleCodec(ReactorDebrisBlock::new);

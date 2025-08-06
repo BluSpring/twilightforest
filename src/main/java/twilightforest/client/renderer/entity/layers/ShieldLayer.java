@@ -15,7 +15,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import org.apache.commons.lang3.ArrayUtils;
 import twilightforest.TwilightForestMod;
 import twilightforest.entity.boss.Lich;
@@ -23,7 +22,7 @@ import twilightforest.init.TFDataAttachments;
 
 public class ShieldLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 
-	public static final ModelResourceLocation LOC = ModelResourceLocation.standalone(TwilightForestMod.prefix("item/shield"));
+	public static final ModelResourceLocation LOC = new ModelResourceLocation(TwilightForestMod.prefix("item/shield"), "");
 	private static final Direction[] DIRS = ArrayUtils.add(Direction.values(), null);
 
 	public ShieldLayer(RenderLayerParent<T, M> renderer) {
@@ -40,7 +39,7 @@ public class ShieldLayer<T extends LivingEntity, M extends EntityModel<T>> exten
 	private int getShieldCount(T entity) {
 		return entity instanceof Lich lich
 			? (lich.getTeleportInvisibility() > 0 ? 0 : lich.getShieldStrength())
-			: entity.getData(TFDataAttachments.FORTIFICATION_SHIELDS).shieldsLeft();
+			: entity.getAttachedOrCreate(TFDataAttachments.FORTIFICATION_SHIELDS.get()).shieldsLeft();
 	}
 
 	private void renderShields(PoseStack stack, MultiBufferSource buffer, T entity, float partialTicks) {
@@ -68,7 +67,7 @@ public class ShieldLayer<T extends LivingEntity, M extends EntityModel<T>> exten
 				Minecraft.getInstance().getItemRenderer().renderQuadList(
 					stack,
 					buffer.getBuffer(Sheets.translucentCullBlockSheet()),
-					model.getQuads(null, dir, entity.getRandom(), ModelData.EMPTY, Sheets.translucentCullBlockSheet()),
+					model.getQuads(null, dir, entity.getRandom()),
 					ItemStack.EMPTY,
 					0xF000F0,
 					OverlayTexture.NO_OVERLAY

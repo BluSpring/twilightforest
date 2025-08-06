@@ -1,10 +1,11 @@
 package twilightforest.item;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.enchantment.ApplyFrostedEffect;
 import twilightforest.init.TFParticleType;
 import twilightforest.network.ParticlePacket;
@@ -28,7 +29,7 @@ public class IceSwordItem extends SwordItem {
 					target.getZ() + (target.getRandom().nextGaussian() * target.getBbWidth() * 0.5),
 					0, 0, 0);
 			}
-			PacketDistributor.sendToPlayersTrackingEntity(target, particlePacket);
+			PlayerLookup.tracking(target).forEach(p -> ServerPlayNetworking.send(p, particlePacket));
 
 			return true;
 		}

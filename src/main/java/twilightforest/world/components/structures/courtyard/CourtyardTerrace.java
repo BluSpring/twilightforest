@@ -1,5 +1,6 @@
 package twilightforest.world.components.structures.courtyard;
 
+import io.github.fabricators_of_create.porting_lib.world.PieceBeardifierModifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +15,6 @@ import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.neoforged.neoforge.common.world.PieceBeardifierModifier;
 import twilightforest.init.TFStructurePieceTypes;
 import twilightforest.world.components.processors.NagastoneVariants;
 import twilightforest.world.components.processors.StoneBricksVariants;

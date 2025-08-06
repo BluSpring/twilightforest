@@ -5,6 +5,10 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import io.github.fabricators_of_create.porting_lib.core.util.Lazy;
+import io.github.fabricators_of_create.porting_lib.models.TransformTypeDependentItemBakedModel;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.SkullModelBase;
@@ -31,12 +35,7 @@ import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.block.*;
 import twilightforest.block.entity.*;
 import twilightforest.client.event.ClientEvents;
@@ -67,15 +66,11 @@ import java.util.function.Supplier;
 
 public class ISTER extends BlockEntityWithoutLevelRenderer {
 
-	@Autowired(dist = Dist.CLIENT)
-	private static TFItemDisplayContextEnumExtension itemDisplayContextEnumExtension;
+	private static TFItemDisplayContextEnumExtension itemDisplayContextEnumExtension = TFItemDisplayContextEnumExtension.INSTANCE;
 
 	public static final Supplier<ISTER> INSTANCE = Suppliers.memoize(ISTER::new);
-	public static final IClientItemExtensions CLIENT_ITEM_EXTENSION = Util.make(() -> new IClientItemExtensions() {
-		@Override
-		public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-			return INSTANCE.get();
-		}
+	public static final BuiltinItemRendererRegistry.DynamicItemRenderer CLIENT_ITEM_EXTENSION = ((stack, mode, matrices, vertexConsumers, light, overlay) -> {
+		INSTANCE.get().renderByItem(stack, mode, matrices, vertexConsumers, light, overlay);
 	});
 	private final SkullChestBlockEntity skullChest = new SkullChestBlockEntity(BlockPos.ZERO, TFBlocks.SKULL_CHEST.get().defaultBlockState());
 	private final KeepsakeCasketBlockEntity keepsakeCasket = new KeepsakeCasketBlockEntity(BlockPos.ZERO, TFBlocks.KEEPSAKE_CASKET.get().defaultBlockState());
@@ -99,7 +94,7 @@ public class ISTER extends BlockEntityWithoutLevelRenderer {
 		makeTrappedInstance(map, TFBlocks.MINING_TRAPPED_CHEST);
 		makeTrappedInstance(map, TFBlocks.SORTING_TRAPPED_CHEST);
 	});
-	private KnightmetalShieldModel shield = new KnightmetalShieldModel(Minecraft.getInstance().getEntityModels().bakeLayer(TFModelLayers.KNIGHTMETAL_SHIELD));
+	private Lazy<KnightmetalShieldModel> shield = Lazy.of(() -> new KnightmetalShieldModel(Minecraft.getInstance().getEntityModels().bakeLayer(TFModelLayers.KNIGHTMETAL_SHIELD)));
 	private Map<BossVariant, TrophyBlockModel> trophies = TrophyRenderer.createTrophyRenderers(Minecraft.getInstance().getEntityModels());
 	private Map<SkullBlock.Type, SkullModelBase> skulls = SkullBlockRenderer.createSkullRenderers(Minecraft.getInstance().getEntityModels());
 	private final CandelabraBlockEntity candelabra = new CandelabraBlockEntity(BlockPos.ZERO, TFBlocks.CANDELABRA.get().defaultBlockState());
@@ -113,7 +108,7 @@ public class ISTER extends BlockEntityWithoutLevelRenderer {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager manager) {
-		this.shield = new KnightmetalShieldModel(Minecraft.getInstance().getEntityModels().bakeLayer(TFModelLayers.KNIGHTMETAL_SHIELD));
+		this.shield = Lazy.of(() -> new KnightmetalShieldModel(Minecraft.getInstance().getEntityModels().bakeLayer(TFModelLayers.KNIGHTMETAL_SHIELD)));
 		this.trophies = TrophyRenderer.createTrophyRenderers(Minecraft.getInstance().getEntityModels());
 		this.skulls = SkullBlockRenderer.createSkullRenderers(Minecraft.getInstance().getEntityModels());
 
@@ -131,7 +126,7 @@ public class ISTER extends BlockEntityWithoutLevelRenderer {
 				TrophyBlockModel trophy = this.trophies.get(variant);
 
 				if (camera == ItemDisplayContext.GUI) {
-					ModelResourceLocation back = ModelResourceLocation.standalone(TwilightForestMod.prefix("item/" + ((AbstractTrophyBlock) block).getVariant().getTrophyType().getModelName()));
+					ModelResourceLocation back = new ModelResourceLocation(TwilightForestMod.prefix("item/" + ((AbstractTrophyBlock) block).getVariant().getTrophyType().getModelName()), "");
 					BakedModel modelBack = minecraft.getItemRenderer().getItemModelShaper().getModelManager().getModel(back);
 
 					Lighting.setupForFlatItems();
@@ -139,7 +134,10 @@ public class ISTER extends BlockEntityWithoutLevelRenderer {
 					pose.pushPose();
 					Lighting.setupForFlatItems();
 					pose.translate(0.5F, 0.5F, -1.5F);
-					minecraft.getItemRenderer().render(TrophyRenderer.stack, ItemDisplayContext.GUI, false, pose, bufferSource, 15728880, OverlayTexture.NO_OVERLAY, modelBack.applyTransform(camera, pose, false));
+
+					var transformedModel = TransformTypeDependentItemBakedModel.maybeApplyTransform(modelBack, camera, pose, false, m -> {});
+
+					minecraft.getItemRenderer().render(TrophyRenderer.stack, ItemDisplayContext.GUI, false, pose, bufferSource, 15728880, OverlayTexture.NO_OVERLAY, transformedModel != null ? transformedModel : modelBack);
 					pose.popPose();
 					bufferSource.endBatch();
 					Lighting.setupFor3DItems();
@@ -159,7 +157,7 @@ public class ISTER extends BlockEntityWithoutLevelRenderer {
 				}
 
 			} else if (block instanceof KeepsakeCasketBlock) {
-				int damage = stack.getOrDefault(TFDataComponents.CASKET_DAMAGE, 0);
+				int damage = stack.getOrDefault(TFDataComponents.CASKET_DAMAGE.get(), 0);
 
 				if (minecraft.getBlockEntityRenderDispatcher().getRenderer(this.keepsakeCasket) instanceof SkullChestRenderer<?> renderer) {
 					renderer.renderCasket(0.0F, pose, buffers, light, overlay, renderer.getTextureLocation(damage), Direction.NORTH);
@@ -190,16 +188,16 @@ public class ISTER extends BlockEntityWithoutLevelRenderer {
 				//we put the candle
 				pose.translate(0.0F, 0.5F, 0.0F);
 
-				SkullCandles skullCandles = stack.getOrDefault(TFDataComponents.SKULL_CANDLES, SkullCandles.DEFAULT);
+				SkullCandles skullCandles = stack.getOrDefault(TFDataComponents.SKULL_CANDLES.get(), SkullCandles.DEFAULT);
 
 				minecraft.getBlockRenderer().renderSingleBlock(
 					AbstractSkullCandleBlock.candleColorToCandle(AbstractSkullCandleBlock.CandleColors.colorFromInt(skullCandles.color()))
-						.defaultBlockState().setValue(CandleBlock.CANDLES, skullCandles.count()), pose, buffers, light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutout());
+						.defaultBlockState().setValue(CandleBlock.CANDLES, skullCandles.count()), pose, buffers, light, OverlayTexture.NO_OVERLAY);
 			} else if (block instanceof CandelabraBlock) {
 				//we need to render the candelabra block here since we have to use builtin/entity on the item.
 				//This doesnt allow us to set the item parent to the candelabra block, and without it, only the candles render, if any
 				minecraft.getBlockRenderer().renderSingleBlock(TFBlocks.CANDELABRA.get().defaultBlockState(), pose, buffers, light, overlay);
-				CandelabraData candelabraData = stack.get(TFDataComponents.CANDELABRA_DATA);
+				CandelabraData candelabraData = stack.get(TFDataComponents.CANDELABRA_DATA.get());
 				if (candelabraData != null) {
 					CandelabraBlockEntity copy = this.candelabra;
 					copy.setData(candelabraData);
@@ -233,8 +231,8 @@ public class ISTER extends BlockEntityWithoutLevelRenderer {
 			pose.pushPose();
 			pose.scale(1.0F, -1.0F, -1.0F);
 			Material material = new Material(Sheets.SHIELD_SHEET, TwilightForestMod.prefix("entity/knightmetal_shield"));
-			VertexConsumer vertexconsumer = material.sprite().wrap(ItemRenderer.getFoilBufferDirect(buffers, this.shield.renderType(material.atlasLocation()), true, stack.hasFoil()));
-			this.shield.renderToBuffer(pose, vertexconsumer, light, overlay);
+			VertexConsumer vertexconsumer = material.sprite().wrap(ItemRenderer.getFoilBufferDirect(buffers, this.shield.get().renderType(material.atlasLocation()), true, stack.hasFoil()));
+			this.shield.get().renderToBuffer(pose, vertexconsumer, light, overlay);
 			pose.popPose();
 		} else if (item instanceof MysticCrownItem && this.trophies.get(BossVariant.LICH) instanceof LichModel<?> lichModel) {
 			lichModel.hat.yRot = 0;

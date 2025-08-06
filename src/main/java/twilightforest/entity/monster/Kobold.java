@@ -1,5 +1,7 @@
 package twilightforest.entity.monster;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -8,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -27,7 +30,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.data.tags.ItemTagGenerator;
 import twilightforest.entity.ai.goal.FlockToSameKindGoal;
 import twilightforest.entity.ai.goal.PanicOnFlockDeathGoal;
@@ -171,7 +173,9 @@ public class Kobold extends Monster {
 						vec31.z() + vec3.z() * this.random.nextGaussian(),
 						0.0D, 0.0D, 0.0D));
 			}
-			PacketDistributor.sendToPlayersTrackingEntity(this, particlePacket);
+			for (ServerPlayer player : PlayerLookup.tracking(this)) {
+				ServerPlayNetworking.send(player, particlePacket);
+			}
 		}
 	}
 

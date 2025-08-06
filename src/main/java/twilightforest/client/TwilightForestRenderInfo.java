@@ -1,5 +1,6 @@
 package twilightforest.client;
 
+import io.github.fabricators_of_create.porting_lib.client.dimesnion.DimensionSpecialEffectsRenderer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -17,7 +18,7 @@ import twilightforest.init.TFBiomes;
 
 import java.util.Optional;
 
-public class TwilightForestRenderInfo extends DimensionSpecialEffects {
+public class TwilightForestRenderInfo extends DimensionSpecialEffects implements DimensionSpecialEffectsRenderer {
 
 	public TwilightForestRenderInfo(float cloudHeight, boolean placebo, SkyType fogType, boolean brightenLightMap, boolean entityLightingBottomsLit) {
 		super(cloudHeight, placebo, fogType, brightenLightMap, entityLightingBottomsLit);

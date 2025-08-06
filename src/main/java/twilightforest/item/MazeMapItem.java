@@ -4,12 +4,14 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +20,7 @@ import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.MapPostProcessing;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -26,8 +29,8 @@ import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
+import twilightforest.fabric.CustomMapItem;
 import twilightforest.init.TFDataMaps;
 import twilightforest.init.TFItems;
 import twilightforest.item.mapdata.TFMagicMapData;
@@ -38,7 +41,7 @@ import java.util.List;
 import java.util.Optional;
 
 // [VanillaCopy] super everything, but with appropriate redirections to our own datastructures. finer details noted
-public class MazeMapItem extends MapItem {
+public class MazeMapItem extends MapItem implements CustomMapItem {
 
 	public static final String STR_ID = "mazemap";
 	private static final int YSEARCH = 3;
@@ -64,7 +67,7 @@ public class MazeMapItem extends MapItem {
 
 	@Nullable
 	@Override
-	protected TFMazeMapData getCustomMapData(ItemStack stack, Level level) {
+	public TFMazeMapData getCustomMapData(ItemStack stack, Level level) {
 		TFMazeMapData mapdata = getData(stack, level);
 		if (mapdata == null && !level.isClientSide()) {
 			BlockPos pos = level.getSharedSpawnPos();
@@ -171,7 +174,16 @@ public class MazeMapItem extends MapItem {
 
 									if (this.mapOres) {
 										// recolor ores
-										OreMapOreColor color = state.getBlock().builtInRegistryHolder().getData(TFDataMaps.ORE_MAP_ORE_COLOR);
+										OreMapOreColor color = null;
+										var holder = state.getBlock().builtInRegistryHolder();
+
+										for (TagKey<Block> tagKey : OreMapOreColor.ORE_COLOR_MAP.keySet()) {
+											if (holder.is(tagKey)) {
+												color = OreMapOreColor.ORE_COLOR_MAP.get(tagKey);
+												break;
+											}
+										}
+
 										if (color != null) {
 											multiset.add(color.color(), 1000);
 										} else if (!state.isAir() && state.is(Tags.Blocks.ORES)) {

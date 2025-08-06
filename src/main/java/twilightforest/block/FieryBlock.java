@@ -1,5 +1,7 @@
 package twilightforest.block;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.FireSourceBlock;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -12,11 +14,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.fml.ModList;
 import twilightforest.init.TFDamageTypes;
 import twilightforest.init.TFItems;
 
-public class FieryBlock extends Block {
+public class FieryBlock extends Block implements FireSourceBlock {
 	public FieryBlock(Properties properties) {
 		super(properties);
 	}
@@ -28,7 +29,7 @@ public class FieryBlock extends Block {
 
 	@Override
 	public boolean skipRendering(BlockState state, BlockState otherState, Direction direction) {
-		return ModList.get().isLoaded("ctm") && otherState.getBlock() instanceof FieryBlock;
+		return FabricLoader.getInstance().isModLoaded("ctm") && otherState.getBlock() instanceof FieryBlock;
 	}
 
 	@Override

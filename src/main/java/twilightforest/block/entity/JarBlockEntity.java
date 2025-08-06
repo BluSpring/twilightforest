@@ -23,7 +23,7 @@ import twilightforest.init.TFBlockEntities;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFDataComponents;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -89,13 +89,13 @@ public class JarBlockEntity extends BlockEntity {
 	@Override
 	protected void collectImplicitComponents(DataComponentMap.Builder builder) {
 		super.collectImplicitComponents(builder);
-		builder.set(TFDataComponents.JAR_LID, new JarLid(this.lid));
+		builder.set(TFDataComponents.JAR_LID.get(), new JarLid(this.lid));
 	}
 
 	@Override
 	protected void applyImplicitComponents(DataComponentInput input) {
 		super.applyImplicitComponents(input);
-		this.lid = input.getOrDefault(TFDataComponents.JAR_LID, new JarLid(TFBlocks.TWILIGHT_OAK_LOG.asItem())).lid();
+		this.lid = input.getOrDefault(TFDataComponents.JAR_LID.get(), new JarLid(TFBlocks.TWILIGHT_OAK_LOG.asItem())).lid();
 	}
 
 	@Override

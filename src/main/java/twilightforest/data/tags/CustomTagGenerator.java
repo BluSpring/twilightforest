@@ -1,5 +1,7 @@
 package twilightforest.data.tags;
 
+import io.github.fabricators_of_create.porting_lib.data.PortingLibTagsProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -11,7 +13,7 @@ import net.minecraft.world.entity.decoration.PaintingVariants;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TFRegistries;
 import twilightforest.TwilightForestMod;
@@ -32,7 +34,7 @@ public class CustomTagGenerator {
 		public static final TagKey<BlockEntityType<?>> IMMOVABLE = TagKey.create(Registries.BLOCK_ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("c", "immovable"));
 
 		public BlockEntityTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper helper) {
-			super(output, Registries.BLOCK_ENTITY_TYPE, provider, TwilightForestMod.ID, helper);
+			super(output, Registries.BLOCK_ENTITY_TYPE, provider);
 		}
 
 		@Override
@@ -70,7 +72,7 @@ public class CustomTagGenerator {
 		}
 	}
 
-	public static class BannerPatternTagGenerator extends TagsProvider<BannerPattern> {
+	public static class BannerPatternTagGenerator extends PortingLibTagsProvider<BannerPattern> {
 
 		public static final TagKey<BannerPattern> NAGA_BANNER_PATTERN = create("pattern_item/naga");
 		public static final TagKey<BannerPattern> LICH_BANNER_PATTERN = create("pattern_item/lich");
@@ -82,7 +84,7 @@ public class CustomTagGenerator {
 		public static final TagKey<BannerPattern> SNOW_QUEEN_BANNER_PATTERN = create("pattern_item/snow_queen");
 		public static final TagKey<BannerPattern> QUEST_RAM_BANNER_PATTERN = create("pattern_item/quest_ram");
 
-		public BannerPatternTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper existingFileHelper) {
+		public BannerPatternTagGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper existingFileHelper) {
 			super(output, Registries.BANNER_PATTERN, provider, TwilightForestMod.ID, existingFileHelper);
 		}
 
@@ -109,7 +111,7 @@ public class CustomTagGenerator {
 		}
 	}
 
-	public static class WoodPaletteTagGenerator extends TagsProvider<WoodPalette> {
+	public static class WoodPaletteTagGenerator extends PortingLibTagsProvider<WoodPalette> {
 		public static final TagKey<WoodPalette> WELL_SWIZZLE_MASK = create("well_swizzle_mask");
 		public static final TagKey<WoodPalette> DRUID_HUT_SWIZZLE_MASK = create("druid_hut_swizzle_mask");
 		public static final TagKey<WoodPalette> COMMON_PALETTES = create("common");
@@ -117,7 +119,7 @@ public class CustomTagGenerator {
 		public static final TagKey<WoodPalette> RARE_PALETTES = create("rare");
 		public static final TagKey<WoodPalette> TREASURE_PALETTES = create("treasure");
 
-		public WoodPaletteTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper helper) {
+		public WoodPaletteTagGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper helper) {
 			super(output, TFRegistries.Keys.WOOD_PALETTES, provider, TwilightForestMod.ID, helper);
 		}
 
@@ -142,11 +144,11 @@ public class CustomTagGenerator {
 		}
 	}
 
-	public static class DimensionTypeTagGenerator extends TagsProvider<DimensionType> {
+	public static class DimensionTypeTagGenerator extends PortingLibTagsProvider<DimensionType> {
 
 		public static final TagKey<DimensionType> ALLOWS_MAGIC_MAP_CHARTING = TagKey.create(Registries.DIMENSION_TYPE, TwilightForestMod.prefix("allows_magic_map_charting"));
 
-		public DimensionTypeTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper helper) {
+		public DimensionTypeTagGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper helper) {
 			super(output, Registries.DIMENSION_TYPE, provider, TwilightForestMod.ID, helper);
 		}
 
@@ -166,7 +168,7 @@ public class CustomTagGenerator {
 		public static final TagKey<PaintingVariant> LICH_BOSS_PAINTINGS = TagKey.create(Registries.PAINTING_VARIANT, TwilightForestMod.prefix("tower_boss_paintings"));
 
 		public PaintingVariantTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper helper) {
-			super(output, Registries.PAINTING_VARIANT, provider, TwilightForestMod.ID, helper);
+			super(output, Registries.PAINTING_VARIANT, provider);
 		}
 
 		@Override

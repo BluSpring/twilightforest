@@ -14,7 +14,6 @@ import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
-import me.shedaniel.rei.forge.REIPluginClient;
 import me.shedaniel.rei.plugin.common.BuiltinPlugin;
 import me.shedaniel.rei.plugin.common.displays.DefaultSmithingDisplay;
 import net.minecraft.client.Minecraft;
@@ -26,7 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import io.github.fabricators_of_create.porting_lib.util.DeferredSpawnEggItem;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.compat.rei.categories.*;
 import twilightforest.compat.rei.displays.REIOminousFireDisplay;
@@ -51,7 +50,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @SuppressWarnings("UnstableApiUsage")
-@REIPluginClient
 public class TFREIClientPlugin implements REIClientPlugin {
 
 	public static final EntityEntryDefinition ENTITY_DEFINITION = new EntityEntryDefinition();

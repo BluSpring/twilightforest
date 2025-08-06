@@ -2,6 +2,8 @@ package twilightforest.components.entity;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -10,7 +12,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TraceableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.init.TFItems;
 import twilightforest.init.TFParticleType;
 import twilightforest.init.TFSounds;
@@ -116,8 +117,10 @@ public class FortificationShieldAttachment {
 			}
 		}
 
-		PacketDistributor.sendToPlayersTrackingEntity(entity, particlePacket);
-		if (entity instanceof ServerPlayer player) PacketDistributor.sendToPlayer(player, particlePacket);
+		for (ServerPlayer player : PlayerLookup.tracking(entity)) {
+			ServerPlayNetworking.send(player, particlePacket);
+		}
+		if (entity instanceof ServerPlayer player) ServerPlayNetworking.send(player, particlePacket);
 	}
 
 	public void setShields(LivingEntity entity, int amount, boolean temp) {
@@ -150,7 +153,14 @@ public class FortificationShieldAttachment {
 	}
 
 	private void sendUpdatePacket(LivingEntity entity) {
-		if (entity instanceof ServerPlayer)
-			PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new UpdateShieldPacket(entity.getId(), this.temporaryShields, this.permanentShields));
+		if (entity instanceof ServerPlayer player) {
+			var packet = new UpdateShieldPacket(entity.getId(), this.temporaryShields, this.permanentShields);
+
+			for (ServerPlayer p : PlayerLookup.tracking(entity)) {
+				ServerPlayNetworking.send(p, packet);
+			}
+
+			ServerPlayNetworking.send(player, packet);
+		}
 	}
 }

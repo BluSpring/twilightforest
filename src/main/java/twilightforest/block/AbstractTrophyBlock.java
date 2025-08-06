@@ -1,8 +1,11 @@
 package twilightforest.block;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -24,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.block.entity.TrophyBlockEntity;
 import twilightforest.enums.BossVariant;
 import twilightforest.init.TFBlockEntities;
@@ -231,7 +233,9 @@ public abstract class AbstractTrophyBlock extends BaseEntityBlock implements Equ
 					break;
 			}
 
-			PacketDistributor.sendToPlayersNear(server, null, pos.getX(), pos.getY(), pos.getZ(), 32.0F, particlePacket);
+			for (ServerPlayer player : PlayerLookup.around((ServerLevel) level, pos, 32f)) {
+				ServerPlayNetworking.send(player, particlePacket);
+			}
 		}
 	}
 

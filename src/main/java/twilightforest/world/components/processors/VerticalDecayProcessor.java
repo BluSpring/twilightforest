@@ -31,21 +31,20 @@ public class VerticalDecayProcessor extends StructureProcessor {
 		this.decayChance = decayChance;
 	}
 
-	@Nullable
 	@Override
-	public StructureTemplate.StructureBlockInfo process(LevelReader level, BlockPos offset, BlockPos piecePos, StructureTemplate.StructureBlockInfo originalInfo, StructureTemplate.StructureBlockInfo modifiedInfo, StructurePlaceSettings placeSettings, @Nullable StructureTemplate template) {
-		Block block = modifiedInfo.state().getBlock();
+	public @Nullable StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
+		Block block = blockInfo.state().getBlock();
 		if (this.decayBlocks.contains(block)) {
 			// Banister Blocks should use RNG from below block pos, to match the absence of block below itself
 			int lookDown = block instanceof BanisterBlock ? -1 : 0;
-			BlockPos randomAt = modifiedInfo.pos().atY(modifiedInfo.pos().getY() + lookDown);
+			BlockPos randomAt = blockInfo.pos().atY(blockInfo.pos().getY() + lookDown);
 
-			if (placeSettings.getRandom(randomAt).nextFloat() < this.decayChance) {
+			if (settings.getRandom(randomAt).nextFloat() < this.decayChance) {
 				return null;
 			}
 		}
 
-		return modifiedInfo;
+		return blockInfo;
 	}
 
 	public List<Block> getDecayBlocks() {

@@ -1,6 +1,7 @@
 package twilightforest.util;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.fabricators_of_create.porting_lib.core.util.ServerLifecycleHooks;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureCheckResult;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.init.TFDimensionData;
 import twilightforest.util.landmarks.LegacyLandmarkPlacements;

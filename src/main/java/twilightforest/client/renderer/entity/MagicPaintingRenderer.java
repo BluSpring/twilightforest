@@ -29,7 +29,7 @@ import twilightforest.entity.MagicPaintingVariant;
 import twilightforest.entity.MagicPaintingVariant.Layer.OpacityModifier;
 import twilightforest.entity.MagicPaintingVariant.Layer.Parallax;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class MagicPaintingRenderer extends EntityRenderer<MagicPainting> {

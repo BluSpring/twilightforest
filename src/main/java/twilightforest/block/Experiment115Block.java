@@ -1,5 +1,7 @@
 package twilightforest.block;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomSoundTypeBlock;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +33,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import twilightforest.init.TFItems;
 import twilightforest.init.TFStats;
 
@@ -68,14 +69,14 @@ public class Experiment115Block extends Block {
 			if (stack.is(TFItems.EXPERIMENT_115.get())) {
 				if (bitesTaken == 0) return ItemInteractionResult.FAIL;
 				level.setBlockAndUpdate(pos, state.setValue(BITES_TAKEN, bitesTaken - 1));
-				level.playSound(null, pos, state.getSoundType(level, pos, player).getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+				level.playSound(null, pos, (state.getBlock() instanceof CustomSoundTypeBlock soundTypeBlock ? soundTypeBlock.getSoundType(state, level, pos, player) : state.getSoundType()).getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
 				stack.consume(1, player);
 				if (player instanceof ServerPlayer)
 					CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer) player, pos, stack);
 				return ItemInteractionResult.sidedSuccess(level.isClientSide());
 			} else if (!state.getValue(REGENERATE) && bitesTaken == 0 && stack.is(Items.REDSTONE)) {
 				level.setBlockAndUpdate(pos, state.setValue(REGENERATE, true));
-				level.playSound(null, pos, state.getSoundType(level, pos, player).getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+				level.playSound(null, pos, (state.getBlock() instanceof CustomSoundTypeBlock soundTypeBlock ? soundTypeBlock.getSoundType(state, level, pos, player) : state.getSoundType()).getPlaceSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
 				stack.consume(1, player);
 				if (player instanceof ServerPlayer) {
 					player.awardStat(Stats.ITEM_USED.get(Items.REDSTONE));

@@ -1,9 +1,9 @@
 package twilightforest.init;
 
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.advancements.critereon.ItemSubPredicate;
 import net.minecraft.core.registries.Registries;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.TwilightForestMod;
 import twilightforest.advancements.predicate.ItemColorPredicate;
 

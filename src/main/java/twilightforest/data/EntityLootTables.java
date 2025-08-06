@@ -1,5 +1,7 @@
 package twilightforest.data;
 
+import io.github.fabricators_of_create.porting_lib.data.ModdedEntityLootSubProvider;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.network.chat.Component;
@@ -19,7 +21,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWit
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFEntities;
 import twilightforest.init.TFItems;
@@ -31,7 +32,7 @@ import twilightforest.loot.conditions.IsMinionCondition;
 
 import java.util.stream.Stream;
 
-public class EntityLootTables extends EntityLootSubProvider {
+public class EntityLootTables extends ModdedEntityLootSubProvider {
 
 	protected EntityLootTables(HolderLookup.Provider provider) {
 		super(FeatureFlags.REGISTRY.allFlags(), provider);
@@ -626,8 +627,8 @@ public class EntityLootTables extends EntityLootSubProvider {
 		return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(wool))).withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(NestedLootTable.lootTableReference(EntityType.SHEEP.getDefaultLootTable())));
 	}
 
-	@Override
+	/*@Override
 	protected Stream<EntityType<?>> getKnownEntityTypes() {
 		return TFEntities.ENTITIES.getEntries().stream().map(DeferredHolder::value);
-	}
+	}*/
 }

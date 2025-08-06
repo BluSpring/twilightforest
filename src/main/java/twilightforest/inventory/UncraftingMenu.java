@@ -1,6 +1,8 @@
 package twilightforest.inventory;
 
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
@@ -20,8 +22,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
@@ -108,7 +108,7 @@ public class UncraftingMenu extends RecipeBookMenu<RecipeInput, Recipe<RecipeInp
 
 		this.slotsChanged(this.assemblyMatrix);
 
-		if (!FMLLoader.isProduction()) {
+		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
 			// Debug slot listing
 			NonNullList<Slot> slots = this.slots;
 
@@ -271,7 +271,7 @@ public class UncraftingMenu extends RecipeBookMenu<RecipeInput, Recipe<RecipeInp
 	}
 
 	public static boolean isIngredientProblematic(ItemStack ingredient) {
-		return (!ingredient.isEmpty() && ingredient.getItem().hasCraftingRemainingItem(ingredient)) || ingredient.is(Items.BARRIER);
+		return (!ingredient.isEmpty() && ingredient.getItem().hasCraftingRemainingItem()) || ingredient.is(Items.BARRIER);
 	}
 
 	private static ItemStack normalizeIngredient(ItemStack ingredient) {

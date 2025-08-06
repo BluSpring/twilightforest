@@ -1,11 +1,14 @@
 package twilightforest.entity.monster;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -28,7 +31,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.TwilightForestMod;
 import twilightforest.entity.ai.goal.HeavySpearAttackGoal;
 import twilightforest.init.TFSounds;
@@ -213,7 +215,9 @@ public class UpperGoblinKnight extends Monster {
 					pz + (this.getRandom().nextFloat() - this.getRandom().nextFloat()) * 0.25F * this.getRandom().nextGaussian(),
 					0, 0, 0);
 			}
-			PacketDistributor.sendToPlayersTrackingEntity(this, particlePacket);
+			for (ServerPlayer player : PlayerLookup.tracking(this)) {
+				ServerPlayNetworking.send(player, particlePacket);
+			}
 		}
 
 		// damage things in front that aren't us or our "mount"

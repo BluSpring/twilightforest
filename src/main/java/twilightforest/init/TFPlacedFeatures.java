@@ -1,6 +1,7 @@
 package twilightforest.init;
 
 import com.google.common.collect.ImmutableList;
+import io.github.fabricators_of_create.porting_lib.models.ConcatenatedListView;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
@@ -19,7 +20,6 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.neoforged.neoforge.common.util.ConcatenatedListView;
 import twilightforest.TwilightForestMod;
 import twilightforest.world.components.placements.AvoidLandmarkModifier;
 import twilightforest.world.components.placements.ChunkBlanketingModifier;

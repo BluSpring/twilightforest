@@ -3,23 +3,14 @@ package twilightforest.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.PotDecorations;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
-import twilightforest.TwilightForestMod;
 import twilightforest.block.CandelabraBlock;
 import twilightforest.block.LightableBlock;
 import twilightforest.components.item.CandelabraData;
@@ -27,7 +18,6 @@ import twilightforest.init.TFBlockEntities;
 import twilightforest.init.TFDataComponents;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CandelabraBlockEntity extends BlockEntity {
@@ -100,13 +90,13 @@ public class CandelabraBlockEntity extends BlockEntity {
 	@Override
 	protected void collectImplicitComponents(DataComponentMap.Builder components) {
 		super.collectImplicitComponents(components);
-		components.set(TFDataComponents.CANDELABRA_DATA, this.data);
+		components.set(TFDataComponents.CANDELABRA_DATA.get(), this.data);
 	}
 
 	@Override
 	protected void applyImplicitComponents(BlockEntity.DataComponentInput componentInput) {
 		super.applyImplicitComponents(componentInput);
-		this.data = componentInput.getOrDefault(TFDataComponents.CANDELABRA_DATA, CandelabraData.EMPTY);
+		this.data = componentInput.getOrDefault(TFDataComponents.CANDELABRA_DATA.get(), CandelabraData.EMPTY);
 	}
 
 	@Override

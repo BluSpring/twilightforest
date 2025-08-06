@@ -1,5 +1,9 @@
 package twilightforest.block;
 
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.LightEmissiveBlock;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbility;
+import io.github.fabricators_of_create.porting_lib.tool.addons.ItemAbilityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -20,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -36,10 +41,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.block.entity.SkullCandleBlockEntity;
 import twilightforest.components.item.SkullCandles;
@@ -48,7 +50,7 @@ import twilightforest.init.TFDataComponents;
 
 import java.util.*;
 
-public abstract class AbstractSkullCandleBlock extends BaseEntityBlock implements LightableBlock {
+public abstract class AbstractSkullCandleBlock extends BaseEntityBlock implements LightableBlock, LightEmissiveBlock, ItemAbilityBlock {
 	public static final IntegerProperty CANDLES = BlockStateProperties.CANDLES;
 	private final SkullBlock.Type type;
 
@@ -79,7 +81,7 @@ public abstract class AbstractSkullCandleBlock extends BaseEntityBlock implement
 				return state.setValue(LIGHTING, Lighting.NORMAL);
 			}
 		}
-		return super.getToolModifiedState(state, context, itemAbility, simulate);
+		return ItemAbilityBlock.super.getToolModifiedState(state, context, itemAbility, simulate);
 	}
 
 	@Override
@@ -114,7 +116,7 @@ public abstract class AbstractSkullCandleBlock extends BaseEntityBlock implement
 		super.setPlacedBy(level, pos, state, placer, stack);
 		BlockEntity blockentity = level.getBlockEntity(pos);
 		if (blockentity instanceof SkullCandleBlockEntity sc) {
-			SkullCandles skullCandles = stack.getOrDefault(TFDataComponents.SKULL_CANDLES, SkullCandles.DEFAULT);
+			SkullCandles skullCandles = stack.getOrDefault(TFDataComponents.SKULL_CANDLES.get(), SkullCandles.DEFAULT);
 			sc.setCandleColor(skullCandles.color());
 
 			if (this.type == SkullBlock.Types.PLAYER && stack.has(DataComponents.PROFILE)) {
@@ -130,10 +132,10 @@ public abstract class AbstractSkullCandleBlock extends BaseEntityBlock implement
 		if (skullStack.isPresent()) {
 			BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 			if (blockEntity instanceof SkullCandleBlockEntity sc) {
-				if (!builder.getParameter(LootContextParams.TOOL).isEmpty() && builder.getParameter(LootContextParams.TOOL).getEnchantmentLevel(sc.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SILK_TOUCH)) > 0) {
+				if (!builder.getParameter(LootContextParams.TOOL).isEmpty() && EnchantmentHelper.getItemEnchantmentLevel(sc.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SILK_TOUCH), builder.getParameter(LootContextParams.TOOL)) > 0) {
 					ItemStack newStack = new ItemStack(this);
 
-					newStack.set(TFDataComponents.SKULL_CANDLES, new SkullCandles(sc.getCandleColor(), state.getValue(CANDLES)));
+					newStack.set(TFDataComponents.SKULL_CANDLES.get(), new SkullCandles(sc.getCandleColor(), state.getValue(CANDLES)));
 
 					if (this.type == SkullBlock.Types.PLAYER && sc.getOwnerProfile() != null)
 						newStack.set(DataComponents.PROFILE, sc.getOwnerProfile());
@@ -150,11 +152,11 @@ public abstract class AbstractSkullCandleBlock extends BaseEntityBlock implement
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
 		ItemStack newStack = new ItemStack(this);
 
 		if (level.getBlockEntity(pos) instanceof SkullCandleBlockEntity sc) {
-			newStack.set(TFDataComponents.SKULL_CANDLES, new SkullCandles(sc.getCandleColor(), state.getValue(CANDLES)));
+			newStack.set(TFDataComponents.SKULL_CANDLES.get(), new SkullCandles(sc.getCandleColor(), state.getValue(CANDLES)));
 
 			if (this.type == SkullBlock.Types.PLAYER && sc.getOwnerProfile() != null)
 				newStack.set(DataComponents.PROFILE, sc.getOwnerProfile());

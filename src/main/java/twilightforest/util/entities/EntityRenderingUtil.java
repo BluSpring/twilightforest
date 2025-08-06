@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,9 +23,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -194,9 +192,6 @@ public class EntityRenderingUtil {
 	}
 
 	public static String getModIdForTooltip(String modId) {
-		return ModList.get().getModContainerById(modId)
-			.map(ModContainer::getModInfo)
-			.map(IModInfo::getDisplayName)
-			.orElseGet(() -> StringUtils.capitalize(modId));
+		return FabricLoader.getInstance().getModContainer(modId).map(e -> e.getMetadata().getName()).orElse(StringUtils.capitalize(modId));
 	}
 }

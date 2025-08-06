@@ -51,10 +51,10 @@ public class FireJetBlock extends BaseEntityBlock {
 		builder.add(STATE);
 	}
 
-	@Override
+	/*@Override
 	public PathType getBlockPathType(BlockState state, BlockGetter getter, BlockPos pos, @Nullable Mob mob) {
 		return state.getValue(STATE) == FireJetVariant.IDLE ? null : PathType.DAMAGE_FIRE;
-	}
+	}*/
 
 	@Override
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {

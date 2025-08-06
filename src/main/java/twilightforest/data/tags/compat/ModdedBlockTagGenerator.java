@@ -1,5 +1,8 @@
 package twilightforest.data.tags.compat;
 
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -8,14 +11,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import twilightforest.TwilightForestMod;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFBlocks;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ModdedBlockTagGenerator extends IntrinsicHolderTagsProvider<Block> {
+public class ModdedBlockTagGenerator extends FabricTagProvider.BlockTagProvider {
 
 	public static final TagKey<Block> AC_FERROMAGNETIC_BLOCKS = createTagFor("alexscaves", "ferromagnetic_blocks");
 	public static final TagKey<Block> AC_GLOOMOTH_LIGHT_SOURCES = createTagFor("alexscaves", "gloomoth_light_sources");
@@ -30,8 +32,13 @@ public class ModdedBlockTagGenerator extends IntrinsicHolderTagsProvider<Block> 
 	public static final TagKey<Block> FD_COMPOST_ACTIVATORS = createTagFor("farmersdelight", "compost_activators");
 	public static final TagKey<Block> FD_HEAT_SOURCES = createTagFor("farmersdelight", "heat_sources");
 
-	public ModdedBlockTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
-		super(output, Registries.BLOCK, future, block -> block.builtInRegistryHolder().key(), TwilightForestMod.ID, helper);
+	public ModdedBlockTagGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
+		super(output, future);
+	}
+
+	@Override
+	protected FabricTagProvider<Block>.FabricTagBuilder tag(TagKey<Block> tag) {
+		return getOrCreateTagBuilder(tag);
 	}
 
 	@Override
@@ -63,6 +70,6 @@ public class ModdedBlockTagGenerator extends IntrinsicHolderTagsProvider<Block> 
 	}
 
 	private static TagKey<Block> createTagFor(String modid, String tagName) {
-		return BlockTags.create(ResourceLocation.fromNamespaceAndPath(modid, tagName));
+		return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(modid, tagName));
 	}
 }

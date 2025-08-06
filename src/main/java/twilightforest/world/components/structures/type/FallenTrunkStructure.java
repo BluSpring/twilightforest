@@ -97,7 +97,7 @@ public class FallenTrunkStructure extends Structure implements CustomDensitySour
 	private boolean isValidNoiseBiome(GenerationContext context, int x, int worldY, int z) {
 		Holder<Biome> noiseBiome = context.chunkGenerator().getBiomeSource()
 			.getNoiseBiome(x >> 2, worldY >> 2, z >> 2, context.randomState().sampler());
-		return this.getModifiedStructureSettings().biomes().contains(noiseBiome);
+		return this.biomes().contains(noiseBiome);
 	}
 
 	private boolean hasInvalidNearbyBiome(GenerationContext context, int x, int worldY, int z, RandomSource random) {

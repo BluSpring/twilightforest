@@ -1,6 +1,7 @@
 package twilightforest.block.entity.spawner;
 
 import com.mojang.datafixers.util.Either;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomRenderBoundingBoxBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
@@ -19,12 +20,13 @@ import net.minecraft.world.level.Spawner;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.init.TFBlockEntities;
 
 import java.util.List;
 
-public class SinisterSpawnerBlockEntity extends BlockEntity implements Spawner {
+public class SinisterSpawnerBlockEntity extends BlockEntity implements Spawner, CustomRenderBoundingBoxBlockEntity {
 	private final SinisterSpawnerLogic spawner = new SinisterSpawnerLogic() {
 		@Override
 		public Either<BlockEntity, Entity> getOwner() {
@@ -132,5 +134,11 @@ public class SinisterSpawnerBlockEntity extends BlockEntity implements Spawner {
 		boolean updated = this.lootTable != lootTable;
 		this.lootTable = lootTable;
 		return updated;
+	}
+
+	@Override
+	public AABB getRenderBoundingBox() {
+		BlockPos pos = this.getBlockPos();
+		return new AABB(pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0, pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
 	}
 }

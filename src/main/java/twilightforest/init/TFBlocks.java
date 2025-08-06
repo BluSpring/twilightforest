@@ -1,5 +1,7 @@
 package twilightforest.init;
 
+import io.github.fabricators_of_create.porting_lib.registry.DeferredBlock;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
@@ -13,8 +15,6 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.TwilightForestMod;
 import twilightforest.block.*;
 import twilightforest.enums.BlockLoggingEnum;
@@ -603,22 +603,22 @@ public class TFBlocks {
 	public static final DeferredBlock<TFTrappedChestBlock> SORTING_TRAPPED_CHEST = register("sorting_trapped_chest", () -> new TFTrappedChestBlock(BlockBehaviour.Properties.ofFullCopy(SORTING_PLANKS.get()).strength(2.5F)));
 
 	//Flower Pots
-	public static final DeferredBlock<FlowerPotBlock> POTTED_TWILIGHT_OAK_SAPLING = BLOCKS.register("potted_twilight_oak_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, TWILIGHT_OAK_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_CANOPY_SAPLING = BLOCKS.register("potted_canopy_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, CANOPY_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_MANGROVE_SAPLING = BLOCKS.register("potted_mangrove_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MANGROVE_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_DARKWOOD_SAPLING = BLOCKS.register("potted_darkwood_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, DARKWOOD_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_HOLLOW_OAK_SAPLING = BLOCKS.register("potted_hollow_oak_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, HOLLOW_OAK_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_RAINBOW_OAK_SAPLING = BLOCKS.register("potted_rainbow_oak_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, RAINBOW_OAK_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_TIME_SAPLING = BLOCKS.register("potted_time_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, TIME_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_TRANSFORMATION_SAPLING = BLOCKS.register("potted_transformation_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, TRANSFORMATION_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_MINING_SAPLING = BLOCKS.register("potted_mining_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MINING_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_SORTING_SAPLING = BLOCKS.register("potted_sorting_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, SORTING_SAPLING, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_MAYAPPLE = BLOCKS.register("potted_mayapple", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MAYAPPLE, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_FIDDLEHEAD = BLOCKS.register("potted_fiddlehead", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, FIDDLEHEAD, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_MUSHGLOOM = BLOCKS.register("potted_mushgloom", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, MUSHGLOOM, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_THORN = BLOCKS.register("potted_thorn", () -> new SpecialFlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, BROWN_THORNS, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_GREEN_THORN = BLOCKS.register("potted_green_thorn", () -> new SpecialFlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, GREEN_THORNS, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
-	public static final DeferredBlock<FlowerPotBlock> POTTED_DEAD_THORN = BLOCKS.register("potted_dead_thorn", () -> new SpecialFlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, BURNT_THORNS, BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_TWILIGHT_OAK_SAPLING = BLOCKS.register("potted_twilight_oak_sapling", () -> new FlowerPotBlock(TWILIGHT_OAK_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_CANOPY_SAPLING = BLOCKS.register("potted_canopy_sapling", () -> new FlowerPotBlock(CANOPY_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_MANGROVE_SAPLING = BLOCKS.register("potted_mangrove_sapling", () -> new FlowerPotBlock(MANGROVE_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_DARKWOOD_SAPLING = BLOCKS.register("potted_darkwood_sapling", () -> new FlowerPotBlock(DARKWOOD_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_HOLLOW_OAK_SAPLING = BLOCKS.register("potted_hollow_oak_sapling", () -> new FlowerPotBlock(HOLLOW_OAK_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_RAINBOW_OAK_SAPLING = BLOCKS.register("potted_rainbow_oak_sapling", () -> new FlowerPotBlock(RAINBOW_OAK_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_TIME_SAPLING = BLOCKS.register("potted_time_sapling", () -> new FlowerPotBlock(TIME_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_TRANSFORMATION_SAPLING = BLOCKS.register("potted_transformation_sapling", () -> new FlowerPotBlock(TRANSFORMATION_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_MINING_SAPLING = BLOCKS.register("potted_mining_sapling", () -> new FlowerPotBlock(MINING_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_SORTING_SAPLING = BLOCKS.register("potted_sorting_sapling", () -> new FlowerPotBlock(SORTING_SAPLING.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_MAYAPPLE = BLOCKS.register("potted_mayapple", () -> new FlowerPotBlock(MAYAPPLE.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_FIDDLEHEAD = BLOCKS.register("potted_fiddlehead", () -> new FlowerPotBlock(FIDDLEHEAD.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_MUSHGLOOM = BLOCKS.register("potted_mushgloom", () -> new FlowerPotBlock(MUSHGLOOM.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_THORN = BLOCKS.register("potted_thorn", () -> new SpecialFlowerPotBlock(BROWN_THORNS.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_GREEN_THORN = BLOCKS.register("potted_green_thorn", () -> new SpecialFlowerPotBlock(GREEN_THORNS.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
+	public static final DeferredBlock<FlowerPotBlock> POTTED_DEAD_THORN = BLOCKS.register("potted_dead_thorn", () -> new SpecialFlowerPotBlock(BURNT_THORNS.value(), BlockBehaviour.Properties.ofFullCopy(Blocks.FLOWER_POT)));
 
 	public static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> block) {
 		DeferredBlock<T> ret = BLOCKS.register(name, block);

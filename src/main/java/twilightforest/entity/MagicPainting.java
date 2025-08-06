@@ -31,13 +31,13 @@ import twilightforest.init.TFEntities;
 import twilightforest.init.TFItems;
 import twilightforest.init.custom.MagicPaintingVariants;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class MagicPainting extends HangingEntity {
-	private static final EntityDataAccessor<Holder<MagicPaintingVariant>> MAGIC_PAINTING_VARIANT = SynchedEntityData.defineId(MagicPainting.class, TFDataSerializers.MAGIC_PAINTING_VARIANT.value());
+	private static final EntityDataAccessor<Holder<MagicPaintingVariant>> MAGIC_PAINTING_VARIANT = SynchedEntityData.defineId(MagicPainting.class, TFDataSerializers.MAGIC_PAINTING_VARIANT.get());
 
 	public MagicPainting(EntityType<? extends MagicPainting> entityType, Level level) {
 		super(entityType, level);
@@ -198,7 +198,7 @@ public class MagicPainting extends HangingEntity {
 	@NotNull
 	public ItemStack getPickResult() {
 		ItemStack itemStack = new ItemStack(TFItems.MAGIC_PAINTING.get());
-		itemStack.set(TFDataComponents.MAGIC_PAINTING_VARIANT, this.getVariant());
+		itemStack.set(TFDataComponents.MAGIC_PAINTING_VARIANT.get(), this.getVariant());
 		return itemStack;
 	}
 

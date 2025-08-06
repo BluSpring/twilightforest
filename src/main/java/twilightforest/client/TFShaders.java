@@ -3,10 +3,10 @@ package twilightforest.client;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
 
@@ -17,15 +17,11 @@ public class TFShaders {
 	public static ShaderInstance RED_THREAD;
 	public static PositionAwareShaderInstance AURORA;
 
-	public static void registerShaders(RegisterShadersEvent event) {
-		try {
-			event.registerShader(new ShaderInstance(event.getResourceProvider(), TwilightForestMod.prefix("red_thread/red_thread"), DefaultVertexFormat.BLOCK),
-				shader -> RED_THREAD = shader);
-			event.registerShader(new PositionAwareShaderInstance(event.getResourceProvider(), TwilightForestMod.prefix("aurora/aurora"), DefaultVertexFormat.POSITION_COLOR),
-				shader -> AURORA = (PositionAwareShaderInstance) shader);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public static void registerShaders() {
+		CoreShaderRegistrationCallback.EVENT.register(context -> {
+			context.register(TwilightForestMod.prefix("red_thread/red_thread"), DefaultVertexFormat.BLOCK, shader -> RED_THREAD = shader);
+			//context.register(TwilightForestMod.prefix("aurora/aurora"), DefaultVertexFormat.POSITION_COLOR, shader -> AURORA = (PositionAwareShaderInstance) shader);
+		});
 	}
 
 	public static class BindableShaderInstance extends ShaderInstance {
@@ -33,7 +29,7 @@ public class TFShaders {
 		private ShaderInstance last;
 
 		public BindableShaderInstance(ResourceProvider p_173336_, ResourceLocation shaderLocation, VertexFormat p_173338_) throws IOException {
-			super(p_173336_, shaderLocation, p_173338_);
+			super(p_173336_, shaderLocation.toString(), p_173338_);
 		}
 
 		ShaderInstance getSelf() {

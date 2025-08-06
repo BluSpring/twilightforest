@@ -11,22 +11,16 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.alchemy.Potion;
-import tamaized.beanification.Autowired;
-import tamaized.beanification.Component;
-import tamaized.beanification.Configurable;
 import twilightforest.init.TFAdvancements;
 import twilightforest.util.HolderMatcher;
 
 import java.util.Optional;
 
-@Configurable
 public class DrinkFromFlaskTrigger extends SimpleCriterionTrigger<DrinkFromFlaskTrigger.TriggerInstance> {
 
-	@Autowired
-	private TriggerInstance.DrinkFromFlaskTriggerInstanceFactory factory;
+	private TriggerInstance.DrinkFromFlaskTriggerInstanceFactory factory = TriggerInstance.DrinkFromFlaskTriggerInstanceFactory.INSTANCE;
 
-	@Autowired
-	private HolderMatcher holderMatcher;
+	private HolderMatcher holderMatcher = new HolderMatcher();
 
 	public Codec<DrinkFromFlaskTrigger.TriggerInstance> codec() {
 		return factory.CODEC;
@@ -42,8 +36,8 @@ public class DrinkFromFlaskTrigger extends SimpleCriterionTrigger<DrinkFromFlask
 			return this.doses().matches(doses) && this.seconds().matches(seconds) && parent.holderMatcher.match(this.potion(), potion);
 		}
 
-		@Component
 		public static class DrinkFromFlaskTriggerInstanceFactory {
+			public static final DrinkFromFlaskTriggerInstanceFactory INSTANCE = new DrinkFromFlaskTriggerInstanceFactory();
 
 			public final Codec<DrinkFromFlaskTrigger.TriggerInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 					EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(DrinkFromFlaskTrigger.TriggerInstance::player),

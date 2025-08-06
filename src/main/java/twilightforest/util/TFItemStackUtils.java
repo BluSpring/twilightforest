@@ -17,12 +17,12 @@ import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ItemLike;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import twilightforest.block.KeepsakeCasketBlock;
 import twilightforest.events.CharmEvents;
 import twilightforest.init.TFDataComponents;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,8 +45,8 @@ public class TFItemStackUtils {
 					String propertyValueString = blockItemStateProperties.properties().get(KeepsakeCasketBlock.BREAKAGE.getName());
 
 					persistentTag.putInt(CharmEvents.CASKET_DAMAGE_TAG, StringUtils.isNumeric(propertyValueString) ? Integer.parseInt(propertyValueString) : 0);
-				} else if (stack.has(TFDataComponents.CASKET_DAMAGE)) {
-					persistentTag.putInt(CharmEvents.CASKET_DAMAGE_TAG, stack.getOrDefault(TFDataComponents.CASKET_DAMAGE, 0));
+				} else if (stack.has(TFDataComponents.CASKET_DAMAGE.get())) {
+					persistentTag.putInt(CharmEvents.CASKET_DAMAGE_TAG, stack.getOrDefault(TFDataComponents.CASKET_DAMAGE.get(), 0));
 				}
 				stack.shrink(1);
 				return true;
@@ -159,7 +159,7 @@ public class TFItemStackUtils {
 
 	public static void hurtButDontBreak(ItemStack stack, int amount, ServerLevel level, @Nullable LivingEntity entity) {
 		if (stack.isDamageableItem()) {
-			amount = stack.getItem().damageItem(stack, amount, entity, item -> {});
+			amount = stack.getDamageValue() - amount;
 			if (entity == null || !entity.hasInfiniteMaterials()) {
 				if (amount > 0) {
 					amount = EnchantmentHelper.processDurabilityChange(level, stack, amount);

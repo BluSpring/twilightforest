@@ -1,8 +1,11 @@
 package twilightforest.block;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -11,7 +14,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.config.TFConfig;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFParticleType;
@@ -67,7 +69,9 @@ public class TimeLogCoreBlock extends SpecialMagicLogBlock {
 					ParticlePacket particlePacket = new ParticlePacket();
 					double yOffset = state.getOcclusionShape(level, dPos).max(Direction.Axis.Y);
 					particlePacket.queueParticle(TFParticleType.LOG_CORE_PARTICLE.get(), false, xyz.add(0.0, yOffset - 0.5, 0.0), new Vec3(0.953, 0.698, 0.0));
-					PacketDistributor.sendToPlayersNear(level, null, xyz.x(), xyz.y(), xyz.z(), 64.0D, particlePacket);
+					for (ServerPlayer player : PlayerLookup.around(level, xyz, 64.0)) {
+						ServerPlayNetworking.send(player, particlePacket);
+					}
 				}
 			}
 		}

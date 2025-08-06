@@ -1,56 +1,29 @@
 package twilightforest.enums.extensions;
 
+import io.github.fabricators_of_create.porting_lib.core.util.Lazy;
 import net.minecraft.world.entity.vehicle.Boat;
-import net.neoforged.neoforge.common.util.Lazy;
+import net.minecraft.world.level.block.Block;
 import twilightforest.TFEnumExtensions;
-import tamaized.beanification.Autowired;
-import tamaized.beanification.Component;
+import twilightforest.fabric.EnumUtils;
+import twilightforest.init.TFBlocks;
+import twilightforest.mixin.ee.BoatTypeAccessor;
 import twilightforest.util.ModidPrefixUtil;
 
-@Component
 public class TFBoatTypeEnumExtension {
 
-	@Autowired
-	private ModidPrefixUtil modidPrefixUtil;
+	private ModidPrefixUtil modidPrefixUtil = ModidPrefixUtil.INSTANCE;
 
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_TWILIGHT_OAK(int, Class)}
-	 */
-	public final Lazy<Boat.Type> TWILIGHT_OAK = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("twilight_oak")));
+	private static Boat.Type create(String name, Block planks) {
+		return EnumUtils.addEnumToClass(Boat.Type.class, BoatTypeAccessor.getValues(), name, size -> BoatTypeAccessor.create(name, size, planks, name), values -> BoatTypeAccessor.setValues(values.toArray(new Boat.Type[0])));
+	}
 
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_CANOPY(int, Class)}
-	 */
-	public final Lazy<Boat.Type> CANOPY = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("canopy")));
-
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_MANGROVE(int, Class)}
-	 */
-	public final Lazy<Boat.Type> MANGROVE = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("mangrove")));
-
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_DARK(int, Class)}
-	 */
-	public final Lazy<Boat.Type> DARK = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("dark")));
-
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_TIME(int, Class)}
-	 */
-	public final Lazy<Boat.Type> TIME = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("time")));
-
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_TRANSFORMATION(int, Class)}
-	 */
-	public final Lazy<Boat.Type> TRANSFORMATION = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("transformation")));
-
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_MINING(int, Class)}
-	 */
-	public final Lazy<Boat.Type> MINING = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("mining")));
-
-	/**
-	 * {@link TFEnumExtensions#Boat$Type_SORTING(int, Class)}
-	 */
-	public final Lazy<Boat.Type> SORTING = Lazy.of(() -> Boat.Type.byName(modidPrefixUtil.stringPrefix("sorting")));
+	public final Lazy<Boat.Type> TWILIGHT_OAK = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("twilight_oak"), TFBlocks.TWILIGHT_OAK_PLANKS.get()));
+	public final Lazy<Boat.Type> CANOPY = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("canopy"), TFBlocks.CANOPY_PLANKS.get()));
+	public final Lazy<Boat.Type> MANGROVE = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("mangrove"), TFBlocks.MANGROVE_PLANKS.get()));
+	public final Lazy<Boat.Type> DARK = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("dark"), TFBlocks.DARK_PLANKS.get()));
+	public final Lazy<Boat.Type> TIME = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("time"), TFBlocks.TIME_PLANKS.get()));
+	public final Lazy<Boat.Type> TRANSFORMATION = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("transformation"), TFBlocks.TRANSFORMATION_PLANKS.get()));
+	public final Lazy<Boat.Type> MINING = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("mining"), TFBlocks.MINING_PLANKS.get()));
+	public final Lazy<Boat.Type> SORTING = Lazy.of(() -> create(modidPrefixUtil.stringPrefix("sorting"), TFBlocks.SORTING_PLANKS.get()));
 
 }

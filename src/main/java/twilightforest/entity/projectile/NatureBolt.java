@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.event.EventHooks;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFDamageTypes;
 import twilightforest.init.TFEntities;
@@ -66,7 +66,7 @@ public class NatureBolt extends TFThrowable implements ITFProjectile, ItemSuppli
 		BlockPos blockPosHit = result.getBlockPos();
 		BlockState stateHit = this.level().getBlockState(blockPosHit);
 
-		if (EventHooks.canEntityGrief(this.level(), this)) {
+		if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 			if (!this.level().isClientSide() && stateHit.getBlock() instanceof BonemealableBlock bonemealable && bonemealable.isValidBonemealTarget(this.level(), blockPosHit, stateHit)) {
 				bonemealable.performBonemeal((ServerLevel) this.level(), this.random, blockPosHit, stateHit);
 			} else if (stateHit.isSolid() && this.canReplaceBlock(this.level(), blockPosHit)) {

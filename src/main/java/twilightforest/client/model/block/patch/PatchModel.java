@@ -2,6 +2,7 @@ package twilightforest.client.model.block.patch;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.math.Transformation;
+import io.github.fabricators_of_create.porting_lib.models.geometry.SimpleModelState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -10,9 +11,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.SimpleModelState;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -184,15 +182,20 @@ public record PatchModel(TextureAtlasSprite texture, boolean shaggify) implement
 	}
 
 	@Override
+	public ItemTransforms getTransforms() {
+		return ItemTransforms.NO_TRANSFORMS;
+	}
+
+	@Override
 	public ItemOverrides getOverrides() {
 		return ItemOverrides.EMPTY; //I doubt we need to do anything here
 	}
 
-	@Override
+	/*@Override
 	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
 		if (state.is(TFBlocks.CLOVER_PATCH)) {
 			return ChunkRenderTypeSet.of(RenderType.cutout());
 		}
 		return BakedModel.super.getRenderTypes(state, rand, data);
-	}
+	}*/
 }

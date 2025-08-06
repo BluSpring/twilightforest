@@ -1,14 +1,19 @@
 package twilightforest.data.tags;
 
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.FarmBlock;
 import twilightforest.TwilightForestMod;
 import twilightforest.data.tags.compat.ModdedBlockTagGenerator;
 import twilightforest.init.TFBlocks;
@@ -100,7 +105,7 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 
 	public static final TagKey<Block> SMALL_LAKES_DONT_REPLACE = create("small_lakes_dont_replace");
 
-	public BlockTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
+	public BlockTagGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
 		super(output, future, helper);
 	}
 
@@ -385,7 +390,7 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 
 		this.tag(ICE_BOMB_REPLACEABLES)
 			.add(TFBlocks.MAYAPPLE.get(), TFBlocks.FIDDLEHEAD.get(), Blocks.SHORT_GRASS, Blocks.TALL_GRASS, Blocks.FERN, Blocks.LARGE_FERN)
-			.addTag(BlockTags.FLOWERS);
+			.forceAddTag(BlockTags.FLOWERS);
 
 		this.tag(PLANTS_HANG_ON)
 			.addTag(BlockTags.DIRT)
@@ -487,8 +492,8 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 			ROOT_GROUND
 		);
 
-		this.tag(ORE_MAGNET_IGNORE).addTag(BlockTags.COAL_ORES);
-		this.tag(MINING_CORE_EXCLUDED).addTag(BlockTags.COAL_ORES);
+		this.tag(ORE_MAGNET_IGNORE).forceAddTag(BlockTags.COAL_ORES);
+		this.tag(MINING_CORE_EXCLUDED).forceAddTag(BlockTags.COAL_ORES);
 
 		this.tag(ROOT_GROUND).add(TFBlocks.ROOT_BLOCK.get());
 		this.tag(ROOT_ORES).add(TFBlocks.LIVEROOT_BLOCK.get());
@@ -514,7 +519,7 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 		// For anything that permits replacement during Worldgen
 		this.tag(WORLDGEN_REPLACEABLES).addTags(BlockTags.LUSH_GROUND_REPLACEABLE, BlockTags.REPLACEABLE_BY_TREES);
 
-		this.tag(ROOT_TRACE_SKIP).addTag(BlockTags.LOGS).add(TFBlocks.ROOT_BLOCK.get(), TFBlocks.LIVEROOT_BLOCK.get(), TFBlocks.MANGROVE_ROOT.get(), TFBlocks.TIME_WOOD.get()).addTags(BlockTags.FEATURES_CANNOT_REPLACE);
+		this.tag(ROOT_TRACE_SKIP).forceAddTag(BlockTags.LOGS).add(TFBlocks.ROOT_BLOCK.get(), TFBlocks.LIVEROOT_BLOCK.get(), TFBlocks.MANGROVE_ROOT.get(), TFBlocks.TIME_WOOD.get()).addTags(BlockTags.FEATURES_CANNOT_REPLACE);
 
 		this.tag(DRUID_PROJECTILE_REPLACEABLE).addTags(BlockTags.LEAVES, BlockTags.LOGS, BlockTags.PLANKS, BlockTags.OVERWORLD_CARVER_REPLACEABLES, BlockTags.NETHER_CARVER_REPLACEABLES, BlockTags.REPLACEABLE_BY_TREES, BlockTags.LUSH_GROUND_REPLACEABLE, BlockTags.SCULK_REPLACEABLE, Tags.Blocks.ORES);
 
@@ -523,22 +528,22 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 		this.tag(TIME_CORE_EXCLUDED).add(Blocks.NETHER_PORTAL);
 
 		this.tag(ORE_METER_TARGETABLE)
-			.addTag(Tags.Blocks.ORES)
-			.addTag(BlockTags.BASE_STONE_OVERWORLD)
-			.addTag(BlockTags.BASE_STONE_NETHER)
-			.addTag(BlockTags.DIRT)
-			.addTag(Tags.Blocks.SANDS)
-			.addTag(Tags.Blocks.SANDSTONE_BLOCKS)
-			.addTag(BlockTags.TERRACOTTA)
-			.addTag(Tags.Blocks.GRAVELS)
-			.addTag(BlockTags.NYLIUM)
-			.addTag(ROOT_ORES)
+			.forceAddTag(Tags.Blocks.ORES)
+			.forceAddTag(BlockTags.BASE_STONE_OVERWORLD)
+			.forceAddTag(BlockTags.BASE_STONE_NETHER)
+			.forceAddTag(BlockTags.DIRT)
+			.forceAddTag(Tags.Blocks.SANDS)
+			.forceAddTag(Tags.Blocks.SANDSTONE_BLOCKS)
+			.forceAddTag(BlockTags.TERRACOTTA)
+			.forceAddTag(Tags.Blocks.GRAVELS)
+			.forceAddTag(BlockTags.NYLIUM)
+			.forceAddTag(ROOT_ORES)
 			.add(Blocks.BUDDING_AMETHYST)
 			.add(Blocks.CALCITE)
 			.add(Blocks.SOUL_SAND)
 			.add(Blocks.SOUL_SOIL);
 
-		this.tag(PENGUINS_SPAWNABLE_ON).addTag(BlockTags.ICE);
+		this.tag(PENGUINS_SPAWNABLE_ON).forceAddTag(BlockTags.ICE);
 		this.tag(GIANTS_SPAWNABLE_ON).addTag(CLOUDS);
 
 		this.tag(BlockTags.MINEABLE_WITH_AXE).add(
@@ -732,15 +737,15 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 
 		this.tag(SUPPORTS_STALAGMITES).addTag(DEADROCK).add(Blocks.PACKED_ICE);
 
-		this.tag(CARVER_REPLACEABLES).addTag(BlockTags.OVERWORLD_CARVER_REPLACEABLES).add(Blocks.SNOW_BLOCK);
+		this.tag(CARVER_REPLACEABLES).forceAddTag(BlockTags.OVERWORLD_CARVER_REPLACEABLES).add(Blocks.SNOW_BLOCK);
 
-		this.tag(INCORRECT_FOR_IRONWOOD_TOOL).addTag(BlockTags.INCORRECT_FOR_IRON_TOOL);
-		this.tag(INCORRECT_FOR_FIERY_TOOL).addTag(BlockTags.INCORRECT_FOR_NETHERITE_TOOL);
-		this.tag(INCORRECT_FOR_STEELEAF_TOOL).addTag(BlockTags.INCORRECT_FOR_DIAMOND_TOOL);
-		this.tag(INCORRECT_FOR_KNIGHTMETAL_TOOL).addTag(BlockTags.INCORRECT_FOR_DIAMOND_TOOL);
-		this.tag(INCORRECT_FOR_GIANT_TOOL).addTag(BlockTags.INCORRECT_FOR_STONE_TOOL);
-		this.tag(INCORRECT_FOR_ICE_TOOL).addTag(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
-		this.tag(INCORRECT_FOR_GLASS_TOOL).addTag(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
+		this.tag(INCORRECT_FOR_IRONWOOD_TOOL).forceAddTag(BlockTags.INCORRECT_FOR_IRON_TOOL);
+		this.tag(INCORRECT_FOR_FIERY_TOOL).forceAddTag(BlockTags.INCORRECT_FOR_NETHERITE_TOOL);
+		this.tag(INCORRECT_FOR_STEELEAF_TOOL).forceAddTag(BlockTags.INCORRECT_FOR_DIAMOND_TOOL);
+		this.tag(INCORRECT_FOR_KNIGHTMETAL_TOOL).forceAddTag(BlockTags.INCORRECT_FOR_DIAMOND_TOOL);
+		this.tag(INCORRECT_FOR_GIANT_TOOL).forceAddTag(BlockTags.INCORRECT_FOR_STONE_TOOL);
+		this.tag(INCORRECT_FOR_ICE_TOOL).forceAddTag(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
+		this.tag(INCORRECT_FOR_GLASS_TOOL).forceAddTag(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
 
 		this.tag(Tags.Blocks.GLASS_BLOCKS).add(TFBlocks.AURORALIZED_GLASS.get());
 		this.tag(Tags.Blocks.PLAYER_WORKSTATIONS_CRAFTING_TABLES).add(TFBlocks.UNCRAFTING_TABLE.get());
@@ -750,11 +755,11 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 			BlockTags.MINEABLE_WITH_SHOVEL, BlockTags.MINEABLE_WITH_HOE);
 
 		this.tag(BLOCK_AND_CHAIN_NEVER_BREAKS).addTags(MAZESTONE, CASTLE_BLOCKS, DEADROCK, BlockTags.WITHER_IMMUNE)
-			.add(TFBlocks.TIME_LOG_CORE.get(), TFBlocks.TRANSFORMATION_LOG_CORE.get(), TFBlocks.MINING_LOG_CORE.get(), TFBlocks.SORTING_LOG_CORE.get())
-			.add(TFBlocks.GIANT_OBSIDIAN.get());
+			.add(TFBlocks.TIME_LOG_CORE.getKey(), TFBlocks.TRANSFORMATION_LOG_CORE.getKey(), TFBlocks.MINING_LOG_CORE.getKey(), TFBlocks.SORTING_LOG_CORE.getKey())
+			.add(TFBlocks.GIANT_OBSIDIAN.getKey());
 
 		this.tag(SMALL_LAKES_DONT_REPLACE).addTags(BlockTags.FEATURES_CANNOT_REPLACE, BlockTags.LOGS, BlockTags.LEAVES)
-			.add(TFBlocks.ROOT_BLOCK.get(), TFBlocks.LIVEROOT_BLOCK.get(), Blocks.MUSHROOM_STEM);
+			.add(TFBlocks.ROOT_BLOCK.getKey(), TFBlocks.LIVEROOT_BLOCK.getKey(), Blocks.MUSHROOM_STEM.builtInRegistryHolder().key());
 
 		this.tag(BlockTags.INSIDE_STEP_SOUND_BLOCKS)
 			.add(TFBlocks.HUGE_LILY_PAD.get());
@@ -770,14 +775,18 @@ public class BlockTagGenerator extends ModdedBlockTagGenerator {
 
 		this.tag(BlockTags.FIRE)
 			.add(TFBlocks.OMINOUS_FIRE.get());
+
+		// Fabric
+		this.tag(BlockTags.DIRT)
+			.add(TFBlocks.UBEROUS_SOIL.get());
 	}
 
 	public static TagKey<Block> create(String tagName) {
-		return BlockTags.create(TwilightForestMod.prefix(tagName));
+		return TagKey.create(Registries.BLOCK, TwilightForestMod.prefix(tagName));
 	}
 
 	public static TagKey<Block> makeCommonTag(String tagName) {
-		return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", tagName));
+		return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", tagName));
 	}
 
 	@Override

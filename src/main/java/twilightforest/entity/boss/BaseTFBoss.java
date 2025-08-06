@@ -1,5 +1,7 @@
 package twilightforest.entity.boss;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
@@ -27,8 +29,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.config.TFConfig;
 import twilightforest.entity.EnforcedHomePoint;
@@ -76,7 +76,10 @@ public abstract class BaseTFBoss extends Monster implements IBossLootBuffer, Enf
 	public void startSeenByPlayer(ServerPlayer player) {
 		super.startSeenByPlayer(player);
 		this.getBossBar().addPlayer(player);
-		if (this.deathTime > 0) PacketDistributor.sendToPlayersTrackingEntity(this, new UpdateDeathTimePacket(this.getId(), this.deathTime));
+		if (this.deathTime > 0)
+			for (ServerPlayer p : PlayerLookup.tracking(this)) {
+				ServerPlayNetworking.send(p, new UpdateDeathTimePacket(this.getId(), this.deathTime));
+			}
 	}
 
 	@Override
@@ -174,7 +177,7 @@ public abstract class BaseTFBoss extends Monster implements IBossLootBuffer, Enf
 	}
 
 	@Override
-	public boolean isPushedByFluid(FluidType type) {
+	public boolean isPushedByFluid() {
 		return false;
 	}
 

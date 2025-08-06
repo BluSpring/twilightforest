@@ -9,13 +9,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import twilightforest.entity.boss.UrGhast;
 
 public class UrGhastFireball extends LargeFireball implements ITFProjectile {
@@ -52,7 +52,7 @@ public class UrGhastFireball extends LargeFireball implements ITFProjectile {
 			entity1.hurt(source, 16.0F);
 			EnchantmentHelper.doPostAttackEffects(serverlevel, entity1, source);
 
-			boolean flag = EventHooks.canEntityGrief(this.level(), this.getOwner());
+			boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 			this.level().explode(null, this.getX(), this.getY(), this.getZ(), this.power, flag, Level.ExplosionInteraction.NONE);
 			this.discard();
 		}
@@ -62,7 +62,7 @@ public class UrGhastFireball extends LargeFireball implements ITFProjectile {
 	protected void onHitBlock(BlockHitResult result) {
 		super.onHitBlock(result);
 		//explode and leave fire when hitting a block, but dont destroy them
-		boolean flag = EventHooks.canEntityGrief(this.level(), this.getOwner());
+		boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 		this.level().explode(null, this.getX(), this.getY(), this.getZ(), (float) this.power, flag, Level.ExplosionInteraction.NONE);
 		this.discard();
 	}

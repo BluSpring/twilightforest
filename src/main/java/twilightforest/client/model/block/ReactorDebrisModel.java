@@ -8,21 +8,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
 import twilightforest.block.entity.ReactorDebrisBlockEntity;
 import twilightforest.client.renderer.block.ReactorDebrisRenderer;
+import twilightforest.fabric.BakedModelWrapper;
 
 
 public class ReactorDebrisModel extends BakedModelWrapper<BakedModel> {
-	public static final ModelProperty<ResourceLocation> TEXTURE_FOR_PARTICLE = new ModelProperty<>();
+	//public static final ModelProperty<ResourceLocation> TEXTURE_FOR_PARTICLE = new ModelProperty<>();
 	public ReactorDebrisModel(BakedModel defaultModel) {
 		super(defaultModel);
 	}
 
-	@Override
+	/*@Override
 	public @NotNull ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
 		if (!(level.getBlockEntity(pos) instanceof ReactorDebrisBlockEntity reactorDebrisBlockEntity)
 			|| !(level instanceof ClientLevel clientLevel))
@@ -35,5 +33,5 @@ public class ReactorDebrisModel extends BakedModelWrapper<BakedModel> {
 	public @NotNull TextureAtlasSprite getParticleIcon(ModelData data) {
 		ResourceLocation texturePath = MoreObjects.firstNonNull(data.get(TEXTURE_FOR_PARTICLE), ReactorDebrisBlockEntity.DEFAULT_TEXTURE);
 		return ReactorDebrisRenderer.getSprite(texturePath);
-	}
+	}*/
 }

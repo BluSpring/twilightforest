@@ -1,26 +1,28 @@
 package twilightforest.client;
 
 import com.google.common.collect.MapMaker;
+import dev.architectury.event.events.client.ClientPlayerEvent;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import tamaized.beanification.Autowired;
-import tamaized.beanification.Component;
-import tamaized.beanification.PostConstruct;
 import twilightforest.init.TFBiomes;
 import twilightforest.world.components.BiomeColorAlgorithms;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public final class FoliageColorHandler {
+	public static final FoliageColorHandler INSTANCE = new FoliageColorHandler();
 
-	@Autowired
-	private BiomeColorAlgorithms biomeColorAlgorithms;
+	private FoliageColorHandler() {
+		setup();
+	}
+
+	private BiomeColorAlgorithms biomeColorAlgorithms = BiomeColorAlgorithms.INSTANCE;
 
 	private final Map<ResourceKey<Biome>, Handler> REGISTRY = new HashMap<>() {{
 		put(TFBiomes.SPOOKY_FOREST, (o, x, z) -> biomeColorAlgorithms.spookyFoliage(x, z));
@@ -32,12 +34,13 @@ public final class FoliageColorHandler {
 
 	private final Map<Biome, Handler> HANDLES = new MapMaker().weakKeys().makeMap(); // Concurrent + Weak + Hash
 
-	@PostConstruct(PostConstruct.Bus.GAME)
-	private void setup(IEventBus bus) {
-		bus.addListener(EntityLeaveLevelEvent.class, event -> {
-			if (event.getLevel().isClientSide()) {
-				HANDLES.clear();
-			}
+	private void setup() {
+		ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((entity, world) -> {
+			HANDLES.clear();
+		});
+
+		ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> {
+			HANDLES.clear();
 		});
 	}
 

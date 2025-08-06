@@ -15,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import twilightforest.client.model.entity.DeathTomeModel;
 import twilightforest.potions.FrostedEffect;
 
@@ -52,7 +51,7 @@ public class IceLayer<T extends LivingEntity, M extends EntityModel<T>> extends 
 			stack.mulPose(Axis.ZP.rotationDegrees(this.random.nextFloat() * 360F));
 			stack.translate(-0.5F, -0.5F, -0.5F);
 
-			Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.ICE.defaultBlockState(), stack, buffer, light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.translucentMovingBlock());
+			Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.ICE.defaultBlockState(), stack, buffer, light, OverlayTexture.NO_OVERLAY);
 			stack.popPose();
 		}
 	}

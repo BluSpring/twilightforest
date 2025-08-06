@@ -1,14 +1,19 @@
 package twilightforest.data;
 
+import io.github.fabricators_of_create.porting_lib.data.DatapackBuiltinEntriesProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.minecraft.data.registries.RegistriesDatapackGenerator;
 import twilightforest.TFRegistries;
 import twilightforest.TwilightForestMod;
+import twilightforest.data.tags.BiomeTagGenerator;
 import twilightforest.init.*;
 import twilightforest.init.custom.*;
+import twilightforest.world.components.structures.type.FallenTrunkStructure;
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -41,7 +46,7 @@ public class RegistryDataGenerator extends DatapackBuiltinEntriesProvider {
 		.add(Registries.JUKEBOX_SONG, TFJukeboxSongs::bootstrap)
 		.add(Registries.ENCHANTMENT, TFEnchantments::bootstrap);
 
-	public RegistryDataGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+	public RegistryDataGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> provider) {
 		super(output, provider, BUILDER, Set.of("minecraft", TwilightForestMod.ID));
 	}
 }

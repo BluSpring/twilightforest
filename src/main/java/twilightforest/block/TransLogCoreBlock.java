@@ -1,11 +1,14 @@
 package twilightforest.block;
 
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -15,7 +18,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.config.TFConfig;
 import twilightforest.init.TFBiomes;
 import twilightforest.init.TFParticleType;
@@ -80,7 +82,9 @@ public class TransLogCoreBlock extends SpecialMagicLogBlock {
 				Vec3 offset = new Vec3(Math.cos(angle), 0.0D, Math.sin(angle)).scale(2.0D);
 				particlePacket.queueParticle(TFParticleType.TRANSFORMATION_PARTICLE.get(), false, xyz.add(offset), Vec3.ZERO.subtract(offset));
 			}
-			PacketDistributor.sendToPlayersNear(level, null, xyz.x(), xyz.y(), xyz.z(), 64.0D, particlePacket);
+			for (ServerPlayer player : PlayerLookup.around(level, xyz, 64.0)) {
+				ServerPlayNetworking.send(player, particlePacket);
+			}
 			break;
 		}
 	}

@@ -10,7 +10,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import twilightforest.init.TFParticleType;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public record LeafParticleData(int r, int g, int b) implements ParticleOptions {
 	public static MapCodec<LeafParticleData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -26,7 +26,7 @@ public record LeafParticleData(int r, int g, int b) implements ParticleOptions {
 		LeafParticleData::new
 	);
 
-	@Nonnull
+	@NotNull
 	@Override
 	public ParticleType<?> getType() {
 		return TFParticleType.FALLEN_LEAF.get();

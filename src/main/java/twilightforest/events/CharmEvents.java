@@ -1,9 +1,12 @@
 package twilightforest.events;
 
-import net.minecraft.ChatFormatting;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDeathEvent;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredItem;
+import net.fabricmc.fabric.api.entity.FakePlayer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,20 +24,10 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.registries.DeferredItem;
 import twilightforest.TwilightForestMod;
 import twilightforest.block.KeepsakeCasketBlock;
-import twilightforest.block.entity.KeepsakeCasketBlockEntity;
 import twilightforest.block.entity.SkullChestBlockEntity;
-import twilightforest.compat.curios.CuriosCompat;
+import twilightforest.compat.curios.TrinketsCompat;
 import twilightforest.config.TFConfig;
 import twilightforest.data.tags.ItemTagGenerator;
 import twilightforest.enums.BlockLoggingEnum;
@@ -46,17 +39,25 @@ import twilightforest.network.SpawnCharmPacket;
 import twilightforest.util.TFItemStackUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-@EventBusSubscriber(modid = TwilightForestMod.ID)
 public class CharmEvents {
 
 	public static final String CHARM_INV_TAG = "TFCharmInventory";
 	public static final String CASKET_DAMAGE_TAG = "CasketDamage";
 	public static final String CONSUMED_CHARM_TAG = "CharmStack";
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public static void init() {
+		LivingDeathEvent.EVENT.register(event -> {
+			applyCharmOfLife(event);
+			applyKeepingAndCasket(event);
+		});
+
+		dev.architectury.event.events.common.PlayerEvent.PLAYER_RESPAWN.register((newPlayer, conqueredEnd, removalReason) -> {
+			onPlayerRespawn(newPlayer, conqueredEnd);
+		});
+	}
+
 	// Check for charm of life first to stop a player from dying
 	public static void applyCharmOfLife(LivingDeathEvent event) {
 		LivingEntity living = event.getEntity();
@@ -68,7 +69,6 @@ public class CharmEvents {
 		if (charmOfLife(player)) event.setCanceled(true); // Executes if the player had charms
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGH)
 	// Then check if the player should keep any items through death
 	public static void applyKeepingAndCasket(LivingDeathEvent event) {
 		LivingEntity living = event.getEntity();
@@ -86,10 +86,8 @@ public class CharmEvents {
 		}
 	}
 
-	@SubscribeEvent
-	public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-		if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
-		if (!event.isEndConquered()) {
+	public static void onPlayerRespawn(ServerPlayer serverPlayer, boolean isEndConquered) {
+		if (!isEndConquered) {
 			returnStoredItems(serverPlayer);
 		}
 	}
@@ -113,7 +111,7 @@ public class CharmEvents {
 			}
 
 			if (player instanceof ServerPlayer serverPlayer) {
-				PacketDistributor.sendToPlayer(serverPlayer, new SpawnCharmPacket(new ItemStack(charm1 ? TFItems.CHARM_OF_LIFE_1.get() : TFItems.CHARM_OF_LIFE_2.get()), TFSounds.CHARM_LIFE.getKey()));
+				ServerPlayNetworking.send(serverPlayer, new SpawnCharmPacket(new ItemStack(charm1 ? TFItems.CHARM_OF_LIFE_1.get() : TFItems.CHARM_OF_LIFE_2.get()), TFSounds.CHARM_LIFE.getKey()));
 				serverPlayer.awardStat(TFStats.LIFE_CHARMS_ACTIVATED.get());
 			}
 
@@ -304,7 +302,7 @@ public class CharmEvents {
 			ItemStack stack = ItemStack.parseOptional(player.registryAccess(), (CompoundTag) getPlayerData(player).get(CONSUMED_CHARM_TAG));
 
 			if (player instanceof ServerPlayer serverPlayer) {
-				PacketDistributor.sendToPlayer(serverPlayer, new SpawnCharmPacket(stack, TFSounds.CHARM_KEEP.getKey()));
+				ServerPlayNetworking.send(serverPlayer, new SpawnCharmPacket(stack, TFSounds.CHARM_KEEP.getKey()));
 				serverPlayer.awardStat(TFStats.KEEPING_CHARMS_ACTIVATED.get());
 			}
 			getPlayerData(player).remove(CONSUMED_CHARM_TAG);
@@ -312,10 +310,10 @@ public class CharmEvents {
 	}
 
 	public static CompoundTag getPlayerData(Player player) {
-		if (!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG)) {
-			player.getPersistentData().put(Player.PERSISTED_NBT_TAG, new CompoundTag());
+		if (!player.getCustomData().contains("PlayerPersisted")) {
+			player.getCustomData().put("PlayerPersisted", new CompoundTag());
 		}
-		return player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+		return player.getCustomData().getCompound("PlayerPersisted");
 	}
 
 	//transfers a list of items to another
@@ -339,8 +337,8 @@ public class CharmEvents {
 	}
 
 	private static boolean hasCharmCurio(Item item, Player player) {
-		if (ModList.get().isLoaded("curios")) {
-			return CuriosCompat.findAndConsumeCurio(item, player);
+		if (FabricLoader.getInstance().isModLoaded("trinkets")) {
+			return TrinketsCompat.findAndConsumeCurio(item, player);
 		}
 
 		return false;

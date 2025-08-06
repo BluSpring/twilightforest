@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
+import io.github.fabricators_of_create.porting_lib.event.client.OverlayRenderCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -20,11 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.components.entity.TFPortalAttachment;
 import twilightforest.components.item.OreScannerData;
 import twilightforest.config.TFConfig;
@@ -47,69 +44,73 @@ public class OverlayHandler {
 	private static final ResourceLocation FORTIFICATION_SHIELD_SPRITE = TwilightForestMod.prefix("fortification_shield");
 	public static final Map<Long, OreMeterInfoCache> ORE_METER_STAT_CACHE = new HashMap<>();
 
-	@Autowired(dist = Dist.CLIENT)
-	private static QuestingRamCurrentContext questingRamCurrentContext;
+	private static QuestingRamCurrentContext questingRamCurrentContext = QuestingRamCurrentContext.INSTANCE;
 
-	protected static void registerOverlays(RegisterGuiLayersEvent event) {
-		event.registerAbove(VanillaGuiLayers.CROSSHAIR, TwilightForestMod.prefix("quest_ram_indicator"), (graphics, partialTicks) -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			Gui gui = minecraft.gui;
-			if (player != null && !minecraft.options.hideGui && TFConfig.showQuestRamCrosshairIndicator) {
-				RenderSystem.enableBlend();
-				renderIndicator(minecraft, graphics, gui, player, graphics.guiWidth(), graphics.guiHeight());
-				RenderSystem.disableBlend();
-			}
-		});
-		event.registerAbove(VanillaGuiLayers.VEHICLE_HEALTH, TwilightForestMod.prefix("hostile_mount_hunger_bar"), (graphics, partialTicks) -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			Gui gui = minecraft.gui;
-			if (!minecraft.options.hideGui && minecraft.gameMode.canHurtPlayer() && player != null && HostileMountEvents.isRidingUnfriendly(player)) {
-				int xPos = graphics.guiWidth() / 2 + 91;
-				int yPos = graphics.guiHeight() - gui.rightHeight;
-				gui.renderFood(graphics, player, yPos, xPos);
-				gui.rightHeight += 10;
-			}
-		});
-		event.registerAboveAll(TwilightForestMod.prefix("ore_meter_stats"), (graphics, partialTicks) -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			Gui gui = minecraft.gui;
-			if (player != null && !minecraft.options.hideGui && !gui.getDebugOverlay().showDebugScreen() && minecraft.screen == null) {
-				renderOreMeterStats(graphics, player);
-			}
-		});
-
-		event.registerAbove(VanillaGuiLayers.ARMOR_LEVEL, TwilightForestMod.prefix("fortification_shield_count"), (graphics, partialTick) -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			Gui gui = minecraft.gui;
-			if (player != null && !minecraft.options.hideGui && (minecraft.gameMode.canHurtPlayer() || TFConfig.showFortificationShieldIndicatorInCreative) && player.hasData(TFDataAttachments.FORTIFICATION_SHIELDS) && player.getData(TFDataAttachments.FORTIFICATION_SHIELDS).shieldsLeft() > 0 && TFConfig.showFortificationShieldIndicator) {
-				renderShieldCount(graphics, gui, graphics.guiWidth(), graphics.guiHeight(), player.getData(TFDataAttachments.FORTIFICATION_SHIELDS).shieldsLeft());
-			}
-		});
-
-		event.registerAboveAll(TwilightForestMod.prefix("portal_overlay"), (graphics, partialTick) -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			Window window = minecraft.getWindow();
-			LocalPlayer player = minecraft.player;
-
-			if (player != null) {
-				TFPortalAttachment portal = player.getData(TFDataAttachments.TF_PORTAL_COOLDOWN);
-				if (portal.getPortalTimer() > 0) {
-					RenderSystem.disableDepthTest();
-					RenderSystem.depthMask(false);
+	protected static void registerOverlays() {
+		OverlayRenderCallback.EVENT.register((graphics, partialTicks, window, type) -> {
+			if (type == OverlayRenderCallback.Types.CROSSHAIRS) {
+				Minecraft minecraft = Minecraft.getInstance();
+				LocalPlayer player = minecraft.player;
+				Gui gui = minecraft.gui;
+				if (player != null && !minecraft.options.hideGui && TFConfig.showQuestRamCrosshairIndicator) {
 					RenderSystem.enableBlend();
-					graphics.setColor(1.0F, 1.0F, 1.0F, (float) portal.getPortalTimer() / (float) TFPortalAttachment.MAX_TICKS);
-					TextureAtlasSprite textureatlassprite = minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(TFBlocks.TWILIGHT_PORTAL.get().defaultBlockState());
-					graphics.blit(0, 0, -90, window.getGuiScaledWidth(), window.getGuiScaledHeight(), textureatlassprite);
+					renderIndicator(minecraft, graphics, gui, player, graphics.guiWidth(), graphics.guiHeight());
 					RenderSystem.disableBlend();
-					RenderSystem.depthMask(true);
-					RenderSystem.enableDepthTest();
-					graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 				}
 			}
+
+			if (type == OverlayRenderCallback.Types.PLAYER_HEALTH) {
+				Minecraft minecraft = Minecraft.getInstance();
+				LocalPlayer player = minecraft.player;
+				Gui gui = minecraft.gui;
+				if (!minecraft.options.hideGui && minecraft.gameMode.canHurtPlayer() && player != null && HostileMountEvents.isRidingUnfriendly(player)) {
+					int xPos = graphics.guiWidth() / 2 + 91;
+					int yPos = graphics.guiHeight() - 39;
+					gui.renderFood(graphics, player, yPos, xPos);
+					//gui.rightHeight += 10;
+				}
+			}
+
+			if (type == OverlayRenderCallback.Types.PLAYER_HEALTH) {
+				Minecraft minecraft = Minecraft.getInstance();
+				LocalPlayer player = minecraft.player;
+				Gui gui = minecraft.gui;
+				if (player != null && !minecraft.options.hideGui && !gui.getDebugOverlay().showDebugScreen() && minecraft.screen == null) {
+					renderOreMeterStats(graphics, player);
+				}
+			}
+
+			if (type == OverlayRenderCallback.Types.PLAYER_HEALTH) {
+				Minecraft minecraft = Minecraft.getInstance();
+				LocalPlayer player = minecraft.player;
+				Gui gui = minecraft.gui;
+				if (player != null && !minecraft.options.hideGui && (minecraft.gameMode.canHurtPlayer() || TFConfig.showFortificationShieldIndicatorInCreative) && player.hasAttached(TFDataAttachments.FORTIFICATION_SHIELDS.get()) && player.getAttachedOrCreate(TFDataAttachments.FORTIFICATION_SHIELDS.get()).shieldsLeft() > 0 && TFConfig.showFortificationShieldIndicator) {
+					renderShieldCount(graphics, gui, graphics.guiWidth(), graphics.guiHeight(), player.getAttachedOrCreate(TFDataAttachments.FORTIFICATION_SHIELDS.get()).shieldsLeft());
+				}
+			}
+
+			if (type == OverlayRenderCallback.Types.PLAYER_HEALTH) {
+				Minecraft minecraft = Minecraft.getInstance();
+				LocalPlayer player = minecraft.player;
+
+				if (player != null) {
+					TFPortalAttachment portal = player.getAttachedOrCreate(TFDataAttachments.TF_PORTAL_COOLDOWN.get());
+					if (portal.getPortalTimer() > 0) {
+						RenderSystem.disableDepthTest();
+						RenderSystem.depthMask(false);
+						RenderSystem.enableBlend();
+						graphics.setColor(1.0F, 1.0F, 1.0F, (float) portal.getPortalTimer() / (float) TFPortalAttachment.MAX_TICKS);
+						TextureAtlasSprite textureatlassprite = minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(TFBlocks.TWILIGHT_PORTAL.get().defaultBlockState());
+						graphics.blit(0, 0, -90, window.getGuiScaledWidth(), window.getGuiScaledHeight(), textureatlassprite);
+						RenderSystem.disableBlend();
+						RenderSystem.depthMask(true);
+						RenderSystem.enableDepthTest();
+						graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+					}
+				}
+			}
+
+			return false;
 		});
 	}
 
@@ -137,9 +138,9 @@ public class OverlayHandler {
 
 	private static void renderShieldCount(GuiGraphics graphics, Gui gui, int screenWidth, int screenHeight, int shieldCount) {
 		for (int i = 0; i < Math.min(shieldCount, 10); i++) {
-			graphics.blitSprite(FORTIFICATION_SHIELD_SPRITE, screenWidth / 2 - 91 + (i * 8), screenHeight - gui.leftHeight, 9, 9);
+			graphics.blitSprite(FORTIFICATION_SHIELD_SPRITE, screenWidth / 2 - 91 + (i * 8), screenHeight - 39, 9, 9);
 		}
-		gui.leftHeight += 10;
+		//gui.leftHeight += 10;
 	}
 
 	private static void renderOreMeterStats(GuiGraphics graphics, Player player) {
@@ -155,13 +156,13 @@ public class OverlayHandler {
 				graphics.fill(0, 0, 56, 16, 0x9b000000);
 				graphics.drawString(Minecraft.getInstance().font, component, 4, 4, 16777215, false);
 			} else {
-				OreScannerData oreScannerData = selectedMeter.get(TFDataComponents.ORE_DATA);
+				OreScannerData oreScannerData = selectedMeter.get(TFDataComponents.ORE_DATA.get());
 
 				if (oreScannerData == null) return;
 
 				long identifier = oreScannerData.universalId();
 				if (identifier != 0L && !ORE_METER_STAT_CACHE.containsKey(identifier)) {
-					initTooltips(identifier, selectedMeter.getOrDefault(TFDataComponents.ORE_RANGE, 1), oreScannerData);
+					initTooltips(identifier, selectedMeter.getOrDefault(TFDataComponents.ORE_RANGE.get(), 1), oreScannerData);
 				}
 
 				if (ORE_METER_STAT_CACHE.containsKey(identifier)) {

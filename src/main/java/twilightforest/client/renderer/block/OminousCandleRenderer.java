@@ -3,6 +3,7 @@ package twilightforest.client.renderer.block;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -14,8 +15,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
-import net.neoforged.neoforge.client.RenderTypeHelper;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import twilightforest.block.OminousCandleBlock;
 import twilightforest.block.entity.OminousCandleBlockEntity;
 
@@ -69,22 +68,7 @@ public class OminousCandleRenderer<T extends OminousCandleBlockEntity> implement
 			blockEntity.setVisualHeightScalar(yHeight, i);
 
 			stack.translate(-vec2s.get(i).x, yHeight, -vec2s.get(i).y);
-			for (RenderType rt : bakedModel.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY)) {
-				this.blockRenderer.getModelRenderer()
-					.renderModel(
-						stack.last(),
-						buffer.getBuffer(RenderTypeHelper.getEntityRenderType(rt, false)),
-						state,
-						bakedModel,
-						r,
-						g,
-						b,
-						packedLight,
-						packedOverlay,
-						ModelData.EMPTY,
-						rt
-					);
-			}
+			this.blockRenderer.getModelRenderer().renderModel(stack.last(), buffer.getBuffer(ItemBlockRenderTypes.getChunkRenderType(state)), state, bakedModel, r, g, b, packedLight, packedOverlay);
 			stack.popPose();
 		}
 		stack.popPose();

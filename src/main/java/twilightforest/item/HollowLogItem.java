@@ -1,5 +1,6 @@
 package twilightforest.item;
 
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -22,6 +23,8 @@ public class HollowLogItem extends BlockItem {
 		this.horizontalLog = horizontalLog.value();
 		this.verticalLog = verticalLog.value();
 		this.climbable = climbable.value();
+
+		FuelRegistry.INSTANCE.add(this, 300);
 	}
 
 	@Nullable
@@ -43,17 +46,12 @@ public class HollowLogItem extends BlockItem {
 
 	// FIXME Depreciated for removal, NeoForge will no longer continue supporting this method
 	//  https://github.com/neoforged/NeoForge/pull/1480
-	@SuppressWarnings("removal")
-	@Override
+	//@SuppressWarnings("removal")
+	/*@Override
 	public void removeFromBlockToItemMap(Map<Block, Item> blockItemMap, Item item) {
 		super.removeFromBlockToItemMap(blockItemMap, item);
 		blockItemMap.remove(this.horizontalLog);
 		blockItemMap.remove(this.verticalLog);
 		blockItemMap.remove(this.climbable);
-	}
-
-	@Override
-	public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
-		return 300;
-	}
+	}*/
 }

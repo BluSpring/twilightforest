@@ -17,7 +17,7 @@ import twilightforest.data.custom.stalactites.entry.StalactiteReloadListener;
 import twilightforest.util.iterators.RectangleLatticeIterator;
 import twilightforest.world.components.feature.BlockSpikeFeature;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;

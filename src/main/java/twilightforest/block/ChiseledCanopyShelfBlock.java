@@ -1,12 +1,13 @@
 package twilightforest.block;
 
-import net.minecraft.ChatFormatting;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.FlammableBlock;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,14 +28,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.block.entity.bookshelf.ChiseledCanopyShelfBlockEntity;
 import twilightforest.init.TFBlockEntities;
 import twilightforest.init.TFSounds;
 import twilightforest.network.ParticlePacket;
 
-public class ChiseledCanopyShelfBlock extends ChiseledBookShelfBlock {
+public class ChiseledCanopyShelfBlock extends ChiseledBookShelfBlock implements FlammableBlock {
 	public static final BooleanProperty SPAWNER = BooleanProperty.create("spawner");
 
 	public ChiseledCanopyShelfBlock(Properties properties) {
@@ -64,7 +64,7 @@ public class ChiseledCanopyShelfBlock extends ChiseledBookShelfBlock {
 			}
 			level.destroyBlock(pos, false);
 		}
-		super.onCaughtFire(state, level, pos, face, igniter);
+		FlammableBlock.super.onCaughtFire(state, level, pos, face, igniter);
 	}
 
 	@Override
@@ -100,7 +100,9 @@ public class ChiseledCanopyShelfBlock extends ChiseledBookShelfBlock {
 					(double) pos.getZ() + 0.5D + level.getRandom().nextGaussian() * 0.02D * level.getRandom().nextGaussian(),
 					0.15F * level.getRandom().nextGaussian(), 0.15F * level.getRandom().nextGaussian(), 0.15F * level.getRandom().nextGaussian());
 			}
-			PacketDistributor.sendToPlayersNear(serverLevel, null, pos.getX(), pos.getY(), pos.getZ(), 32.0D, particlePacket);
+			for (ServerPlayer player2 : PlayerLookup.around(serverLevel, pos, 32.0)) {
+				ServerPlayNetworking.send(player2, particlePacket);
+			}
 		}
 		super.playerDestroy(level, player, pos, state, entity, stack);
 	}

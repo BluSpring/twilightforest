@@ -1,6 +1,8 @@
 package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.EntityDestroyBlock;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.ExplosionResistanceBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
@@ -30,7 +32,7 @@ import twilightforest.block.entity.SkullChestBlockEntity;
 import twilightforest.enums.BlockLoggingEnum;
 import twilightforest.init.TFBlockEntities;
 
-public class SkullChestBlock extends BaseEntityBlock implements BlockLoggingEnum.IMultiLoggable {
+public class SkullChestBlock extends BaseEntityBlock implements BlockLoggingEnum.IMultiLoggable, ExplosionResistanceBlock, EntityDestroyBlock {
 
 	public static final DirectionProperty FACING = TFHorizontalBlock.FACING;
 	public static final MapCodec<SkullChestBlock> CODEC = simpleCodec(SkullChestBlock::new);

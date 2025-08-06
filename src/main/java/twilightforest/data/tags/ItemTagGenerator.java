@@ -1,6 +1,8 @@
 package twilightforest.data.tags;
 
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -10,8 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
 import twilightforest.TwilightForestMod;
 import twilightforest.data.tags.compat.ModdedItemTagGenerator;
 import twilightforest.init.TFBlocks;
@@ -341,7 +342,7 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 		this.tag(ItemTags.MEAT).add(TFItems.RAW_VENISON.get(), TFItems.COOKED_VENISON.get(), TFItems.RAW_MEEF.get(), TFItems.COOKED_MEEF.get(), TFItems.MEEF_STROGANOFF.get(), TFItems.EXPERIMENT_115.get(), TFItems.HYDRA_CHOP.get());
 		this.tag(ItemTags.BEACON_PAYMENT_ITEMS).addTags(IRONWOOD_INGOTS, STEELEAF_INGOTS, KNIGHTMETAL_INGOTS, FIERY_INGOTS);
 
-		this.tag(ItemTags.TRIMMABLE_ARMOR).remove(TFItems.YETI_HELMET.get());
+		this.tag(ItemTags.TRIMMABLE_ARMOR);//.remove(TFItems.YETI_HELMET.get());
 
 		this.tag(ItemTags.HEAD_ARMOR).add(
 			TFItems.IRONWOOD_HELMET.get(),
@@ -389,15 +390,15 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 			TFItems.TRIPLE_BOW.get(), TFItems.SEEKER_BOW.get(), TFItems.ICE_BOW.get(), TFItems.ENDER_BOW.get(),
 			TFItems.BLOCK_AND_CHAIN.get(), TFItems.KNIGHTMETAL_SHIELD.get(), TFItems.ORE_MAGNET.get(),
 			TFItems.PEACOCK_FEATHER_FAN.get(), TFItems.CRUMBLE_HORN.get());
-		this.tag(ItemTags.FIRE_ASPECT_ENCHANTABLE).remove(TFItems.FIERY_SWORD.get(), TFItems.ICE_SWORD.get());
-		this.tag(ItemTags.VANISHING_ENCHANTABLE).remove(TFItems.PHANTOM_HELMET.get(), TFItems.PHANTOM_CHESTPLATE.get());
-		this.tag(ItemTags.EQUIPPABLE_ENCHANTABLE).remove(TFItems.PHANTOM_HELMET.get(), TFItems.PHANTOM_CHESTPLATE.get());
+		this.tag(ItemTags.FIRE_ASPECT_ENCHANTABLE);//.remove(TFItems.FIERY_SWORD.get(), TFItems.ICE_SWORD.get());
+		this.tag(ItemTags.VANISHING_ENCHANTABLE);//.remove(TFItems.PHANTOM_HELMET.get(), TFItems.PHANTOM_CHESTPLATE.get());
+		this.tag(ItemTags.EQUIPPABLE_ENCHANTABLE);//.remove(TFItems.PHANTOM_HELMET.get(), TFItems.PHANTOM_CHESTPLATE.get());
 		this.tag(ItemTags.BREAKS_DECORATED_POTS).add(TFItems.BLOCK_AND_CHAIN.get());
 
-		this.tag(Tags.Items.FOODS_BERRY).add(TFItems.TORCHBERRIES.get());
-		this.tag(Tags.Items.FOODS_RAW_MEAT).add(TFItems.RAW_VENISON.get(), TFItems.RAW_MEEF.get());
-		this.tag(Tags.Items.FOODS_COOKED_MEAT).add(TFItems.COOKED_VENISON.get(), TFItems.COOKED_MEEF.get(), TFItems.HYDRA_CHOP.get());
-		this.tag(Tags.Items.FOODS_SOUP).add(TFItems.MEEF_STROGANOFF.get());
+		this.tag(Tags.Items.FOODS_BERRIES).add(TFItems.TORCHBERRIES.get());
+		this.tag(Tags.Items.FOODS_RAW_MEATS).add(TFItems.RAW_VENISON.get(), TFItems.RAW_MEEF.get());
+		this.tag(Tags.Items.FOODS_COOKED_MEATS).add(TFItems.COOKED_VENISON.get(), TFItems.COOKED_MEEF.get(), TFItems.HYDRA_CHOP.get());
+		this.tag(Tags.Items.FOODS_SOUPS).add(TFItems.MEEF_STROGANOFF.get());
 		this.tag(Tags.Items.FOODS_EDIBLE_WHEN_PLACED).add(TFItems.EXPERIMENT_115.get());
 		this.tag(Tags.Items.ROPES).add(TFItems.ROPE.get());
 		this.tag(Tags.Items.MUSHROOMS).add(TFBlocks.MUSHGLOOM.get().asItem());
@@ -409,11 +410,11 @@ public class ItemTagGenerator extends ModdedItemTagGenerator {
 	}
 
 	public static TagKey<Item> create(String tagName) {
-		return ItemTags.create(TwilightForestMod.prefix(tagName));
+		return TagKey.create(Registries.ITEM, TwilightForestMod.prefix(tagName));
 	}
 
 	public static TagKey<Item> makeCommonTag(String tagName) {
-		return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", tagName));
+		return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", tagName));
 	}
 
 	@Override

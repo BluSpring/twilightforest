@@ -4,14 +4,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.ResourceLocation;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Component;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Component
 public final class LichTowerPieces {
 	public static final int YARD_SPAWNS = 0;
 	public static final int INTERIOR_SPAWNS = 1;

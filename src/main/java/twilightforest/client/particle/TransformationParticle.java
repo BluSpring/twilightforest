@@ -89,8 +89,4 @@ public class TransformationParticle extends TextureSheetParticle {
 		}
 	}
 
-	@Override
-	public AABB getRenderBoundingBox(float partialTicks) {
-		return AABB.INFINITE;
-	}
 }

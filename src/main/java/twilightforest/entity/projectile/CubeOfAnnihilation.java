@@ -1,5 +1,8 @@
 package twilightforest.entity.projectile;
 
+import io.github.fabricators_of_create.porting_lib.level.events.BlockEvent;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -19,9 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.*;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFItems;
 import twilightforest.init.TFParticleType;
@@ -100,7 +100,7 @@ public class CubeOfAnnihilation extends ThrowableProjectile {
 			BlockState state = this.level().getBlockState(pos);
 			if (!state.isAir()) {
 				if (this.getOwner() instanceof ServerPlayer player) {
-					if (!NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(this.level(), pos, state, player)).isCanceled()) {
+					if (!(new BlockEvent.BreakEvent(this.level(), pos, state, player)).post()) {
 						if (this.canAnnihilate(pos, state, player.gameMode.getGameModeForPlayer().isBlockPlacingRestricted())) {
 							this.level().removeBlock(pos, false);
 							this.playSound(TFSounds.BLOCK_ANNIHILATED.get(), 0.125f, this.random.nextFloat() * 0.25F + 0.75F);
@@ -139,7 +139,9 @@ public class CubeOfAnnihilation extends ThrowableProjectile {
 					}
 				}
 			}
-			PacketDistributor.sendToPlayersNear(server, null, pos.getX(), pos.getY(), pos.getZ(), 32.0D, particlePacket);
+			for (ServerPlayer player : PlayerLookup.around(server, pos, 32.0)) {
+				ServerPlayNetworking.send(player, particlePacket);
+			}
 		}
 	}
 

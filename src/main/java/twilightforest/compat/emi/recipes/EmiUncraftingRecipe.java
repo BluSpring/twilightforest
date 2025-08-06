@@ -8,6 +8,7 @@ import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -47,7 +48,7 @@ public class EmiUncraftingRecipe<T extends CraftingRecipe> extends TFEmiRecipe<T
 		List<Ingredient> outputs = new ArrayList<>(this.getRecipe().value().getIngredients()); //Collect each ingredient
 		outputs.replaceAll(ingredient -> Ingredient.of(Arrays.stream(ingredient.getItems())
 			.filter(o -> !o.is(ItemTagGenerator.BANNED_UNCRAFTING_INGREDIENTS))
-			.filter(o -> o.getCraftingRemainingItem().isEmpty())));
+			.filter(o -> o.getItem().getCraftingRemainingItem() == Items.AIR)));
 
 		for (int index = 0, offset = 0; index - offset < outputs.size() && index < 9; index++) {
 			int x = index % 3, y = index / 3;

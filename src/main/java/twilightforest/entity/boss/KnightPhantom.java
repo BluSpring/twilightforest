@@ -2,7 +2,10 @@ package twilightforest.entity.boss;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.CustomFrictionBlock;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
@@ -46,7 +49,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
 import twilightforest.entity.ai.control.NoClipMoveControl;
@@ -117,7 +119,10 @@ public class KnightPhantom extends BaseTFBoss {
 
 	@Override
 	public void startSeenByPlayer(ServerPlayer player) {
-		if (this.isDeadOrDying()) PacketDistributor.sendToPlayersTrackingEntity(this, new UpdateDeathTimePacket(this.getId(), this.deathTime));
+		if (this.isDeadOrDying())
+			for (ServerPlayer pl : PlayerLookup.tracking(this)) {
+				ServerPlayNetworking.send(pl, new UpdateDeathTimePacket(this.getId(), this.deathTime));
+			}
 		else if (this.getNumber() == 0) this.getBossBar().addPlayer(player);
 	}
 
@@ -255,7 +260,9 @@ public class KnightPhantom extends BaseTFBoss {
 			// tell the other knights to reset their animation
 			for (KnightPhantom phantom : this.level().getEntitiesOfClass(KnightPhantom.class, this.getBoundingBox().inflate(64.0D), LivingEntity::isDeadOrDying)) {
 				phantom.deathTime = 1;
-				PacketDistributor.sendToPlayersTrackingEntity(phantom, new UpdateDeathTimePacket(phantom.getId(), 1));
+				for (ServerPlayer player : PlayerLookup.tracking(phantom)) {
+					ServerPlayNetworking.send(player, new UpdateDeathTimePacket(phantom.getId(), 1));
+				}
 			}
 			this.getEntityData().set(IT_IS_OVER, true);
 		}
@@ -341,14 +348,19 @@ public class KnightPhantom extends BaseTFBoss {
 			} else {
 				BlockPos ground = getBlockPosBelowThatAffectsMyMovement();
 				float f = 0.91F;
+				var state = this.level().getBlockState(ground);
 				if (this.onGround()) {
-					f = this.level().getBlockState(ground).getFriction(this.level(), ground, this) * 0.91F;
+					f = (state.getBlock() instanceof CustomFrictionBlock frictionBlock ?
+						frictionBlock.getFriction(state, this.level(), ground, this) :
+						state.getBlock().getFriction()) * 0.91f;
 				}
 
 				float f1 = 0.16277137F / (f * f * f);
 				f = 0.91F;
 				if (this.onGround()) {
-					f = this.level().getBlockState(ground).getFriction(this.level(), ground, this) * 0.91F;
+					f = (state.getBlock() instanceof CustomFrictionBlock frictionBlock ?
+						frictionBlock.getFriction(state, this.level(), ground, this) :
+						state.getBlock().getFriction()) * 0.91f;
 				}
 
 				this.moveRelative(this.onGround() ? 0.1F * f1 : 0.02F, vec3);

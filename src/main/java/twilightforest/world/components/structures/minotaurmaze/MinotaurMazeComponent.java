@@ -14,7 +14,6 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
-import tamaized.beanification.Autowired;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFStructurePieceTypes;
 import twilightforest.util.BoundingBoxUtils;
@@ -24,8 +23,7 @@ import twilightforest.world.components.structures.selectors.MazestoneRandomBlock
 
 
 public class MinotaurMazeComponent extends TFStructureComponentOld {
-	@Autowired
-	private static MazestoneRandomBlockSelectoryFactory mazestone;
+	private static MazestoneRandomBlockSelectoryFactory mazestone = new MazestoneRandomBlockSelectoryFactory();
 	final TFMaze maze;
 	final int[] rcoords;
 	private final int level;

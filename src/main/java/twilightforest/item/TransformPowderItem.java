@@ -12,9 +12,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import twilightforest.init.TFDataMaps;
+import twilightforest.util.datamaps.EntityTransformation;
 import twilightforest.util.entities.EntityUtil;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class TransformPowderItem extends Item {
 
@@ -31,9 +32,9 @@ public class TransformPowderItem extends Item {
 		return transformEntityIfPossible(target, player.getItemInHand(hand), !player.isCreative()) ? InteractionResult.SUCCESS : InteractionResult.PASS;
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, @Nonnull InteractionHand hand) {
+	public InteractionResultHolder<ItemStack> use(Level level, Player player, @NotNull InteractionHand hand) {
 		if (level.isClientSide()) {
 			AABB area = this.getEffectAABB(player);
 
@@ -54,7 +55,7 @@ public class TransformPowderItem extends Item {
 		//dont transform tamed animals that have owners
 		if (target instanceof OwnableEntity ownable && ownable.getOwner() != null) return false;
 
-		var datamap = target.getType().builtInRegistryHolder().getData(TFDataMaps.TRANSFORMATION_POWDER);
+		var datamap = EntityTransformation.TRANSFORMATION_POWDER.get(target.getType());
 
 		if (datamap != null) {
 			boolean flag = EntityUtil.convertEntity(target, datamap.result());

@@ -1,6 +1,10 @@
 package twilightforest.block;
 
 import com.mojang.serialization.MapCodec;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -17,7 +21,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -30,13 +36,10 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.templates.VoidFluidHandler;
+import org.jetbrains.annotations.Nullable;
 import twilightforest.block.entity.BrazierBlockEntity;
 import twilightforest.enums.BrazierLight;
 import twilightforest.init.TFBlockEntities;
-
-import javax.annotation.Nullable;
 
 public class BrazierBlock extends BaseEntityBlock {
 
@@ -96,7 +99,7 @@ public class BrazierBlock extends BaseEntityBlock {
 
 	@Override
 	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-		if (!level.isClientSide && (player.isCreative() || !player.hasCorrectToolForDrops(state, level, pos))) {
+		if (!level.isClientSide && (player.isCreative() || !player.hasCorrectToolForDrops(state))) {
 			DoubleBlockHalf half = state.getValue(HALF);
 			if (half == DoubleBlockHalf.UPPER) {
 				BlockPos below = pos.below();
@@ -153,15 +156,23 @@ public class BrazierBlock extends BaseEntityBlock {
 			}
 
 			if (state.getValue(LIGHT).isLit()) {
-				if (FluidUtil.getFluidContained(stack).isPresent() && FluidUtil.getFluidContained(stack).get().is(Fluids.WATER)) {
-					if (FluidUtil.tryEmptyContainer(stack, new VoidFluidHandler(), 1000, player, true).isSuccess()) {
-						level.setBlock(pos, state.setValue(LIGHT, BrazierLight.OFF), 11);
-						level.getBlockState(pos.below()).setValue(LIGHT, BrazierLight.OFF);
-						level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS);
-						player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-						return ItemInteractionResult.sidedSuccess(level.isClientSide());
-					} else {
-						return ItemInteractionResult.FAIL;
+				var fluid = FluidStorage.ITEM.find(stack, null);
+				if (fluid != null) {
+					for (StorageView<FluidVariant> view : fluid) {
+						if (view.getResource().isOf(Fluids.WATER)) {
+							try (Transaction transaction = Transaction.openOuter()) {
+								if (view.extract(view.getResource(), 1000L, transaction) > 0) {
+									level.setBlock(pos, state.setValue(LIGHT, BrazierLight.OFF), 11);
+									level.getBlockState(pos.below()).setValue(LIGHT, BrazierLight.OFF);
+									level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS);
+									player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+									transaction.commit();
+									return ItemInteractionResult.sidedSuccess(level.isClientSide());
+								} else {
+									return ItemInteractionResult.FAIL;
+								}
+							}
+						}
 					}
 				}
 			}

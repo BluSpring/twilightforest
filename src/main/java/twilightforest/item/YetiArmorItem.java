@@ -1,5 +1,6 @@
 package twilightforest.item;
 
+import io.github.fabricators_of_create.porting_lib.item.extensions.WalkOnSnowItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -13,8 +14,6 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.client.model.TFModelLayers;
@@ -23,7 +22,7 @@ import twilightforest.init.TFItems;
 
 import java.util.List;
 
-public class YetiArmorItem extends ArmorItem {
+public class YetiArmorItem extends ArmorItem implements WalkOnSnowItem {
 	private static final MutableComponent TOOLTIP = Component.translatable("item.twilightforest.yeti_armor.desc").setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
 
 	public YetiArmorItem(Holder<ArmorMaterial> material, Type type, Properties properties) {
@@ -41,7 +40,7 @@ public class YetiArmorItem extends ArmorItem {
 		return stack.is(TFItems.YETI_BOOTS.get());
 	}
 
-	public static final class ArmorRender implements IClientItemExtensions {
+	/*public static final class ArmorRender implements IClientItemExtensions {
 		public static final ArmorRender INSTANCE = new ArmorRender();
 
 		private static final Lazy<HumanoidModel<?>> INNER_ARMOR_MODEL = Lazy.of(() ->
@@ -55,6 +54,6 @@ public class YetiArmorItem extends ArmorItem {
 		public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity living, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> model) {
 			return slot == EquipmentSlot.LEGS ? INNER_ARMOR_MODEL.get() : OUTER_ARMOR_MODEL.get();
 		}
-	}
+	}*/
 
 }

@@ -1,12 +1,9 @@
 package twilightforest.network;
 
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.moddiscovery.ModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -14,7 +11,6 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.Optional;
 
-@Component
 public class ModUpdateURLInterceptor {
 
 	private final Logger logger = LogManager.getLogger();
@@ -23,7 +19,7 @@ public class ModUpdateURLInterceptor {
 	private MethodHandle ModInfo_updateJSONURL = null;
 
 	public ModUpdateURLInterceptor() {
-		ModList.get().getModFileById(TwilightForestMod.ID).getMods().forEach(info -> {
+		/*ModList.get().getModFileById(TwilightForestMod.ID).getMods().forEach(info -> {
 			if (info instanceof ModInfo mod) {
 				if (ModInfo_updateJSONURL == null) {
 					try {
@@ -46,7 +42,7 @@ public class ModUpdateURLInterceptor {
 					}
 				}
 			}
-		});
+		});*/
 	}
 
 }

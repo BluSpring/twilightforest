@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.Util;
 import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponents;
@@ -46,13 +47,11 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.common.world.PieceBeardifierModifier;
+import io.github.fabricators_of_create.porting_lib.world.PieceBeardifierModifier;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.block.ChiseledCanopyShelfBlock;
 import twilightforest.block.LightableBlock;
 import twilightforest.block.SkullCandleBlock;
@@ -80,8 +79,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public final class LichTowerWingRoom extends TwilightJigsawPiece implements PieceBeardifierModifier, SpawnIndexProvider {
-	@Autowired
-	private static LichTowerUtil lichTowerUtil;
+	private static LichTowerUtil lichTowerUtil = new LichTowerUtil();
 
 	private final int roomSize;
 	private final boolean generateGround;
@@ -559,7 +557,7 @@ public final class LichTowerWingRoom extends TwilightJigsawPiece implements Piec
 				BlockState blockState = this.blockFromLabel(parameters[0]).rotate(stateRotation);
 				if (!blockState.isAir()) {
 					level.setBlock(pos, blockState, Block.UPDATE_CLIENTS);
-				} else if (!FMLLoader.isProduction()) {
+				} else if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
 					TwilightForestMod.LOGGER.warn("Variation label {} ({}) obtained {} in {}", parameters[0], parameters, blockState, this.templateName);
 				}
 			}
@@ -726,7 +724,7 @@ public final class LichTowerWingRoom extends TwilightJigsawPiece implements Piec
 		trapEntity.setPersistenceRequired();
 		trapEntity.setLeashedTo(knot, false);
 		trapEntity.moveTo(zombiePos.getX() + 0.5, zombiePos.getY() - 1, zombiePos.getZ() + 0.5);
-		trapEntity.setData(TFDataAttachments.LEASH_PATHFINDER_OVERRIDE, Unit.INSTANCE);
+		trapEntity.setAttached(TFDataAttachments.LEASH_PATHFINDER_OVERRIDE.get(), Unit.INSTANCE);
 		level.addFreshEntity(trapEntity);
 	}
 

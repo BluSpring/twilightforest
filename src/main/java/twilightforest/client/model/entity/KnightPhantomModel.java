@@ -17,7 +17,7 @@ import twilightforest.TwilightForestMod;
 import twilightforest.client.renderer.entity.KnightPhantomRenderer;
 import twilightforest.entity.boss.KnightPhantom;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class KnightPhantomModel extends HumanoidModel<KnightPhantom> implements TrophyBlockModel {
 

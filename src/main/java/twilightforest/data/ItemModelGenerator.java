@@ -1,5 +1,13 @@
 package twilightforest.data;
 
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.models.builders.ItemLayerModelBuilder;
+import io.github.fabricators_of_create.porting_lib.models.generators.ItemModelBuilder;
+import io.github.fabricators_of_create.porting_lib.models.generators.ItemModelProvider;
+import io.github.fabricators_of_create.porting_lib.models.generators.ModelFile;
+import io.github.fabricators_of_create.porting_lib.models.generators.loaders.SeparateTransformsModelBuilder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredItem;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -10,16 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
-import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.enums.extensions.TFItemDisplayContextEnumExtension;
 import twilightforest.init.TFBlocks;
 import twilightforest.init.TFEntities;
@@ -32,8 +31,7 @@ import static twilightforest.TwilightForestMod.prefix;
 @SuppressWarnings("SameParameterValue")
 public class ItemModelGenerator extends ItemModelProvider {
 
-	@Autowired
-	private static TFItemDisplayContextEnumExtension itemDisplayContextEnumExtension;
+	private static TFItemDisplayContextEnumExtension itemDisplayContextEnumExtension = TFItemDisplayContextEnumExtension.INSTANCE;
 
 	public ItemModelGenerator(PackOutput output, ExistingFileHelper existingFileHelper) {
 		super(output, TwilightForestMod.ID, existingFileHelper);
@@ -976,7 +974,7 @@ public class ItemModelGenerator extends ItemModelProvider {
 		ItemModelBuilder builder = withExistingParent(item.getId().getPath(), "item/generated");
 		builder = builder.texture("layer0", prefix("item/exanimate_powder"));
 		builder = builder.texture("layer1", prefix("item/exanimate_flames"));
-		builder = builder.customLoader(ItemLayerModelBuilder::begin).emissive(15, 15, 1)/*.renderType("minecraft:translucent", 0)*/.end();
+		builder = builder.customLoader(ItemLayerModelBuilder::begin).emissive(15, 15, 1).renderType("minecraft:translucent", 0).end();
 		return builder;
 	}
 

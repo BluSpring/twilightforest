@@ -22,7 +22,7 @@ import twilightforest.init.TFBlocks;
 import twilightforest.init.TFDamageTypes;
 import twilightforest.init.TFSounds;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class SlideBlock extends Entity {
@@ -177,14 +177,14 @@ public class SlideBlock extends Entity {
 	}
 
 	@Override
-	protected void readAdditionalSaveData(@Nonnull CompoundTag compound) {
+	protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
 		this.slideTime = compound.getInt("Time");
 		this.getEntityData().set(MOVE_DIRECTION, Direction.from3DDataValue(compound.getByte("Direction")));
 		this.myState = NbtUtils.readBlockState(this.level().holderLookup(Registries.BLOCK), compound.getCompound("BlockState"));
 	}
 
 	@Override
-	protected void addAdditionalSaveData(@Nonnull CompoundTag compound) {
+	protected void addAdditionalSaveData(@NotNull CompoundTag compound) {
 		compound.putInt("Time", this.slideTime);
 		compound.putByte("Direction", (byte) this.getEntityData().get(MOVE_DIRECTION).get3DDataValue());
 		compound.put("BlockState", NbtUtils.writeBlockState(this.myState));

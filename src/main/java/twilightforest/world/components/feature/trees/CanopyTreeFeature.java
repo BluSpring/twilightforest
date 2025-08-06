@@ -4,16 +4,17 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelSimulatedReader;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import twilightforest.init.TFBlocks;
+import twilightforest.util.RootPlacer;
 import twilightforest.util.features.FeatureLogic;
 import twilightforest.util.features.FeaturePlacers;
 import twilightforest.util.features.FeatureUtil;
-import twilightforest.util.RootPlacer;
 import twilightforest.world.components.feature.config.TFTreeFeatureConfig;
 
 import java.util.List;
@@ -47,9 +48,12 @@ public class CanopyTreeFeature extends TFTreeFeature<TFTreeFeatureConfig> {
 			return false;
 		}
 
-		if (world.getBlockState(pos.below()).canSustainPlant(world, pos.below(), Direction.UP, TFBlocks.CANOPY_SAPLING.get().defaultBlockState()).isFalse()) {
+		/*if (TFBlocks.CANOPY_SAPLING.get().defaultBlockState().getBlock() instanceof IPlantable plantable && !world.getBlockState(pos.below()).canSustainPlant(world, pos.below(), Direction.UP, plantable)) {
 			return false;
-		}
+		}*/
+
+		if (!world.getBlockState(pos.below()).is(BlockTags.DIRT))
+			return false;
 
 		leaves.clear();
 

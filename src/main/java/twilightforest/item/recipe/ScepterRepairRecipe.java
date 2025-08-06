@@ -110,7 +110,9 @@ public class ScepterRepairRecipe extends CustomRecipe {
 
 	@Override
 	public NonNullList<Ingredient> getIngredients() {
-		return NonNullList.copyOf(this.repairItems);
+		var list = NonNullList.<Ingredient>createWithCapacity(this.repairItems.size());
+		list.addAll(this.repairItems);
+		return list;
 	}
 
 	@Override

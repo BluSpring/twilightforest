@@ -32,7 +32,7 @@ import twilightforest.init.TFEntities;
 import twilightforest.init.TFSounds;
 import twilightforest.util.TFItemStackUtils;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class MoonwormQueenItem extends Item {
@@ -48,15 +48,15 @@ public class MoonwormQueenItem extends Item {
 		return false;
 	}
 
-	@Override
+	/*@Override
 	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
 		return false;
-	}
+	}*/
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
-		if (stack.getDamageValue() == this.getMaxDamage(stack)) {
+		if (stack.getDamageValue() == stack.getMaxDamage()) {
 			return InteractionResultHolder.fail(stack);
 		} else {
 			player.startUsingItem(hand);
@@ -82,7 +82,7 @@ public class MoonwormQueenItem extends Item {
 
 			if (itemstack.getDamageValue() < itemstack.getMaxDamage() && player.mayUseItemAt(pos, context.getClickedFace(), itemstack) && level.isUnobstructed(TFBlocks.MOONWORM.get().defaultBlockState(), pos, CollisionContext.empty())) {
 				if (this.tryPlace(blockItemUseContext).shouldSwing()) {
-					SoundType soundtype = level.getBlockState(pos).getBlock().getSoundType(level.getBlockState(pos), level, pos, player);
+					SoundType soundtype = level.getBlockState(pos).getSoundType();
 					level.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 					// TF - damage stack instead of shrinking
 					player.stopUsingItem();
@@ -112,7 +112,7 @@ public class MoonwormQueenItem extends Item {
 
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public UseAnim getUseAnimation(ItemStack stack) {
 		return UseAnim.BOW;
@@ -153,7 +153,7 @@ public class MoonwormQueenItem extends Item {
 						}
 					}
 
-					SoundType soundtype = blockstate1.getSoundType(level, blockpos, context.getPlayer());
+					SoundType soundtype = blockstate1.getSoundType();
 					level.playSound(playerentity, blockpos, this.getPlaceSound(blockstate1, level, blockpos, Objects.requireNonNull(context.getPlayer())), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 					if (level instanceof ServerLevel server && !playerentity.getAbilities().instabuild) {
 						TFItemStackUtils.hurtButDontBreak(itemstack, 1, server, playerentity);
@@ -166,7 +166,7 @@ public class MoonwormQueenItem extends Item {
 	}
 
 	protected SoundEvent getPlaceSound(BlockState state, Level level, BlockPos pos, Player entity) {
-		return state.getSoundType(level, pos, entity).getPlaceSound();
+		return state.getSoundType().getPlaceSound();
 	}
 
 	@Nullable

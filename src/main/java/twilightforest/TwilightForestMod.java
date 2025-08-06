@@ -3,66 +3,43 @@ package twilightforest;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.Reflection;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.Util;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
-import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.IBlockCapabilityProvider;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import net.neoforged.neoforge.registries.NewRegistryEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
-import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import tamaized.beanification.Autowired;
-import tamaized.beanification.BeanContext;
-import tamaized.beanification.Configurable;
 import twilightforest.block.entity.JarBlockEntity;
-import twilightforest.client.event.ClientEvents;
-import twilightforest.client.event.RegistrationEvents;
 import twilightforest.command.TFCommand;
 import twilightforest.compat.CosmeticArmorCompat;
-import twilightforest.compat.curios.CuriosCompat;
-import twilightforest.components.block.ChiseledCanopyBookshelfWrapper;
+import twilightforest.compat.curios.TrinketsCompat;
 import twilightforest.config.ConfigSetup;
+import twilightforest.data.DataMapGenerator;
 import twilightforest.data.custom.stalactites.entry.StalactiteReloadListener;
 import twilightforest.dispenser.TFDispenserBehaviors;
 import twilightforest.entity.MagicPaintingVariant;
 import twilightforest.entity.passive.DwarfRabbitVariant;
 import twilightforest.entity.passive.TinyBirdVariant;
 import twilightforest.entity.passive.quest.QuestReloadListener;
+import twilightforest.events.*;
+import twilightforest.fabric.FlowerPotBlockExtension;
 import twilightforest.init.*;
 import twilightforest.init.custom.BiomeLayerStack;
 import twilightforest.init.custom.BiomeLayerTypes;
@@ -79,12 +56,11 @@ import twilightforest.world.components.layer.BiomeDensitySource;
 import twilightforest.world.components.structures.StructureSpeleothemConfig;
 import twilightforest.world.components.structures.lichtowerrevamp.StructureTemplateDefinitions;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-@Configurable
-@Mod(TwilightForestMod.ID)
-public final class TwilightForestMod {
+public final class TwilightForestMod implements ModInitializer {
 
 	public static final String ID = "twilightforest";
 
@@ -94,10 +70,12 @@ public final class TwilightForestMod {
 
 	public static final Supplier<GameRules.Key<GameRules.BooleanValue>> ENFORCED_PROGRESSION_RULE = Suppliers.memoize(() -> GameRules.register("tfEnforcedProgression",
 		GameRules.Category.UPDATES,  //Putting it in UPDATES since other world stuff is here
-		GameRules.BooleanValue.create(true, (server, enforced) ->
+		GameRules.BooleanValue.create(true, (server, enforced) -> {
 			//sends a packet to every player online when this changes so weather effects update accordingly
-			PacketDistributor.sendToAllPlayers(new EnforceProgressionStatusPacket(enforced.get()))
-		)
+			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+				ServerPlayNetworking.send(player, new EnforceProgressionStatusPacket(enforced.get()));
+			}
+		})
 	));
 
 	public static final Logger LOGGER = LogManager.getLogger(ID);
@@ -106,102 +84,107 @@ public final class TwilightForestMod {
 	private static QuestReloadListener QUEST_INSTANCE;
 
 	static {
-		BeanContext.init(ID);
+		//BeanContext.init(ID);
 	}
 
-	@Autowired
-	private TFCommand tfCommand;
+	private TFCommand tfCommand = new TFCommand();
 
-	@Autowired
-	private HolidayEvent holidayEvent;
+	private HolidayEvent holidayEvent = new HolidayEvent();
 
-	public TwilightForestMod(IEventBus bus, Dist dist) {
+	@Override
+	public void onInitialize() {
 		Reflection.initialize(ConfigSetup.class);
-		ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, () -> ConfigurationScreen::new);
 		// Get main thread and use it to register our gamerule early
 		Util.backgroundExecutor().execute(ENFORCED_PROGRESSION_RULE::get);
-		if (dist.isClient()) {
-			RegistrationEvents.initModBusEvents(bus);
-			ClientEvents.initGameEvents();
-		}
-		NeoForge.EVENT_BUS.addListener(this::registerCommands);
-		NeoForge.EVENT_BUS.addListener(StalactiteReloadListener.INSTANCE::registerListener);
-		NeoForge.EVENT_BUS.addListener(StructureTemplateDefinitions.INSTANCE::registerListener);
-
-		TFItems.ITEMS.register(bus);
-		TFStats.STATS.register(bus);
-		TFLoot.NUMBERS.register(bus);
-		TFBlocks.BLOCKS.register(bus);
-		TFPOITypes.POIS.register(bus);
-		TFSounds.SOUNDS.register(bus);
-		TFLoot.FUNCTIONS.register(bus);
-		TFLoot.CONDITIONS.register(bus);
-		TFEntities.ENTITIES.register(bus);
-		TFFeatures.FEATURES.register(bus);
-		TFCreativeTabs.TABS.register(bus);
-		TFLoot.CONDITIONALS.register(bus);
-		TFEntities.SPAWN_EGGS.register(bus);
-		TFMenuTypes.CONTAINERS.register(bus);
-		TFRecipes.RECIPE_TYPES.register(bus);
-		TFAttributes.ATTRIBUTES.register(bus);
-		TFAdvancements.TRIGGERS.register(bus);
-		TFMobEffects.MOB_EFFECTS.register(bus);
-		TFItemSubPredicates.TYPES.register(bus);
-		Enforcements.ENFORCEMENTS.register(bus);
-		TFCaveCarvers.CARVER_TYPES.register(bus);
-		TFDataComponents.COMPONENTS.register(bus);
-		TFRecipes.RECIPE_SERIALIZERS.register(bus);
-		TFMapDecorations.DECORATIONS.register(bus);
-		TFParticleType.PARTICLE_TYPES.register(bus);
-		TFBlockEntities.BLOCK_ENTITIES.register(bus);
-		TFLootModifiers.LOOT_MODIFIERS.register(bus);
-		TFArmorMaterials.ARMOR_MATERIALS.register(bus);
-		TFStructureTypes.STRUCTURE_TYPES.register(bus);
-		TFFeatureModifiers.TRUNK_PLACERS.register(bus);
-		BiomeLayerTypes.BIOME_LAYER_TYPES.register(bus);
-		TFDataAttachments.ATTACHMENT_TYPES.register(bus);
-		TFDataSerializers.DATA_SERIALIZERS.register(bus);
-		TFFeatureModifiers.FOLIAGE_PLACERS.register(bus);
-		TFFeatureModifiers.TREE_DECORATORS.register(bus);
-		TFEnchantmentEffects.ENTITY_EFFECTS.register(bus);
-		TFFeatureModifiers.PLACEMENT_MODIFIERS.register(bus);
-		TFDensityFunctions.DENSITY_FUNCTION_TYPES.register(bus);
-		TFStructureProcessors.STRUCTURE_PROCESSORS.register(bus);
-		TFStructurePieceTypes.STRUCTURE_PIECE_TYPES.register(bus);
-		ChunkBlanketProcessors.CHUNK_BLANKETING_TYPES.register(bus);
-		TFStructurePlacementTypes.STRUCTURE_PLACEMENT_TYPES.register(bus);
+		this.registerCommands();
+		StalactiteReloadListener.INSTANCE.registerListener();
+		StructureTemplateDefinitions.INSTANCE.registerListener();
+		TFRegistries.init();
 
 		TFRemapper.addRegistryAliases();
+		TFSounds.SOUNDS.register();
+		TFBlocks.BLOCKS.register();
+		TFDataComponents.COMPONENTS.register();
+		TFItems.ITEMS.register();
+		TFStats.STATS.register();
+		TFLoot.NUMBERS.register();
+		TFPOITypes.POIS.register();
+		TFLoot.FUNCTIONS.register();
+		TFLoot.CONDITIONS.register();
+		TFEntities.ENTITIES.register();
+		TFEntities.registerSpawnPlacements();
+		TFFeatures.FEATURES.register();
+		TFCreativeTabs.TABS.register();
+		TFLoot.CONDITIONALS.register();
+		TFEntities.SPAWN_EGGS.register();
+		TFMenuTypes.CONTAINERS.register();
+		TFRecipes.RECIPE_TYPES.register();
+		TFAttributes.ATTRIBUTES.register();
+		TFAdvancements.TRIGGERS.register();
+		TFMobEffects.MOB_EFFECTS.register();
+		TFItemSubPredicates.TYPES.register();
+		Enforcements.ENFORCEMENTS.register();
+		TFCaveCarvers.CARVER_TYPES.register();
+		TFRecipes.RECIPE_SERIALIZERS.register();
+		TFMapDecorations.DECORATIONS.register();
+		TFParticleType.PARTICLE_TYPES.register();
+		TFBlockEntities.BLOCK_ENTITIES.register();
+		TFLootModifiers.LOOT_MODIFIERS.register();
+		TFArmorMaterials.ARMOR_MATERIALS.register();
+		TFStructureTypes.STRUCTURE_TYPES.register();
+		TFFeatureModifiers.TRUNK_PLACERS.register();
+		BiomeLayerTypes.BIOME_LAYER_TYPES.register();
+		//TFDataAttachments.ATTACHMENT_TYPES.register();
+		TFDataSerializers.init();
+		TFFeatureModifiers.FOLIAGE_PLACERS.register();
+		TFFeatureModifiers.TREE_DECORATORS.register();
+		TFEnchantmentEffects.ENTITY_EFFECTS.register();
+		TFFeatureModifiers.PLACEMENT_MODIFIERS.register();
+		TFDensityFunctions.DENSITY_FUNCTION_TYPES.register();
+		TFStructureProcessors.STRUCTURE_PROCESSORS.register();
+		TFStructurePieceTypes.STRUCTURE_PIECE_TYPES.register();
+		ChunkBlanketProcessors.CHUNK_BLANKETING_TYPES.register();
+		TFStructurePlacementTypes.STRUCTURE_PLACEMENT_TYPES.register();
 
-		bus.addListener(this::init);
-		bus.addListener(this::sendIMCs);
-		bus.addListener(this::setupPackets);
-		bus.addListener(this::createDataMaps);
-		bus.addListener(this::registerExtraStuff);
-		bus.addListener(this::createNewRegistries);
-		bus.addListener(this::addBlockEntityTypes);
-		bus.addListener(this::setRegistriesForDatapack);
-		bus.addListener(this::registerGenericItemHandlers);
-		bus.addListener(TFCreativeTabs::addToTabs);
+		this.init();
+		this.sendIMCs();
+		this.setupPackets();
+		this.createDataMaps();
+		this.registerExtraStuff();
+		this.createNewRegistries();
+		this.addBlockEntityTypes();
+		this.setRegistriesForDatapack();
+		this.registerGenericItemHandlers();
+		TFCreativeTabs.addToTabs();
 
-		bus.addListener(ConfigSetup::loadConfigs);
-		bus.addListener(ConfigSetup::reloadConfigs);
-		NeoForge.EVENT_BUS.addListener(ConfigSetup::syncUncraftingConfig);
-		NeoForge.EVENT_BUS.addListener(this::reloadQuests);
+		ConfigSetup.loadConfigs();
+		ConfigSetup.reloadConfigs();
+		ConfigSetup.syncUncraftingConfig();
+		this.reloadQuests();
 
-		if (ModList.get().isLoaded("curios")) loadCuriosCompat(bus);
-		if (ModList.get().isLoaded("cosmeticarmorreworked")) NeoForge.EVENT_BUS.addListener(CosmeticArmorCompat::keepCosmeticArmor);
+		if (FabricLoader.getInstance().isModLoaded("trinkets")) loadTrinketsCompat();
+		if (FabricLoader.getInstance().isModLoaded("cosmetic-armor")) CosmeticArmorCompat.keepCosmeticArmor();
+
+		(new DataMapGenerator()).gather();
+		CapabilityEvents.init();
+		CharmEvents.init();
+		EntityEvents.init();
+		HostileMountEvents.init();
+		MiscEvents.init();
+		ProgressionEvents.init();
+		TFTickHandler.init();
+		ToolEvents.init();
+		TFDamageTypes.init();
+		TFEntities.addEntityAttributes();
 	}
 
-	private static void loadCuriosCompat(IEventBus bus) {
-		NeoForge.EVENT_BUS.addListener(CuriosCompat::keepCurios);
-		bus.addListener(CuriosCompat::registerCuriosCapabilities);
-		bus.addListener(CuriosCompat::registerCurioRenderers);
-		bus.addListener(CuriosCompat::registerCurioLayers);
+	private static void loadTrinketsCompat() {
+		TrinketsCompat.keepCurios();
+		TrinketsCompat.registerCuriosCapabilities();
 	}
 
-	private void registerGenericItemHandlers(RegisterCapabilitiesEvent event) {
-		IBlockCapabilityProvider<IItemHandler, @Nullable Direction> itemHandlerProvider = (level, pos, state, blockEntity, side) -> level.getBlockEntity(pos) instanceof ChestBlockEntity tfChestBlock ? new InvWrapper(tfChestBlock) : null;
+	private void registerGenericItemHandlers() {
+		/*IBlockCapabilityProvider<IItemHandler, @Nullable Direction> itemHandlerProvider = (level, pos, state, blockEntity, side) -> level.getBlockEntity(pos) instanceof ChestBlockEntity tfChestBlock ? new InvWrapper(tfChestBlock) : null;
 		event.registerBlock(
 			Capabilities.ItemHandler.BLOCK,
 			itemHandlerProvider,
@@ -226,69 +209,71 @@ public final class TwilightForestMod {
 		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TFBlockEntities.MASON_JAR.get(), (masonJarBlock, side) ->
 			side == Direction.UP ? masonJarBlock.getItemHandler() : null);
 
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TFBlockEntities.CHISELED_CANOPY_BOOKSHELF.get(), (container, side) -> new ChiseledCanopyBookshelfWrapper(container));
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TFBlockEntities.CHISELED_CANOPY_BOOKSHELF.get(), (container, side) -> new ChiseledCanopyBookshelfWrapper(container));*/
 	}
 
-	public void addBlockEntityTypes(BlockEntityTypeAddBlocksEvent event) {
-		event.modify(BlockEntityType.HANGING_SIGN,
-			TFBlocks.TWILIGHT_OAK_HANGING_SIGN.get(), TFBlocks.TWILIGHT_OAK_WALL_HANGING_SIGN.get(),
+	public void addBlockEntityTypes() {
+		for (SignBlock signBlock : List.of(TFBlocks.TWILIGHT_OAK_HANGING_SIGN.get(), TFBlocks.TWILIGHT_OAK_WALL_HANGING_SIGN.get(),
 			TFBlocks.CANOPY_HANGING_SIGN.get(), TFBlocks.CANOPY_WALL_HANGING_SIGN.get(),
 			TFBlocks.MANGROVE_HANGING_SIGN.get(), TFBlocks.MANGROVE_WALL_HANGING_SIGN.get(),
 			TFBlocks.DARK_HANGING_SIGN.get(), TFBlocks.DARK_WALL_HANGING_SIGN.get(),
 			TFBlocks.TIME_HANGING_SIGN.get(), TFBlocks.TIME_WALL_HANGING_SIGN.get(),
 			TFBlocks.TRANSFORMATION_HANGING_SIGN.get(), TFBlocks.TRANSFORMATION_WALL_HANGING_SIGN.get(),
 			TFBlocks.MINING_HANGING_SIGN.get(), TFBlocks.MINING_WALL_HANGING_SIGN.get(),
-			TFBlocks.SORTING_HANGING_SIGN.get(), TFBlocks.SORTING_WALL_HANGING_SIGN.get());
+			TFBlocks.SORTING_HANGING_SIGN.get(), TFBlocks.SORTING_WALL_HANGING_SIGN.get())
+		) {
+			BlockEntityType.HANGING_SIGN.addSupportedBlock(signBlock);
+		}
 
-		event.modify(BlockEntityType.SIGN,
-			TFBlocks.TWILIGHT_OAK_SIGN.get(), TFBlocks.TWILIGHT_WALL_SIGN.get(),
+		for (SignBlock signBlock : List.of(TFBlocks.TWILIGHT_OAK_SIGN.get(), TFBlocks.TWILIGHT_WALL_SIGN.get(),
 			TFBlocks.CANOPY_SIGN.get(), TFBlocks.CANOPY_WALL_SIGN.get(),
 			TFBlocks.MANGROVE_SIGN.get(), TFBlocks.MANGROVE_WALL_SIGN.get(),
 			TFBlocks.DARK_SIGN.get(), TFBlocks.DARK_WALL_SIGN.get(),
 			TFBlocks.TIME_SIGN.get(), TFBlocks.TIME_WALL_SIGN.get(),
 			TFBlocks.TRANSFORMATION_SIGN.get(), TFBlocks.TRANSFORMATION_WALL_SIGN.get(),
 			TFBlocks.MINING_SIGN.get(), TFBlocks.MINING_WALL_SIGN.get(),
-			TFBlocks.SORTING_SIGN.get(), TFBlocks.SORTING_WALL_SIGN.get());
-	}
-
-	public void createNewRegistries(NewRegistryEvent event) {
-		event.register(TFRegistries.BIOME_LAYER_TYPE);
-		event.register(TFRegistries.ENFORCEMENT);
-		event.register(TFRegistries.CHUNK_BLANKET_TYPES);
-	}
-
-	public void setRegistriesForDatapack(DataPackRegistryEvent.NewRegistry event) {
-		event.dataPackRegistry(TFRegistries.Keys.WOOD_PALETTES, WoodPalette.CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.BIOME_STACK, BiomeLayerStack.DISPATCH_CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.BIOME_TERRAIN_DATA, BiomeDensitySource.CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.RESTRICTIONS, Restriction.CODEC, Restriction.CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.MAGIC_PAINTINGS, MagicPaintingVariant.CODEC, MagicPaintingVariant.CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.STRUCTURE_SPELEOTHEM_SETTINGS, StructureSpeleothemConfig.CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.CHUNK_BLANKET_PROCESSORS, ChunkBlanketProcessors.DISPATCH_CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.DWARF_RABBIT_VARIANT, DwarfRabbitVariant.DIRECT_CODEC, DwarfRabbitVariant.DIRECT_CODEC);
-		event.dataPackRegistry(TFRegistries.Keys.TINY_BIRD_VARIANT, TinyBirdVariant.DIRECT_CODEC, TinyBirdVariant.DIRECT_CODEC);
-	}
-
-	public void registerExtraStuff(RegisterEvent evt) {
-		if (evt.getRegistryKey().equals(Registries.BIOME_SOURCE)) {
-			Registry.register(BuiltInRegistries.BIOME_SOURCE, TwilightForestMod.prefix("twilight_biomes"), TFBiomeProvider.TF_CODEC);
+			TFBlocks.SORTING_SIGN.get(), TFBlocks.SORTING_WALL_SIGN.get())
+		) {
+			BlockEntityType.SIGN.addSupportedBlock(signBlock);
 		}
 	}
 
-	public void createDataMaps(RegisterDataMapTypesEvent event) {
-		event.register(TFDataMaps.CRUMBLE_HORN);
+	public void createNewRegistries() {
+		/*event.register(TFRegistries.BIOME_LAYER_TYPE);
+		event.register(TFRegistries.ENFORCEMENT);
+		event.register(TFRegistries.CHUNK_BLANKET_TYPES);*/
+	}
+
+	public void setRegistriesForDatapack() {
+		DynamicRegistries.registerSynced(TFRegistries.Keys.WOOD_PALETTES, WoodPalette.CODEC);
+		DynamicRegistries.registerSynced(TFRegistries.Keys.BIOME_STACK, BiomeLayerStack.DISPATCH_CODEC);
+		DynamicRegistries.register(TFRegistries.Keys.BIOME_TERRAIN_DATA, BiomeDensitySource.CODEC);
+		DynamicRegistries.registerSynced(TFRegistries.Keys.RESTRICTIONS, Restriction.CODEC);
+		DynamicRegistries.registerSynced(TFRegistries.Keys.MAGIC_PAINTINGS, MagicPaintingVariant.CODEC);
+		DynamicRegistries.registerSynced(TFRegistries.Keys.STRUCTURE_SPELEOTHEM_SETTINGS, StructureSpeleothemConfig.CODEC);
+		DynamicRegistries.register(TFRegistries.Keys.CHUNK_BLANKET_PROCESSORS, ChunkBlanketProcessors.DISPATCH_CODEC);
+		DynamicRegistries.registerSynced(TFRegistries.Keys.DWARF_RABBIT_VARIANT, DwarfRabbitVariant.DIRECT_CODEC);
+		DynamicRegistries.registerSynced(TFRegistries.Keys.TINY_BIRD_VARIANT, TinyBirdVariant.DIRECT_CODEC);
+	}
+
+	public void registerExtraStuff() {
+		Registry.register(BuiltInRegistries.BIOME_SOURCE, TwilightForestMod.prefix("twilight_biomes"), TFBiomeProvider.TF_CODEC);
+	}
+
+	public void createDataMaps() {
+		/*event.register(TFDataMaps.CRUMBLE_HORN);
 		event.register(TFDataMaps.TRANSFORMATION_POWDER);
 		event.register(TFDataMaps.OMINOUS_FIRE);
 		event.register(TFDataMaps.MAGIC_MAP_BIOME_COLOR);
-		event.register(TFDataMaps.ORE_MAP_ORE_COLOR);
+		event.register(TFDataMaps.ORE_MAP_ORE_COLOR);*/
 	}
 
-	public void sendIMCs(InterModEnqueueEvent evt) {
+	public void sendIMCs() {
 		//if (ModList.get().isLoaded("theoneprobe")) InterModComms.sendTo("theoneprobe", "getTheOneProbe", TopCompat::new);
 	}
 
-	public void setupPackets(RegisterPayloadHandlersEvent event) {
-		PayloadRegistrar registrar = event.registrar(ID).versioned("1.0.0").optional();
+	public void setupPackets() {
+		PayloadRegistrar registrar = new PayloadRegistrar();
 		registrar.playToClient(AreaProtectionPacket.TYPE, AreaProtectionPacket.STREAM_CODEC, AreaProtectionPacket::handle);
 		registrar.playToClient(CreateMovingCicadaSoundPacket.TYPE, CreateMovingCicadaSoundPacket.STREAM_CODEC, CreateMovingCicadaSoundPacket::handle);
 		registrar.playToClient(EnforceProgressionStatusPacket.TYPE, EnforceProgressionStatusPacket.STREAM_CODEC, EnforceProgressionStatusPacket::handle);
@@ -315,8 +300,8 @@ public final class TwilightForestMod {
 		registrar.playToClient(SyncQuestsPacket.TYPE, SyncQuestsPacket.STREAM_CODEC, SyncQuestsPacket::handle);
 	}
 
-	public void init(FMLCommonSetupEvent evt) {
-		evt.enqueueWork(() -> {
+	public void init() {
+		{
 			TFDispenserBehaviors.init();
 			TFStats.init();
 
@@ -344,7 +329,7 @@ public final class TwilightForestMod {
 			AxeItem.STRIPPABLES.put(TFBlocks.MINING_WOOD.get(), TFBlocks.STRIPPED_MINING_WOOD.get());
 			AxeItem.STRIPPABLES.put(TFBlocks.SORTING_WOOD.get(), TFBlocks.STRIPPED_SORTING_WOOD.get());
 
-			FlowerPotBlock pot = (FlowerPotBlock) Blocks.FLOWER_POT;
+			FlowerPotBlockExtension pot = (FlowerPotBlockExtension) Blocks.FLOWER_POT;
 
 			pot.addPlant(TFBlocks.TWILIGHT_OAK_SAPLING.getId(), TFBlocks.POTTED_TWILIGHT_OAK_SAPLING);
 			pot.addPlant(TFBlocks.CANOPY_SAPLING.getId(), TFBlocks.POTTED_CANOPY_SAPLING);
@@ -598,11 +583,13 @@ public final class TwilightForestMod {
 			JarBlockEntity.addLid(Items.BAMBOO_BLOCK);
 			JarBlockEntity.addLid(Items.STRIPPED_BAMBOO_BLOCK);
 			JarBlockEntity.addLid(Items.PUMPKIN, () -> holidayEvent.isHalloweenWeek());
-		});
+		}
 	}
 
-	public void registerCommands(RegisterCommandsEvent event) {
-		tfCommand.register(event.getDispatcher(), event.getBuildContext());
+	public void registerCommands() {
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			tfCommand.register(dispatcher, registryAccess);
+		});
 	}
 
 	public static ResourceLocation prefix(String name) {
@@ -621,9 +608,9 @@ public final class TwilightForestMod {
 		return ResourceLocation.fromNamespaceAndPath(ID, ENVIRO_DIR + name);
 	}
 
-	private void reloadQuests(AddReloadListenerEvent event) {
+	private void reloadQuests() {
 		QUEST_INSTANCE = new QuestReloadListener();
-		event.addListener(QUEST_INSTANCE);
+		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(QUEST_INSTANCE);
 	}
 
 	public static QuestReloadListener getQuests() {

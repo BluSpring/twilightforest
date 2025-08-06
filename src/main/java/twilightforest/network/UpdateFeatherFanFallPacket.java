@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import twilightforest.TwilightForestMod;
 import twilightforest.init.TFDataAttachments;
 
@@ -33,7 +33,7 @@ public record UpdateFeatherFanFallPacket(int entityID, boolean falling) implemen
 		ctx.enqueueWork(() -> {
 			Entity entity = ctx.player().level().getEntity(message.entityID());
 			if (entity instanceof Player) {
-				entity.setData(TFDataAttachments.FEATHER_FAN, message.falling());
+				entity.setAttached(TFDataAttachments.FEATHER_FAN.get(), message.falling());
 			}
 		});
 	}

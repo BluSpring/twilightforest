@@ -5,11 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import twilightforest.TwilightForestMod;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public abstract class CodecResourceReloadListener<T> extends SimpleJsonResourceReloadListener {
+public abstract class CodecResourceReloadListener<T> extends SimpleJsonResourceReloadListener implements IdentifiableResourceReloadListener {
 	protected final Gson gson;
 	private final Codec<T> codec;
 
@@ -75,7 +77,7 @@ public abstract class CodecResourceReloadListener<T> extends SimpleJsonResourceR
 	/**
 	 * Intentionally not subscribed, it is on the subclasses to opt into subscription
 	 */
-	public void registerListener(AddReloadListenerEvent event) {
-		event.addListener(this);
+	public void registerListener() {
+		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(this);
 	}
 }

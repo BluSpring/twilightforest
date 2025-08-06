@@ -1,19 +1,19 @@
 package twilightforest.data.tags;
 
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.data.PortingLibTagsProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.BiomeTagsProvider;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import twilightforest.TwilightForestMod;
 import twilightforest.init.TFBiomes;
 
 import java.util.concurrent.CompletableFuture;
 
-public class BiomeTagGenerator extends BiomeTagsProvider {
+public class BiomeTagGenerator extends PortingLibTagsProvider<Biome> {
 
 	public static final TagKey<Biome> IS_TWILIGHT = TagKey.create(Registries.BIOME, TwilightForestMod.prefix("in_twilight_forest"));
 
@@ -36,8 +36,8 @@ public class BiomeTagGenerator extends BiomeTagsProvider {
 	public static final TagKey<Biome> VALID_GIANT_HOUSE_BIOMES = TagKey.create(Registries.BIOME, TwilightForestMod.prefix("valid_giant_house_biomes"));
 	public static final TagKey<Biome> VALID_FINAL_CASTLE_BIOMES = TagKey.create(Registries.BIOME, TwilightForestMod.prefix("valid_final_castle_biomes"));
 
-	public BiomeTagGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, ExistingFileHelper helper) {
-		super(output, provider, TwilightForestMod.ID, helper);
+	public BiomeTagGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> provider, ExistingFileHelper helper) {
+		super(output, Registries.BIOME, provider, TwilightForestMod.ID, helper);
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package twilightforest.entity.boss;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -8,6 +10,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -20,7 +23,6 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import twilightforest.config.TFConfig;
 import twilightforest.init.TFSounds;
 import twilightforest.loot.TFLootTables;
@@ -109,7 +111,9 @@ public interface IBossLootBuffer {
 			double z = (boss.getRandom().nextDouble() - 0.5D) * 0.075D * i;
 			particlePacket.queueParticle(ParticleTypes.POOF, false, vec3.add(x, y, z), Vec3.ZERO);
 		}
-		PacketDistributor.sendToPlayersTrackingEntity(boss, particlePacket);
+		for (ServerPlayer player : PlayerLookup.tracking(boss)) {
+			ServerPlayNetworking.send(player, particlePacket);
+		}
 	}
 
 	default <T extends LivingEntity & IBossLootBuffer> void fill(T boss, LootParams context, LootTable table) {

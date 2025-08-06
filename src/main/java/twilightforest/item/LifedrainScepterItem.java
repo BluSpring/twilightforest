@@ -1,5 +1,10 @@
 package twilightforest.item;
 
+import io.github.fabricators_of_create.porting_lib.item.extensions.ContinueUsingItem;
+import io.github.fabricators_of_create.porting_lib.item.extensions.ReequipAnimationItem;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
@@ -7,8 +12,10 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -27,8 +34,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.data.tags.EntityTagGenerator;
 import twilightforest.enchantment.RechargeScepterEffect;
@@ -46,7 +51,7 @@ import twilightforest.util.entities.EntityUtil;
 import java.util.List;
 import java.util.Optional;
 
-public class LifedrainScepterItem extends Item {
+public class LifedrainScepterItem extends Item implements ContinueUsingItem, ReequipAnimationItem {
 
 	public LifedrainScepterItem(Properties properties) {
 		super(properties);
@@ -68,7 +73,7 @@ public class LifedrainScepterItem extends Item {
 	@Override
 	public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
 		if (entity.tickCount % 20 == 0 && level instanceof ServerLevel serverLevel && stack.has(DataComponents.ENCHANTMENTS) && !isSelected) {
-			int renewal = stack.get(DataComponents.ENCHANTMENTS).getLevel(level.holderOrThrow(TFEnchantments.RENEWAL));
+			int renewal = stack.get(DataComponents.ENCHANTMENTS).getLevel(level.holderLookup(Registries.ENCHANTMENT).getOrThrow(TFEnchantments.RENEWAL));
 			if (renewal > 0) {
 				RechargeScepterEffect.applyRecharge(serverLevel, stack, entity);
 			}
@@ -99,7 +104,7 @@ public class LifedrainScepterItem extends Item {
 			particlePacket.queueParticle(options, false, target.getX() + x, target.getY() + y, target.getZ() + z, x * speed, y * speed, z * speed);
 		}
 
-		PacketDistributor.sendToPlayersTrackingEntity(target, particlePacket);
+		PlayerLookup.tracking(target).forEach(p -> ServerPlayNetworking.send(p, particlePacket));
 	}
 
 	/**
@@ -143,7 +148,7 @@ public class LifedrainScepterItem extends Item {
 
 	@Override
 	public void onUseTick(Level level, LivingEntity living, ItemStack stack, int count) {
-		if (stack.getDamageValue() == this.getMaxDamage(stack)) {
+		if (stack.getDamageValue() == stack.getMaxDamage()) {
 			// do not use
 			living.stopUsingItem();
 			return;
@@ -155,7 +160,10 @@ public class LifedrainScepterItem extends Item {
 
 			if (pointedEntity instanceof LivingEntity target && !(target instanceof ArmorStand)) {
                 if (!level.isClientSide() && !target.isDeadOrDying()) {
-					PacketDistributor.sendToPlayersTrackingEntityAndSelf(living, new LifedrainParticlePacket(living.getId(), target.getEyePosition()));
+					PlayerLookup.tracking(living).forEach(p -> ServerPlayNetworking.send(p, new LifedrainParticlePacket(living.getId(), target.getEyePosition())));
+
+					if (living instanceof ServerPlayer player)
+						ServerPlayNetworking.send(player, new LifedrainParticlePacket(living.getId(), target.getEyePosition()));
 					level.playSound(null, living.blockPosition(), TFSounds.LIFE_SCEPTER_DRAIN.get(), SoundSource.PLAYERS);
 				}
 

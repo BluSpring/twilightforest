@@ -1,10 +1,12 @@
 package twilightforest.client.model.block.connected;
 
+import io.github.fabricators_of_create.porting_lib.render_types.RenderTypeGroup;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -12,11 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.RenderTypeGroup;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +22,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class ConnectedTextureModel implements IDynamicBakedModel {
+public class ConnectedTextureModel implements BakedModel {
 
 	private final EnumSet<Direction> enabledFaces;
 	private final boolean renderOnDisabledFaces;
@@ -35,14 +32,14 @@ public class ConnectedTextureModel implements IDynamicBakedModel {
 	private final TextureAtlasSprite particle;
 	private final ItemOverrides overrides;
 	private final ItemTransforms transforms;
-	@Nullable
-	private final ChunkRenderTypeSet blockRenderTypes;
+	//@Nullable
+	//private final ChunkRenderTypeSet blockRenderTypes;
 	@Nullable
 	private final List<RenderType> itemRenderTypes;
 	@Nullable
 	private final List<RenderType> fabulousItemRenderTypes;
 	private final List<Block> validConnectors;
-	private static final ModelProperty<CastleDoorData> DATA = new ModelProperty<>();
+	//private static final ModelProperty<CastleDoorData> DATA = new ModelProperty<>();
 
 	public ConnectedTextureModel(EnumSet<Direction> enabledFaces, boolean renderOnDisabledFaces, List<Block> connectableBlocks, @Nullable List<BakedQuad>[] baseQuads, BakedQuad[][][] quads, TextureAtlasSprite particle, ItemOverrides overrides, ItemTransforms transforms, RenderTypeGroup group) {
 		this.enabledFaces = enabledFaces;
@@ -53,17 +50,17 @@ public class ConnectedTextureModel implements IDynamicBakedModel {
 		this.particle = particle;
 		this.overrides = overrides;
 		this.transforms = transforms;
-		this.blockRenderTypes = !group.isEmpty() ? ChunkRenderTypeSet.of(group.block()) : null;
+		//this.blockRenderTypes = !group.isEmpty() ? ChunkRenderTypeSet.of(group.block()) : null;
 		this.itemRenderTypes = !group.isEmpty() ? List.of(group.entity()) : null;
 		this.fabulousItemRenderTypes = !group.isEmpty() ? List.of(group.entityFabulous()) : null;
 	}
 
 	@NotNull
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource random, @NotNull ModelData extraData, @Nullable RenderType type) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource random) {
 		if (side != null) {
 			int faceIndex = side.get3DDataValue();
-			CastleDoorData data = extraData.get(DATA);
+			CastleDoorData data = null; //extraData.get(DATA);
 			ArrayList<BakedQuad> quads = new ArrayList<>(4 + (this.baseQuads != null ? 4 : 0));
 			if (this.baseQuads != null) {
 				quads.addAll(this.baseQuads[faceIndex]);
@@ -84,7 +81,7 @@ public class ConnectedTextureModel implements IDynamicBakedModel {
 		}
 	}
 
-	@NotNull
+	/*@NotNull
 	@Override
 	public ModelData getModelData(@NotNull BlockAndTintGetter getter, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
 		CastleDoorData data = new CastleDoorData();
@@ -110,7 +107,7 @@ public class ConnectedTextureModel implements IDynamicBakedModel {
 		}
 
 		return modelData.derive().with(DATA, data).build();
-	}
+	}*/
 
 	private boolean shouldConnectSide(BlockAndTintGetter getter, BlockPos pos, Direction face, Direction side) {
 		BlockState neighborState = getter.getBlockState(pos.relative(side));
@@ -160,7 +157,7 @@ public class ConnectedTextureModel implements IDynamicBakedModel {
 		return this.transforms;
 	}
 
-	@NotNull
+	/*@NotNull
 	@Override
 	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
 		return this.blockRenderTypes != null ? this.blockRenderTypes : IDynamicBakedModel.super.getRenderTypes(state, rand, data);
@@ -178,7 +175,7 @@ public class ConnectedTextureModel implements IDynamicBakedModel {
 		}
 
 		return IDynamicBakedModel.super.getRenderTypes(stack, fabulous);
-	}
+	}*/
 
 	//we need a class to make model data. Fine, here you go
 	private static final class CastleDoorData {

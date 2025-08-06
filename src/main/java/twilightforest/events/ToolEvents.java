@@ -1,5 +1,11 @@
 package twilightforest.events;
 
+import io.github.fabricators_of_create.porting_lib.entity.events.ProjectileImpactEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.MobEffectEvent;
+import io.github.fabricators_of_create.porting_lib.level.events.BlockEvent;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -11,15 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.damagesource.DamageContainer;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
 import twilightforest.data.tags.BlockTagGenerator;
@@ -28,13 +25,24 @@ import twilightforest.item.EnderBowItem;
 import twilightforest.item.MazebreakerPickItem;
 import twilightforest.item.MinotaurAxeItem;
 
-@EventBusSubscriber(modid = TwilightForestMod.ID)
 public class ToolEvents {
 
 	private static final int KNIGHTMETAL_BONUS_DAMAGE = 2;
 	private static final int MINOTAUR_AXE_BONUS_DAMAGE = 7;
 
-	@SubscribeEvent
+	public static void init() {
+		ProjectileImpactEvent.EVENT.register(event -> onEnderBowHit(event));
+		LivingHurtEvent.EVENT.register(event -> {
+			fieryToolSetFire(event);
+		});
+		LivingDamageEvent.DAMAGE.register(event -> {
+			onKnightmetalToolDamage(event);
+			onMinotaurAxeCharge(event);
+		});
+		BlockEvent.BreakEvent.EVENT.register(event -> damageToolsExtra((BlockEvent.BreakEvent) event));
+		MobEffectEvent.Applicable.EVENT.register(event -> onMobEffectApplicableEvent(event));
+	}
+
 	public static void onEnderBowHit(ProjectileImpactEvent evt) {
 		Projectile arrow = evt.getProjectile();
 		if (arrow.getOwner() instanceof Player player
@@ -42,7 +50,7 @@ public class ToolEvents {
 			&& result.getEntity() instanceof LivingEntity living
 			&& arrow.getOwner() != result.getEntity() && !result.getEntity().getType().is(Tags.EntityTypes.BOSSES)) {
 
-			if (arrow.getPersistentData().contains(EnderBowItem.KEY)) {
+			if (arrow.getCustomData().contains(EnderBowItem.KEY)) {
 				double sourceX = player.getX(), sourceY = player.getY(), sourceZ = player.getZ();
 				float sourceYaw = player.getYRot(), sourcePitch = player.getXRot();
 				@Nullable Entity playerVehicle = player.getVehicle();
@@ -70,34 +78,31 @@ public class ToolEvents {
 		}
 	}
 
-	@SubscribeEvent
-	public static void fieryToolSetFire(LivingIncomingDamageEvent event) {
+	public static void fieryToolSetFire(LivingHurtEvent event) {
 		if (event.getSource().getEntity() instanceof LivingEntity living && (living.getMainHandItem().is(TFItems.FIERY_SWORD.get()) || living.getMainHandItem().is(TFItems.FIERY_PICKAXE.get())) && !event.getEntity().fireImmune()) {
 			event.getEntity().igniteForSeconds(1);
 		}
 	}
 
-	@SubscribeEvent
 	@SuppressWarnings("UnstableApiUsage")
-	public static void onKnightmetalToolDamage(LivingDamageEvent.Pre event) {
+	public static void onKnightmetalToolDamage(LivingDamageEvent event) {
 		LivingEntity target = event.getEntity();
 
-		DamageContainer container = event.getContainer();
-		if (!target.level().isClientSide() && container.getSource().getDirectEntity() instanceof LivingEntity living) {
+		if (!target.level().isClientSide() && event.getSource().getDirectEntity() instanceof LivingEntity living) {
 			ItemStack weapon = living.getMainHandItem();
 
 			if (!weapon.isEmpty()) {
 				if (target.getArmorValue() > 0 && (weapon.is(TFItems.KNIGHTMETAL_PICKAXE.get()) || weapon.is(TFItems.KNIGHTMETAL_SWORD.get()))) {
 					if (target.getArmorCoverPercentage() > 0) {
 						int moreBonus = (int) (KNIGHTMETAL_BONUS_DAMAGE * target.getArmorCoverPercentage());
-						container.setNewDamage(container.getOriginalDamage() + moreBonus);
+						event.setAmount(event.getAmount() + moreBonus);
 					} else {
-						container.setNewDamage(container.getOriginalDamage() + KNIGHTMETAL_BONUS_DAMAGE);
+						event.setAmount(event.getAmount() + KNIGHTMETAL_BONUS_DAMAGE);
 					}
 					// enchantment attack sparkles
 					((ServerLevel) target.level()).getChunkSource().broadcastAndSend(target, new ClientboundAnimatePacket(target, 5));
 				} else if (target.getArmorValue() == 0 && weapon.is(TFItems.KNIGHTMETAL_AXE.get())) {
-					container.setNewDamage(container.getOriginalDamage() + KNIGHTMETAL_BONUS_DAMAGE);
+					event.setAmount(event.getAmount() + KNIGHTMETAL_BONUS_DAMAGE);
 					// enchantment attack sparkles
 					((ServerLevel) target.level()).getChunkSource().broadcastAndSend(target, new ClientboundAnimatePacket(target, 5));
 				}
@@ -105,22 +110,19 @@ public class ToolEvents {
 		}
 	}
 
-	@SubscribeEvent
 	@SuppressWarnings("UnstableApiUsage")
-	public static void onMinotaurAxeCharge(LivingDamageEvent.Pre event) {
+	public static void onMinotaurAxeCharge(LivingDamageEvent event) {
 		LivingEntity target = event.getEntity();
-		DamageContainer container = event.getContainer();
-		if (!target.level().isClientSide() && container.getSource().getDirectEntity() instanceof LivingEntity living && living.isSprinting() && (container.getSource().getMsgId().equals("player") || container.getSource().getMsgId().equals("mob"))) {
+		if (!target.level().isClientSide() && event.getSource().getDirectEntity() instanceof LivingEntity living && living.isSprinting() && (event.getSource().getMsgId().equals("player") || event.getSource().getMsgId().equals("mob"))) {
 			ItemStack weapon = living.getMainHandItem();
 			if (!weapon.isEmpty() && weapon.getItem() instanceof MinotaurAxeItem) {
-				container.setNewDamage(container.getOriginalDamage() + MINOTAUR_AXE_BONUS_DAMAGE);
+				event.setAmount(event.getAmount() + MINOTAUR_AXE_BONUS_DAMAGE);
 				// enchantment attack sparkles
 				((ServerLevel) target.level()).getChunkSource().broadcastAndSend(target, new ClientboundAnimatePacket(target, 5));
 			}
 		}
 	}
 
-	@SubscribeEvent
 	public static void damageToolsExtra(BlockEvent.BreakEvent event) {
 		ItemStack stack = event.getPlayer().getMainHandItem();
 		if (event.getState().is(BlockTagGenerator.MAZESTONE) || event.getState().is(BlockTagGenerator.CASTLE_BLOCKS)) {
@@ -130,7 +132,6 @@ public class ToolEvents {
 		}
 	}
 
-	@SubscribeEvent
 	public static void onMobEffectApplicableEvent(MobEffectEvent.Applicable event) {
 		if (event.getApplicationResult() && event.getEffectInstance().is(MobEffects.DIG_SLOWDOWN) && event.getEntity().isHolding(TFItems.POCKET_WATCH.get())) {
 			event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);

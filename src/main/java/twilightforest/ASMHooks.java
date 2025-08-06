@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.model.HumanoidModel;
@@ -24,7 +25,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,21 +39,19 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
-import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import tamaized.beanification.Autowired;
-import twilightforest.init.TFDataAttachments;
-import twilightforest.util.ArmorUtil;
-import twilightforest.util.multiparts.MultipartEntityUtil;
 import twilightforest.block.CloudBlock;
 import twilightforest.block.WroughtIronFenceBlock;
 import twilightforest.client.FoliageColorHandler;
 import twilightforest.config.TFConfig;
 import twilightforest.init.TFBlocks;
+import twilightforest.init.TFDataAttachments;
 import twilightforest.init.TFDataComponents;
 import twilightforest.init.custom.ChunkBlanketProcessors;
+import twilightforest.util.ArmorUtil;
 import twilightforest.util.WorldUtil;
+import twilightforest.util.multiparts.MultipartEntityUtil;
 import twilightforest.world.components.structures.CustomDensitySource;
 import twilightforest.world.components.structures.util.CustomStructureData;
 
@@ -62,14 +61,11 @@ import java.util.Iterator;
 @SuppressWarnings({"JavadocReference", "unused", "RedundantSuppression", "deprecation"})
 public class ASMHooks {
 
-	@Autowired
-	private static ArmorUtil armorUtil;
+	private static ArmorUtil armorUtil = new ArmorUtil();
 
-	@Autowired
-	private static MultipartEntityUtil multipartEntityUtil;
+	private static MultipartEntityUtil multipartEntityUtil = new MultipartEntityUtil();
 
-	@Autowired
-	private static FoliageColorHandler foliageColorHandler;
+	private static FoliageColorHandler foliageColorHandler = FoliageColorHandler.INSTANCE;
 
 	// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// armor
@@ -92,7 +88,7 @@ public class ASMHooks {
 	 * {@link net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer#renderArmorPiece(PoseStack, MultiBufferSource, LivingEntity, EquipmentSlot, int, HumanoidModel, float, float, float, float, float, float)}
 	 */
 	public static boolean cancelArmorRendering(boolean o, ItemStack stack) {
-		if (o && stack.get(TFDataComponents.EMPERORS_CLOTH) != null) {
+		if (o && stack.get(TFDataComponents.EMPERORS_CLOTH.get()) != null) {
 			return false;
 		}
 		return o;
@@ -149,7 +145,7 @@ public class ASMHooks {
 	 * {@link net.minecraft.world.item.WrittenBookItem#getName(net.minecraft.world.item.ItemStack)}
 	 */
 	public static Component modifyWrittenBookName(Component component, ItemStack stack) {
-		if (stack.has(TFDataComponents.TRANSLATABLE_BOOK)) {
+		if (stack.has(TFDataComponents.TRANSLATABLE_BOOK.get())) {
 			return Component.translatable(component.getString());
 		} else return component;
 	}
@@ -307,7 +303,7 @@ public class ASMHooks {
 	 * Targets: {@link BlockState#canSustainPlant(BlockGetter, BlockPos, Direction, BlockState)}
 	 */
 	public static TriState modifySoilDecisionForMushroomBlockSurvivability(TriState o, LevelReader level, BlockPos pos) {
-		if (!o.isDefault())
+		if (o != TriState.DEFAULT)
 			return o; // Short-circuit - We should not override non-default soil behaviour otherwise this would allow Mushrooms to survive on ALL blocks
 		for (int x = -1; x <= 1; x++) {
 			for (int z = -1; z <= 1; z++) {
@@ -332,6 +328,6 @@ public class ASMHooks {
 	 * Targets: IRETURN
 	 */
 	public static boolean overrideStayCloseToHolder(boolean prior, PathfinderMob mob) {
-		return prior && !mob.hasData(TFDataAttachments.LEASH_PATHFINDER_OVERRIDE);
+		return prior && !mob.hasAttached(TFDataAttachments.LEASH_PATHFINDER_OVERRIDE.get());
 	}
 }

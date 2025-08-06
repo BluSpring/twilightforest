@@ -1,5 +1,10 @@
 package twilightforest.data;
 
+import io.github.fabricators_of_create.porting_lib.data.ModdedBlockLootSubProvider;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.tool.ItemAbilities;
+import io.github.fabricators_of_create.porting_lib.tool.loot.CanItemPerformAbility;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredBlock;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -10,7 +15,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.PipeBlock;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -26,10 +34,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.loot.CanItemPerformAbility;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import twilightforest.block.*;
 import twilightforest.enums.HollowLogVariants;
 import twilightforest.init.TFBlocks;
@@ -40,7 +44,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BlockLootTables extends BlockLootSubProvider {
+public class BlockLootTables extends ModdedBlockLootSubProvider {
 	// [VanillaCopy] of BlockLoot fields, just changed shears to work with modded ones
 	private static final float[] DEFAULT_SAPLING_DROP_RATES = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
 	private static final float[] RARE_SAPLING_DROP_RATES = new float[]{0.025F, 0.027777778F, 0.03125F, 0.041666668F, 0.1F};
@@ -51,7 +55,7 @@ public class BlockLootTables extends BlockLootSubProvider {
 	}
 
 	@Override
-	protected void generate() {
+	public void generate() {
 		HolderLookup.RegistryLookup<Enchantment> registrylookup = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
 
 		dropSelf(TFBlocks.TOWERWOOD.get());
@@ -742,16 +746,16 @@ public class BlockLootTables extends BlockLootSubProvider {
 
 	//[VanillaCopy] of a few different methods from BlockLoot. These are here just so we can use the modded shears thing
 	@Override
-	protected LootTable.Builder createShearsDispatchTable(Block block, LootPoolEntryContainer.Builder<?> builder) {
+	public LootTable.Builder createShearsDispatchTable(Block block, LootPoolEntryContainer.Builder<?> builder) {
 		return createSelfDropDispatchTable(block, HAS_SHEARS, builder);
 	}
 
 	@Override
-	protected LootTable.Builder createSilkTouchOrShearsDispatchTable(Block block, LootPoolEntryContainer.Builder<?> builder) {
+	public LootTable.Builder createSilkTouchOrShearsDispatchTable(Block block, LootPoolEntryContainer.Builder<?> builder) {
 		return createSelfDropDispatchTable(block, HAS_SHEARS.or(this.hasSilkTouch()), builder);
 	}
 
-	protected static LootTable.Builder createShearsOnlyDrop(ItemLike p_124287_) {
+	public static LootTable.Builder createShearsOnlyDrop(ItemLike p_124287_) {
 		return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).when(HAS_SHEARS).add(LootItem.lootTableItem(p_124287_)));
 	}
 

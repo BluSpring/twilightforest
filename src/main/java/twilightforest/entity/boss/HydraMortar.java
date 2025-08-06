@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -17,7 +18,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import twilightforest.data.tags.BlockTagGenerator;
 import twilightforest.init.TFDamageTypes;
 import twilightforest.init.TFEntities;
@@ -126,7 +126,7 @@ public class HydraMortar extends ThrowableProjectile {
 
 	private void detonate() {
 		float explosionPower = megaBlast ? 4.0F : 0.1F;
-		boolean flag = EventHooks.canEntityGrief(this.level(), this);
+		boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 		this.level().explode(this, this.getX(), this.getY(), this.getZ(), explosionPower, flag, Level.ExplosionInteraction.MOB);
 
 		for (Entity nearby : this.level().getEntities(this, this.getBoundingBox().inflate(1.0D, 1.0D, 1.0D))) {

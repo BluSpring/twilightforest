@@ -1,5 +1,10 @@
 package twilightforest.init;
 
+import dev.architectury.registry.level.entity.SpawnPlacementsRegistry;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
+import io.github.fabricators_of_create.porting_lib.util.DeferredSpawnEggItem;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
@@ -11,13 +16,6 @@ import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.TwilightForestMod;
 import twilightforest.entity.*;
 import twilightforest.entity.boss.*;
@@ -25,7 +23,6 @@ import twilightforest.entity.monster.*;
 import twilightforest.entity.passive.*;
 import twilightforest.entity.projectile.*;
 
-@EventBusSubscriber(modid = TwilightForestMod.ID, bus = EventBusSubscriber.Bus.MOD)
 public class TFEntities {
 
 	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, TwilightForestMod.ID);
@@ -162,136 +159,134 @@ public class TFEntities {
 	private static <E extends Entity> EntityType.Builder<E> makeBuilder(EntityType.EntityFactory<E> factory, MobCategory classification, float width, float height, int range, int interval, float ridingOffset) {
 		return EntityType.Builder.of(factory, classification)
 			.sized(width, height)
-			.setTrackingRange(range)
-			.setUpdateInterval(interval)
-			.setShouldReceiveVelocityUpdates(true)
+			.clientTrackingRange(range)
+			.updateInterval(interval)
+			.alwaysUpdateVelocity(true)
 			.ridingOffset(ridingOffset);
 	}
 
-	@SubscribeEvent
-	public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
-		event.register(BOAR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(BIGHORN_SHEEP.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(DEER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(REDCAP.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(SKELETON_DRUID.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SkeletonDruid::checkDruidSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(WRAITH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Wraith::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(HOSTILE_WOLF.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, HostileWolf::checkWolfSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(HYDRA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(LICH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(PENGUIN.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Penguin::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(LICH_MINION.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(LOYAL_ZOMBIE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(TINY_BIRD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(SQUIRREL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(DWARF_RABBIT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(RAVEN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(QUEST_RAM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(KOBOLD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(MOSQUITO_SWARM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(DEATH_TOME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(MINOTAUR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(MINOSHROOM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(FIRE_BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(SLIME_BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(PINCH_BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(MIST_WOLF.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(CARMINITE_GHASTLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CarminiteGhastling::canSpawnHere, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(CARMINITE_GOLEM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(TOWERWOOD_BORER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(CARMINITE_GHASTGUARD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CarminiteGhastguard::ghastSpawnHandler, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(UR_GHAST.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(BLOCKCHAIN_GOBLIN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(UPPER_GOBLIN_KNIGHT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(LOWER_GOBLIN_KNIGHT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(HELMET_CRAB.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(KNIGHT_PHANTOM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(NAGA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(SWARM_SPIDER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SwarmSpider::getCanSpawnHere, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(KING_SPIDER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(CARMINITE_BROODLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(HEDGE_SPIDER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, HedgeSpider::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(REDCAP_SAPPER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(MAZE_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MazeSlime::getCanSpawnHere, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(YETI.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Yeti::yetiSnowyForestSpawnHandler, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(ALPHA_YETI.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(WINTER_WOLF.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WinterWolf::canSpawnHere, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(SNOW_GUARDIAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(STABLE_ICE_CORE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(UNSTABLE_ICE_CORE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(SNOW_QUEEN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(TROLL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(GIANT_MINER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GiantMiner::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(ARMORED_GIANT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GiantMiner::canSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(ICE_CRYSTAL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(HARBINGER_CUBE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(ADHERENT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(ROVING_CUBE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-		event.register(RISING_ZOMBIE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+	public static void registerSpawnPlacements() {
+		SpawnPlacements.register(BOAR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(BIGHORN_SHEEP.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(DEER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(REDCAP.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(SKELETON_DRUID.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SkeletonDruid::checkDruidSpawnRules);
+		SpawnPlacements.register(WRAITH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Wraith::checkMonsterSpawnRules);
+		SpawnPlacements.register(HOSTILE_WOLF.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, HostileWolf::checkWolfSpawnRules);
+		SpawnPlacements.register(HYDRA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+		SpawnPlacements.register(LICH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(PENGUIN.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Penguin::canSpawn);
+		SpawnPlacements.register(LICH_MINION.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(LOYAL_ZOMBIE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+		SpawnPlacements.register(TINY_BIRD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(SQUIRREL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(DWARF_RABBIT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(RAVEN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(QUEST_RAM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
+		SpawnPlacements.register(KOBOLD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(MOSQUITO_SWARM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(DEATH_TOME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(MINOTAUR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(MINOSHROOM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(FIRE_BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(SLIME_BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(PINCH_BEETLE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(MIST_WOLF.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(CARMINITE_GHASTLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CarminiteGhastling::canSpawnHere);
+		SpawnPlacements.register(CARMINITE_GOLEM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(TOWERWOOD_BORER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(CARMINITE_GHASTGUARD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CarminiteGhastguard::ghastSpawnHandler);
+		SpawnPlacements.register(UR_GHAST.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(BLOCKCHAIN_GOBLIN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(UPPER_GOBLIN_KNIGHT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(LOWER_GOBLIN_KNIGHT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(HELMET_CRAB.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(KNIGHT_PHANTOM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+		SpawnPlacements.register(NAGA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(SWARM_SPIDER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SwarmSpider::getCanSpawnHere);
+		SpawnPlacements.register(KING_SPIDER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(CARMINITE_BROODLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(HEDGE_SPIDER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, HedgeSpider::canSpawn);
+		SpawnPlacements.register(REDCAP_SAPPER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(MAZE_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, MazeSlime::getCanSpawnHere);
+		SpawnPlacements.register(YETI.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Yeti::yetiSnowyForestSpawnHandler);
+		SpawnPlacements.register(ALPHA_YETI.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(WINTER_WOLF.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WinterWolf::canSpawnHere);
+		SpawnPlacements.register(SNOW_GUARDIAN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(STABLE_ICE_CORE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(UNSTABLE_ICE_CORE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(SNOW_QUEEN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(TROLL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(GIANT_MINER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GiantMiner::canSpawn);
+		SpawnPlacements.register(ARMORED_GIANT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, GiantMiner::canSpawn);
+		SpawnPlacements.register(ICE_CRYSTAL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(HARBINGER_CUBE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(ADHERENT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(ROVING_CUBE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
+		SpawnPlacements.register(RISING_ZOMBIE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules);
 	}
 
-	@SubscribeEvent
-	public static void addEntityAttributes(EntityAttributeCreationEvent event) {
-		event.put(BOAR.get(), Boar.registerAttributes().build());
-		event.put(BIGHORN_SHEEP.get(), Sheep.createAttributes().build());
-		event.put(DEER.get(), Deer.registerAttributes().build());
-		event.put(REDCAP.get(), Redcap.registerAttributes().build());
-		event.put(SWARM_SPIDER.get(), SwarmSpider.registerAttributes().build());
-		event.put(NAGA.get(), Naga.registerAttributes().build());
-		event.put(SKELETON_DRUID.get(), AbstractSkeleton.createAttributes().build());
-		event.put(HOSTILE_WOLF.get(), HostileWolf.registerAttributes().build());
-		event.put(WRAITH.get(), Wraith.registerAttributes().build());
-		event.put(HEDGE_SPIDER.get(), Spider.createAttributes().build());
-		event.put(HYDRA.get(), Hydra.registerAttributes().build());
-		event.put(LICH.get(), Lich.registerAttributes().build());
-		event.put(PENGUIN.get(), Penguin.registerAttributes().build());
-		event.put(LICH_MINION.get(), Zombie.createAttributes().build());
-		event.put(LOYAL_ZOMBIE.get(), LoyalZombie.registerAttributes().build());
-		event.put(TINY_BIRD.get(), TinyBird.registerAttributes().build());
-		event.put(SQUIRREL.get(), Squirrel.registerAttributes().build());
-		event.put(DWARF_RABBIT.get(), DwarfRabbit.registerAttributes().build());
-		event.put(RAVEN.get(), Raven.registerAttributes().build());
-		event.put(QUEST_RAM.get(), QuestRam.registerAttributes().build());
-		event.put(KOBOLD.get(), Kobold.registerAttributes().build());
-		event.put(MOSQUITO_SWARM.get(), MosquitoSwarm.registerAttributes().build());
-		event.put(DEATH_TOME.get(), DeathTome.registerAttributes().build());
-		event.put(MINOTAUR.get(), Minotaur.registerAttributes().build());
-		event.put(MINOSHROOM.get(), Minoshroom.registerAttributes().build());
-		event.put(FIRE_BEETLE.get(), FireBeetle.registerAttributes().build());
-		event.put(SLIME_BEETLE.get(), SlimeBeetle.registerAttributes().build());
-		event.put(PINCH_BEETLE.get(), PinchBeetle.registerAttributes().build());
-		event.put(MAZE_SLIME.get(), MazeSlime.registerAttributes().build());
-		event.put(REDCAP_SAPPER.get(), RedcapSapper.registerAttributes().build());
-		event.put(MIST_WOLF.get(), MistWolf.registerAttributes().build());
-		event.put(KING_SPIDER.get(), KingSpider.registerAttributes().build());
-		event.put(CARMINITE_GHASTLING.get(), CarminiteGhastling.registerAttributes().build());
-		event.put(CARMINITE_GHASTGUARD.get(), CarminiteGhastguard.registerAttributes().build());
-		event.put(CARMINITE_GOLEM.get(), CarminiteGolem.registerAttributes().build());
-		event.put(TOWERWOOD_BORER.get(), TowerwoodBorer.registerAttributes().build());
-		event.put(CARMINITE_BROODLING.get(), TowerBroodling.registerAttributes().build());
-		event.put(UR_GHAST.get(), UrGhast.registerAttributes().build());
-		event.put(BLOCKCHAIN_GOBLIN.get(), BlockChainGoblin.registerAttributes().build());
-		event.put(UPPER_GOBLIN_KNIGHT.get(), UpperGoblinKnight.registerAttributes().build());
-		event.put(LOWER_GOBLIN_KNIGHT.get(), LowerGoblinKnight.registerAttributes().build());
-		event.put(HELMET_CRAB.get(), HelmetCrab.registerAttributes().build());
-		event.put(KNIGHT_PHANTOM.get(), KnightPhantom.registerAttributes().build());
-		event.put(YETI.get(), Yeti.registerAttributes().build());
-		event.put(ALPHA_YETI.get(), AlphaYeti.registerAttributes().build());
-		event.put(WINTER_WOLF.get(), WinterWolf.registerAttributes().build());
-		event.put(SNOW_GUARDIAN.get(), SnowGuardian.registerAttributes().build());
-		event.put(STABLE_ICE_CORE.get(), StableIceCore.registerAttributes().build());
-		event.put(UNSTABLE_ICE_CORE.get(), UnstableIceCore.registerAttributes().build());
-		event.put(SNOW_QUEEN.get(), SnowQueen.registerAttributes().build());
-		event.put(TROLL.get(), Troll.registerAttributes().build());
-		event.put(GIANT_MINER.get(), GiantMiner.registerAttributes().build());
-		event.put(ARMORED_GIANT.get(), GiantMiner.registerAttributes().build());
-		event.put(ICE_CRYSTAL.get(), IceCrystal.registerAttributes().build());
-		event.put(HARBINGER_CUBE.get(), HarbingerCube.registerAttributes().build());
-		event.put(ADHERENT.get(), Adherent.registerAttributes().build());
-		event.put(ROVING_CUBE.get(), RovingCube.registerAttributes().build());
-		event.put(PLATEAU_BOSS.get(), PlateauBoss.registerAttributes().build());
+	public static void addEntityAttributes() {
+		FabricDefaultAttributeRegistry.register(BOAR.get(), Boar.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(BIGHORN_SHEEP.get(), Sheep.createAttributes().build());
+		FabricDefaultAttributeRegistry.register(DEER.get(), Deer.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(REDCAP.get(), Redcap.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(SWARM_SPIDER.get(), SwarmSpider.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(NAGA.get(), Naga.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(SKELETON_DRUID.get(), AbstractSkeleton.createAttributes().build());
+		FabricDefaultAttributeRegistry.register(HOSTILE_WOLF.get(), HostileWolf.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(WRAITH.get(), Wraith.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(HEDGE_SPIDER.get(), Spider.createAttributes().build());
+		FabricDefaultAttributeRegistry.register(HYDRA.get(), Hydra.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(LICH.get(), Lich.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(PENGUIN.get(), Penguin.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(LICH_MINION.get(), Zombie.createAttributes().build());
+		FabricDefaultAttributeRegistry.register(LOYAL_ZOMBIE.get(), LoyalZombie.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(TINY_BIRD.get(), TinyBird.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(SQUIRREL.get(), Squirrel.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(DWARF_RABBIT.get(), DwarfRabbit.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(RAVEN.get(), Raven.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(QUEST_RAM.get(), QuestRam.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(KOBOLD.get(), Kobold.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(MOSQUITO_SWARM.get(), MosquitoSwarm.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(DEATH_TOME.get(), DeathTome.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(MINOTAUR.get(), Minotaur.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(MINOSHROOM.get(), Minoshroom.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(FIRE_BEETLE.get(), FireBeetle.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(SLIME_BEETLE.get(), SlimeBeetle.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(PINCH_BEETLE.get(), PinchBeetle.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(MAZE_SLIME.get(), MazeSlime.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(REDCAP_SAPPER.get(), RedcapSapper.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(MIST_WOLF.get(), MistWolf.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(KING_SPIDER.get(), KingSpider.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(CARMINITE_GHASTLING.get(), CarminiteGhastling.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(CARMINITE_GHASTGUARD.get(), CarminiteGhastguard.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(CARMINITE_GOLEM.get(), CarminiteGolem.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(TOWERWOOD_BORER.get(), TowerwoodBorer.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(CARMINITE_BROODLING.get(), TowerBroodling.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(UR_GHAST.get(), UrGhast.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(BLOCKCHAIN_GOBLIN.get(), BlockChainGoblin.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(UPPER_GOBLIN_KNIGHT.get(), UpperGoblinKnight.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(LOWER_GOBLIN_KNIGHT.get(), LowerGoblinKnight.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(HELMET_CRAB.get(), HelmetCrab.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(KNIGHT_PHANTOM.get(), KnightPhantom.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(YETI.get(), Yeti.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(ALPHA_YETI.get(), AlphaYeti.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(WINTER_WOLF.get(), WinterWolf.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(SNOW_GUARDIAN.get(), SnowGuardian.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(STABLE_ICE_CORE.get(), StableIceCore.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(UNSTABLE_ICE_CORE.get(), UnstableIceCore.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(SNOW_QUEEN.get(), SnowQueen.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(TROLL.get(), Troll.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(GIANT_MINER.get(), GiantMiner.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(ARMORED_GIANT.get(), GiantMiner.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(ICE_CRYSTAL.get(), IceCrystal.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(HARBINGER_CUBE.get(), HarbingerCube.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(ADHERENT.get(), Adherent.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(ROVING_CUBE.get(), RovingCube.registerAttributes().build());
+		FabricDefaultAttributeRegistry.register(PLATEAU_BOSS.get(), PlateauBoss.registerAttributes().build());
 
-		//event.put(BOGGARD.get(), Boggard.registerAttributes().create());
-		event.put(RISING_ZOMBIE.get(), Zombie.createAttributes().build());
+		//FabricDefaultAttributeRegistry.register(BOGGARD.get(), Boggard.registerAttributes().create());
+		FabricDefaultAttributeRegistry.register(RISING_ZOMBIE.get(), Zombie.createAttributes().build());
 	}
 }

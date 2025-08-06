@@ -1,8 +1,11 @@
 package twilightforest.client.model.block.forcefield;
 
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryBakingContext;
+import io.github.fabricators_of_create.porting_lib.render_types.RenderTypeGroup;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
@@ -14,12 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.RenderTypeGroup;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.block.ForceFieldBlock;
@@ -27,8 +24,8 @@ import twilightforest.block.ForceFieldBlock;
 import java.util.*;
 import java.util.function.Function;
 
-public class ForceFieldModel implements IDynamicBakedModel {
-	private static final ModelProperty<ForceFieldData> DATA = new ModelProperty<>();
+public class ForceFieldModel implements BakedModel {
+	//private static final ModelProperty<ForceFieldData> DATA = new ModelProperty<>();
 	private static final FaceBakery FACE_BAKERY = new FaceBakery();
 
 	private final Map<BlockElement, ForceFieldModelLoader.Condition> parts;
@@ -36,8 +33,8 @@ public class ForceFieldModel implements IDynamicBakedModel {
 	private final IGeometryBakingContext context;
 	private final TextureAtlasSprite particle;
 	private final ItemOverrides overrides;
-	@Nullable
-	private final ChunkRenderTypeSet blockRenderTypes;
+	//@Nullable
+	//private final ChunkRenderTypeSet blockRenderTypes;
 	@Nullable
 	private final List<RenderType> itemRenderTypes;
 	@Nullable
@@ -51,15 +48,15 @@ public class ForceFieldModel implements IDynamicBakedModel {
 		this.overrides = overrides;
 		ResourceLocation renderTypeHint = context.getRenderTypeHint();
 		RenderTypeGroup group = renderTypeHint != null ? context.getRenderType(renderTypeHint) : RenderTypeGroup.EMPTY;
-		this.blockRenderTypes = !group.isEmpty() ? ChunkRenderTypeSet.of(group.block()) : null;
+		//this.blockRenderTypes = !group.isEmpty() ? ChunkRenderTypeSet.of(group.block()) : null;
 		this.itemRenderTypes = !group.isEmpty() ? List.of(group.entity()) : null;
 		this.fabulousItemRenderTypes = !group.isEmpty() ? List.of(group.entityFabulous()) : null;
 	}
 
 	@Override
-	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction cullFace, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction cullFace, @NotNull RandomSource rand) {
 		List<BakedQuad> quads = new ArrayList<>();
-		ForceFieldData data = extraData.get(DATA);
+		ForceFieldData data = null; //extraData.get(DATA);
 
 		if (data != null) {
 			if (cullFace == null) {
@@ -103,7 +100,7 @@ public class ForceFieldModel implements IDynamicBakedModel {
 		return false;
 	}
 
-	@Override
+	/*@Override
 	public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
 		if (modelData == ModelData.EMPTY) {
 			Map<ExtraDirection, List<Direction>> map = new HashMap<>();
@@ -124,7 +121,7 @@ public class ForceFieldModel implements IDynamicBakedModel {
 			modelData = ModelData.builder().with(DATA, new ForceFieldData(map)).build();
 		}
 		return modelData;
-	}
+	}*/
 
 	public static List<ExtraDirection> getExtraDirections(BlockState state, BlockGetter level, BlockPos pos) {
 		List<ExtraDirection> directions = new ArrayList<>();
@@ -203,7 +200,7 @@ public class ForceFieldModel implements IDynamicBakedModel {
 		return this.context.getTransforms();
 	}
 
-	@NotNull
+	/*@NotNull
 	@Override
 	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
 		return this.blockRenderTypes != null ? this.blockRenderTypes : IDynamicBakedModel.super.getRenderTypes(state, rand, data);
@@ -221,7 +218,7 @@ public class ForceFieldModel implements IDynamicBakedModel {
 		}
 
 		return IDynamicBakedModel.super.getRenderTypes(stack, fabulous);
-	}
+	}*/
 
 	public enum ExtraDirection implements StringRepresentable {
 		DOWN("down", 0, 1, 0),

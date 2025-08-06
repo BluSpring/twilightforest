@@ -1,10 +1,10 @@
 package twilightforest.init;
 
 import com.mojang.serialization.MapCodec;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.registry.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.enchantment.effects.EnchantmentEntityEffect;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import twilightforest.TwilightForestMod;
 import twilightforest.enchantment.ApplyFrostedEffect;
 import twilightforest.enchantment.RechargeScepterEffect;

@@ -1,5 +1,6 @@
 package twilightforest.world.components.structures.lichtowerrevamp;
 
+import io.github.fabricators_of_create.porting_lib.world.PieceBeardifierModifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -18,11 +19,9 @@ import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.templatesystem.*;
-import net.neoforged.neoforge.common.world.PieceBeardifierModifier;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.init.TFStructurePieceTypes;
 import twilightforest.util.BoundingBoxUtils;
 import twilightforest.util.jigsaw.JigsawPlaceContext;
@@ -32,8 +31,7 @@ import twilightforest.world.components.structures.TwilightJigsawPiece;
 import twilightforest.world.components.structures.util.SortablePiece;
 
 public final class LichTowerBase extends TwilightJigsawPiece implements PieceBeardifierModifier, SpawnIndexProvider, SortablePiece {
-	@Autowired
-	private static LichTowerUtil lichTowerUtil;
+	private static LichTowerUtil lichTowerUtil = new LichTowerUtil();
 
 	private final int casketWingIndex;
 
@@ -146,15 +144,14 @@ public final class LichTowerBase extends TwilightJigsawPiece implements PieceBea
 	private static class TrimProcessor extends StructureProcessor {
 		private static final TrimProcessor INSTANCE = new TrimProcessor();
 
-		@Nullable
 		@Override
-		public StructureTemplate.StructureBlockInfo process(LevelReader level, BlockPos origin, BlockPos centerBottom, StructureTemplate.StructureBlockInfo originalBlockInfo, StructureTemplate.StructureBlockInfo modifiedBlockInfo, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
-			if (modifiedBlockInfo.state().is(Blocks.POLISHED_ANDESITE_STAIRS) && level.getBlockState(modifiedBlockInfo.pos()).is(BlockTags.STONE_BRICKS)) {
+		public @Nullable StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
+			if (blockInfo.state().is(Blocks.POLISHED_ANDESITE_STAIRS) && level.getBlockState(pos).is(BlockTags.STONE_BRICKS)) {
 				// Don't replace trim blocks placed by tower wings
 				return null;
 			}
 
-			return super.process(level, origin, centerBottom, originalBlockInfo, modifiedBlockInfo, settings, template);
+			return super.processBlock(level, offset, pos, blockInfo, relativeBlockInfo, settings);
 		}
 
 		@Override

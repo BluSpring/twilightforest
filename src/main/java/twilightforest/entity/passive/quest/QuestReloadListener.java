@@ -5,21 +5,20 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import twilightforest.TwilightForestMod;
-import tamaized.beanification.Autowired;
 import twilightforest.entity.passive.quest.ram.QuestingRamContext;
 import twilightforest.entity.passive.quest.ram.QuestingRamCurrentContext;
 
 import java.util.Map;
 
-public class QuestReloadListener extends SimpleJsonResourceReloadListener {
+public class QuestReloadListener extends SimpleJsonResourceReloadListener implements IdentifiableResourceReloadListener {
 
-	@Autowired
-	private static QuestingRamCurrentContext questingRamCurrentContext;
+	private static QuestingRamCurrentContext questingRamCurrentContext = QuestingRamCurrentContext.INSTANCE;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -42,5 +41,10 @@ public class QuestReloadListener extends SimpleJsonResourceReloadListener {
 			TwilightForestMod.LOGGER.error("Questing Ram quest file not found. Defaulting to fallback");
 			questingRamCurrentContext.setContext(QuestingRamContext.FALLBACK);
 		}
+	}
+
+	@Override
+	public ResourceLocation getFabricId() {
+		return TwilightForestMod.prefix("quests");
 	}
 }

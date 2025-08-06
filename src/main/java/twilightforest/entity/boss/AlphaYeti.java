@@ -24,6 +24,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -31,7 +32,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.entity.IHostileMount;
 import twilightforest.entity.ai.goal.ThrowRiderGoal;
@@ -40,8 +40,8 @@ import twilightforest.entity.ai.goal.YetiTiredGoal;
 import twilightforest.entity.projectile.FallingIce;
 import twilightforest.entity.projectile.IceBomb;
 import twilightforest.init.*;
-import twilightforest.util.entities.EntityUtil;
 import twilightforest.util.WorldUtil;
+import twilightforest.util.entities.EntityUtil;
 
 public class AlphaYeti extends BaseTFBoss implements RangedAttackMob, IHostileMount {
 
@@ -213,7 +213,7 @@ public class AlphaYeti extends BaseTFBoss implements RangedAttackMob, IHostileMo
 	}
 
 	public void destroyBlocksInAABB(AABB box) {
-		if (EventHooks.canEntityGrief(this.level(), this)) {
+		if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 			for (BlockPos pos : WorldUtil.getAllInBB(box)) {
 				if (EntityUtil.canDestroyBlock(this.level(), pos, this)) {
 					this.level().destroyBlock(pos, false);
@@ -223,7 +223,7 @@ public class AlphaYeti extends BaseTFBoss implements RangedAttackMob, IHostileMo
 	}
 
 	public void makeRandomBlockFall(int range, int hangTime) {
-		if (EventHooks.canEntityGrief(this.level(), this)) {
+		if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 			// find a block nearby
 			int bx = Mth.floor(this.getX()) + this.getRandom().nextInt(range) - this.getRandom().nextInt(range);
 			int bz = Mth.floor(this.getZ()) + this.getRandom().nextInt(range) - this.getRandom().nextInt(range);

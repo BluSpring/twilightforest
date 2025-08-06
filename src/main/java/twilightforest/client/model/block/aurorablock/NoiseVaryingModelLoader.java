@@ -4,7 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import io.github.fabricators_of_create.porting_lib.models.geometry.IGeometryLoader;
 
 import java.util.ArrayList;
 import java.util.List;

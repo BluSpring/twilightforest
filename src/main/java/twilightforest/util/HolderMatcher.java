@@ -1,9 +1,7 @@
 package twilightforest.util;
 
 import net.minecraft.core.Holder;
-import tamaized.beanification.Component;
 
-@Component
 public class HolderMatcher {
 
 	public <T> boolean match(Holder<T> a, Holder<T> b) {

@@ -1,12 +1,13 @@
 package twilightforest.client.particle;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
+
+@Environment(EnvType.CLIENT)
 public class CustomTextureParticle extends TextureSheetParticle {
     private final boolean fullBright;
 	private final float uo;
@@ -61,7 +62,7 @@ public class CustomTextureParticle extends TextureSheetParticle {
 		return this.sprite.getV((this.vo + 1.0F) / 4.0F);
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public record Factory(SpriteSet sprite, boolean fullBright) implements ParticleProvider<SimpleParticleType> {
 		@Override
 		public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
@@ -71,7 +72,7 @@ public class CustomTextureParticle extends TextureSheetParticle {
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public record ShieldBreak(SpriteSet sprite) implements ParticleProvider<SimpleParticleType> {
 		@Override
 		public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {

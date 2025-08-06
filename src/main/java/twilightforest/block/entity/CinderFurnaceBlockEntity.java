@@ -1,5 +1,6 @@
 package twilightforest.block.entity;
 
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
 import twilightforest.block.CinderFurnaceBlock;
 import twilightforest.init.TFBlocks;
@@ -60,7 +60,7 @@ public class CinderFurnaceBlockEntity extends FurnaceBlockEntity {
 							itemstack.shrink(1);
 
 							if (itemstack.isEmpty()) {
-								ItemStack item1 = item.getCraftingRemainingItem(itemstack);
+								ItemStack item1 = item.getCraftingRemainingItem().getDefaultInstance();
 								te.items.set(1, item1);
 							}
 						}

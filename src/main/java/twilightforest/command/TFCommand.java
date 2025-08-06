@@ -10,49 +10,47 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import tamaized.beanification.Autowired;
 
-@tamaized.beanification.Component
 public class TFCommand {
 
-	@Autowired
-	private CenterCommand centerCommand;
 
-	@Autowired
-	private ConquerCommand conquerCommand;
+	private CenterCommand centerCommand = new CenterCommand();
 
-	@Autowired
-	private GenerateBookCommand generateBookCommand;
 
-	@Autowired
-	private InfoCommand infoCommand;
+	private ConquerCommand conquerCommand = new ConquerCommand();
 
-	@Autowired
-	private MapBiomesCommand mapBiomesCommand;
 
-	@Autowired
-	private MapLocatorCommand mapLocatorCommand;
+	private GenerateBookCommand generateBookCommand = new GenerateBookCommand();
 
-	@Autowired
-	private ShieldCommand shieldCommand;
 
-	@Autowired
-	private SinisterSpawnerCommand spawnerCommand;
+	private InfoCommand infoCommand = new InfoCommand();
 
-	@Autowired
-	private DisplayPiecesCommand displayPiecesCommand;
 
-	@Autowired
-	private CountLootCommand countLootCommand;
+	private MapBiomesCommand mapBiomesCommand = new MapBiomesCommand();
 
-	@Autowired
-	private CountTemplateCommand countTemplateCommand;
 
-	@Autowired
-	private StructureDistanceCommand structureDistanceCommand;
+	private MapLocatorCommand mapLocatorCommand = new MapLocatorCommand();
 
-	@Autowired
-	private ClearDisplayCommand clearDisplayCommand;
+
+	private ShieldCommand shieldCommand = new ShieldCommand();
+
+
+	private SinisterSpawnerCommand spawnerCommand = new SinisterSpawnerCommand();
+
+
+	private DisplayPiecesCommand displayPiecesCommand = new DisplayPiecesCommand();
+
+
+	private CountLootCommand countLootCommand = new CountLootCommand();
+
+
+	private CountTemplateCommand countTemplateCommand = new CountTemplateCommand();
+
+
+	private StructureDistanceCommand structureDistanceCommand = new StructureDistanceCommand();
+
+
+	private ClearDisplayCommand clearDisplayCommand = new ClearDisplayCommand();
 
 	public void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
 		LiteralArgumentBuilder<CommandSourceStack> structureBranch = Commands.literal("structure_util")
